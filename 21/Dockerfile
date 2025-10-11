@@ -9,7 +9,7 @@ RUN apt-get update -y \
     && apt-get install -y --no-install-recommends \
         chromium-browser ffmpeg git imagemagick python3 sqlite3 dnsutils zip tar iproute2 iputils-ping build-essential \
     && npm install -g npm@latest typescript ts-node @types/node \
-    && useradd -m -d /home/container container \
+     && useradd -m -d /home/container --user-group container \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home/container
