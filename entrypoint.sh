@@ -38,9 +38,9 @@ printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "APT Version"       "$(apt -v | head -
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Node.js Version"   "$(node -v)"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "NPM Version"       "$(npm -v)"
 echo -e ""
-echo -e "${ACCENT}${BOLD}──────────────────────────────────────────────────────────────${RESET}"
+echo -e "${ACCENT}${BOLD}───────────────────────────────────────────────────────────${RESET}"
 echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
-echo -e "${ACCENT}${BOLD}──────────────────────────────────────────────────────────────${RESET}"
+echo -e "${ACCENT}${BOLD}───────────────────────────────────────────────────────────${RESET}"
 echo -e ""
 
 # Jalankan server
