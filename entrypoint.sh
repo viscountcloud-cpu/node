@@ -40,7 +40,7 @@ printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "NPM Version"       "$(npm -v)"
 echo -e ""
 echo -e "${ACCENT}${BOLD}───────────────────────────────────────────────────────────${RESET}"
 echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
-echo -e "${ACCENT}${BOLD}───────────────────────────────────────────────────────────${RESET}"
+echo -e "${ACCENT}${BOLD}──────────────────────────────────────────────────────${RESET}"
 echo -e ""
 
 # Jalankan server
