@@ -1,0 +1,49 @@
+name: build nodejs-basic
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  push:
+    name: "${{ matrix.tag }}"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        tag:
+          - 12
+          - 14
+          - 16
+          - 17
+          - 18
+          - 19
+          - 20
+          - 21
+          - 22
+          - 23
+    steps:
+      - uses: actions/checkout@v4
+      # Setup QEMU for ARM64 Build
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+        with:
+          buildkitd-flags: --debug
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.TOKEN }}
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./nodejs-basic/${{ matrix.tag }}/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/someyaka555/node:${{ matrix.tag }}
