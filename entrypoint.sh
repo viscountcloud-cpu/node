@@ -23,9 +23,9 @@ MODIFIED_STARTUP=$(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
 clear
 echo -e ""
-echo -e "${ACCENT}${BOLD}┌────────────────────────────────────────────────────┐${RESET}"
-echo -e "${ACCENT}${BOLD}│${RESET}                   ${TEXT}Server Environment Info${RESET}                    ${ACCENT}${BOLD}│${RESET}"
-echo -e "${ACCENT}${BOLD}└────────────────────────────────────────────────────┘${RESET}"
+echo -e "${ACCENT}${BOLD}┌──────────────────────────────────────────────────┐${RESET}"
+echo -e "${ACCENT}${BOLD}│${RESET}              ${TEXT}Server Environment Info${RESET}               ${ACCENT}${BOLD}│${RESET}"
+echo -e "${ACCENT}${BOLD}└──────────────────────────────────────────────────┘${RESET}"
 echo -e ""
 
 # Info tampil elegan seperti tabel
