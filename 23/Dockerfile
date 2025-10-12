@@ -8,7 +8,7 @@ RUN apt-get update -y \
     && apt-get install -y nodejs \
     && apt-get install -y --no-install-recommends \
         chromium-browser ffmpeg git imagemagick python3 sqlite3 dnsutils zip tar iproute2 iputils-ping build-essential \
-    && npm install -g npm@latest typescript ts-node @types/node \
+   
     && rm -rf /var/lib/apt/lists/*
 
 # Download dan install Google Chrome
@@ -19,7 +19,9 @@ RUN wget -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chr
 RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
 
 WORKDIR /home/container
-RUN npm init -y && npm install puppeteer
+RUN npm init -y && npm install puppeteer \
+    && npm install -g npm@latest typescript ts-node @types/node \
+    && npm install -g pm2@latest
 
 ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium-browser"
 ENV PUPPETEER_DISABLE_SANDBOX=true
