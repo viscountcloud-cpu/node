@@ -44,6 +44,6 @@ COPY ../../entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh && chown container:container /entrypoint.sh
 
 # --- Kembali ke user non-root ---
-USER container
+#USER container
 
 CMD ["/bin/bash", "/entrypoint.sh"]
