@@ -18,8 +18,10 @@ RUN wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-
     && rm -rf /var/lib/apt/lists/*
 
 # --- Buat user non-root ---
-RUN groupadd -g 997 container \
-    && useradd -m -u 997 -d /home/container -g container -s /bin/bash container
+# RUN groupadd -g 997 container \
+#    && useradd -m -u 997 -d /home/container -g container -s /bin/bash container
+ RUN groupadd -g 997 container \
+   && useradd -m -d /home/container -g container container
 
 # --- Buat direktori npm global untuk user container ---
 RUN mkdir -p /home/container/.npm-global \
