@@ -29,7 +29,7 @@ RUN mkdir -p /home/container/.npm-global \
 ENV NPM_CONFIG_PREFIX=/home/container/.npm-global
 ENV PATH=/home/container/.npm-global/bin:$PATH
 ENV HOME=/home/container
-ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium-browser"
+ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome-stable"
 ENV PUPPETEER_DISABLE_SANDBOX=true
 
 # --- Ganti ke user container dan install package ---
