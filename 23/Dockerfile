@@ -18,15 +18,33 @@ RUN wget -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chr
     
 RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
 
+USER container
 WORKDIR /home/container
 RUN npm init -y && npm install puppeteer \
     && npm install -g npm@latest typescript ts-node @types/node \
     && npm install -g pm2@latest
 
+    
+# Kembali ke root untuk mengatur pembatasan akses
+USER root
+
+# Batasi akses user container hanya ke /home/container
+RUN chown -R container:container /home/container \
+    && chmod 700 /home/container \
+    && chmod o-rwx /home/container \
+    && find / -mindepth 1 -maxdepth 1 ! -path "/home" ! -path "/proc" ! -path "/sys" ! -path "/dev" -exec chmod 000 {} \; || true
+
+# (Opsional) pastikan user container tidak punya shell login penuh
+RUN usermod -s /usr/sbin/nologin container
+
 ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium-browser"
 ENV PUPPETEER_DISABLE_SANDBOX=true
 
+
 USER container
+WORKDIR /home/container
+
+
 COPY ../entrypoint.sh /entrypoint.sh
 
 
