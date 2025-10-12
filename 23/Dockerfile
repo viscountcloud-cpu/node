@@ -4,7 +4,6 @@ LABEL author="FanDev" maintainer="FanDev404@pterodactyl.io"
 
 RUN apt-get update -y \
     && apt-get install -y curl gnupg wget ca-certificates --no-install-recommends \
-    && wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
     && curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
     && apt-get install -y nodejs \
     && apt-get install -y --no-install-recommends \
@@ -12,6 +11,11 @@ RUN apt-get update -y \
     && npm install -g npm@latest typescript ts-node @types/node \
     && rm -rf /var/lib/apt/lists/*
 
+# Download dan install Google Chrome
+RUN wget -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && apt-get install -y /tmp/google-chrome.deb || apt-get -fy install \
+    && rm /tmp/google-chrome.deb 
+    
 RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
 
 WORKDIR /home/container
