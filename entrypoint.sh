@@ -19,7 +19,7 @@ PS1='\[\e[1;34m\]\u@\h \[\e[0;37m\]\w \$ \[\e[0m\]'
 export PS1
 
 # Ganti variable startup
-MODIFIED_STARTUP=$(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
+MODIFIED_STARTUP=$(echo -e bash -c ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
 clear
 echo -e ""
