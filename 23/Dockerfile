@@ -14,7 +14,7 @@ RUN wget -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chr
     && apt-get install -y /tmp/google-chrome.deb || apt-get -fy install \
     && rm /tmp/google-chrome.deb 
     
-RUN groupadd -g 997 container && useradd -m -d /home/container container
+RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
     
 WORKDIR /home/container
 RUN npm init -y && npm install puppeteer
