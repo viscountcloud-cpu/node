@@ -21,7 +21,9 @@ RUN groupadd -g 997 container && useradd -m -d /home/container -g container cont
 USER container
 WORKDIR /home/container
 RUN npm init -y && npm install puppeteer
-RUN npm install -g npm@latest typescript ts-node @types/node 
+
+RUN npm install -g npm@latest
+
 RUN npm install -g pm2@latest
 
     
