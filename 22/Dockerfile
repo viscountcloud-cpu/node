@@ -2,21 +2,16 @@ FROM ubuntu:22.04
 
 LABEL author="FanDev" maintainer="FanDev404@pterodactyl.io"
 
-# --- Instalasi dasar dan Node.js ---
+# --- Instalasi dasar & Node.js ---
 RUN apt-get update -y \
     && apt-get install -y curl gnupg wget ca-certificates --no-install-recommends \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && apt-get install -y --no-install-recommends \
-        chromium-browser ffmpeg git imagemagick python3 sqlite3 dnsutils zip tar iproute2 iputils-ping build-essential
+        chromium-browser ffmpeg git imagemagick python3 sqlite3 dnsutils zip tar iproute2 iputils-ping build-essential fonts-liberation xdg-utils \
+    && npm install -g npm@latest typescript ts-node @types/node
 
-# --- Pastikan NPM global path dapat digunakan oleh user biasa ---
-RUN mkdir -p /usr/local/lib/node_modules \
-    && npm install -g npm@latest typescript ts-node @types/node \
-    && ln -sf /usr/bin/node /usr/local/bin/node \
-    && ln -sf /usr/bin/npm /usr/local/bin/npm
-
-# --- Instal Google Chrome (Puppeteer akan pakai ini) ---
+# --- Install Google Chrome ---
 RUN wget -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
     && apt-get install -y /tmp/google-chrome.deb || apt-get -fy install \
     && rm /tmp/google-chrome.deb
@@ -24,27 +19,34 @@ RUN wget -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chr
 # --- Buat user container ---
 RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
 
-# --- Pastikan user container bisa gunakan npm di semua direktori ---
+# --- Konfigurasi npm agar bisa digunakan di semua direktori ---
 RUN mkdir -p /home/container/.npm-global \
     && chown -R container:container /home/container \
     && npm config set prefix '/home/container/.npm-global' \
-    && echo 'export PATH=$PATH:/home/container/.npm-global/bin' >> /etc/profile \
     && echo 'export PATH=$PATH:/home/container/.npm-global/bin' >> /home/container/.bashrc
 
-# --- Set PATH agar npm global tetap tersedia untuk semua user termasuk non-login shell ---
 ENV PATH="/home/container/.npm-global/bin:${PATH}"
+ENV HOME="/home/container"
+
+# --- Siapkan direktori writable untuk Chrome ---
+RUN mkdir -p /home/container/.local/share/applications \
+    && mkdir -p /home/container/.cache \
+    && chown -R container:container /home/container
 
 # --- Direktori kerja utama ---
 WORKDIR /home/container
 
-# --- Instal puppeteer (lokal) ---
+# --- Install Puppeteer ---
 RUN npm init -y && npm install puppeteer
 
-# --- Set variabel lingkungan untuk Puppeteer ---
+# --- Puppeteer environment ---
 ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome-stable"
 ENV PUPPETEER_DISABLE_SANDBOX=true
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-# --- Ganti ke user container ---
+# --- Nonaktifkan crashpad dan sandbox Chrome ---
+ENV CHROME_ARGS="--no-sandbox --disable-dev-shm-usage --disable-gpu --disable-crash-reporter --no-zygote --single-process --disable-extensions"
+
 USER container
 
 # --- Copy entrypoint ---
