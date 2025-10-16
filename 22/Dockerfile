@@ -48,7 +48,6 @@ ENV PUPPETEER_DISABLE_SANDBOX=true
 USER container
 
 # --- Copy entrypoint ---
-COPY ../../entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY ../entrypoint.sh /entrypoint.sh
 
 CMD ["/bin/bash", "/entrypoint.sh"]
