@@ -1,66 +1,86 @@
-#!/bin/bash
-cd /home/container || exit 1
+FROM ubuntu:22.04
 
-# Tambahkan user ke /etc/passwd agar tidak muncul "I have no name!"
-echo "container:x:$(id -u):$(id -g):container user:/home/container:/bin/bash" >> /etc/passwd 2>/dev/null
-
-# Ubah prompt shell agar tampil seperti "server@hostname:~/"
-export PS1="\[\033[1;36m\]server@\[\033[1;34m\]\h\[\033[0m\]:\[\033[1;37m\]\w\[\033[0m\]\$ "
-
-# 🎨 Warna tema (elegan & profesional)
-ACCENT='\033[1;34m'     # biru lembut
-DIM='\033[0;37m'        # abu muda
-TEXT='\033[1;37m'       # putih terang
-BOLD='\033[1m'
-RESET='\033[0m'
-
-# Informasi sistem
-HOSTNAME=$(hostname)
-DATE=$(date "+%Y-%m-%d")
-UPTIME=$(uptime -p | sed 's/up //')
-MEMORY=$(free -h | awk '/Mem:/ {print $3 " / " $2}')
-DISK=$(df -h /home | awk 'NR==2 {print $3 " / " $2 " (" $5 ")"}')
-NODE_IP=$(dig +short myip.opendns.com @resolver1.opendns.com 2>/dev/null || echo "Unavailable")
-
-# Informasi software
-NODE_VERSION=$(node -v)
-NPM_VERSION=$(npm -v)
-PM2_VERSION=$(pm2 -v 2>/dev/null || echo "Not Installed")
-GIT_VERSION=$(git --version 2>/dev/null | awk '{print $3}')
-CHROME_PATH=PUPPETEER_EXECUTABLE_PATH
-
-# Ganti variable startup (misal: STARTUP="node index.js")
-MODIFIED_STARTUP=$(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
+LABEL author="FanDev" maintainer="FanDev404@pterodactyl.io"
 
 # ========================================
-#        SERVER INFORMATION
+# 🧩 Dasar sistem
 # ========================================
-echo -e ""
-echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
-echo -e "                ${TEXT}${BOLD}Server Information${RESET}"
-echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
-echo -e ""
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Hostname" "$HOSTNAME"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "IP Node" "$NODE_IP"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Date" "$DATE"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Memory" "$MEMORY"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Disk" "$DISK"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Uptime" "$UPTIME"
-echo -e ""
-echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
-echo -e "                ${TEXT}${BOLD}Software Information${RESET}"
-echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
-echo -e ""
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Node.js" "$NODE_VERSION"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "npm" "$NPM_VERSION"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "PM2" "$PM2_VERSION"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Git" "$GIT_VERSION"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Chrome Path" "$CHROME_PATH"
-echo -e ""
-echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
-echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
-echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
-echo -e ""
+RUN apt-get update -y \
+    && apt-get install -y curl wget gnupg ca-certificates build-essential --no-install-recommends \
+    && apt-get install -y chromium-browser ffmpeg git imagemagick python3 sqlite3 dnsutils zip tar iproute2 iputils-ping fonts-liberation xdg-utils \
+    && rm -rf /var/lib/apt/lists/*
 
-# 🚀 Jalankan server utama
-eval ${MODIFIED_STARTUP}
+# ========================================
+# 🧩 Node.js, npm, dan PM2
+# ========================================
+RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g npm@latest pm2 \
+    && npm config set fund false \
+    && npm config set audit false \
+    && npm config set progress false
+
+# ========================================
+# 🧩 Install Google Chrome (full deps)
+# ========================================
+RUN apt-get update -y \
+    && apt-get install -y wget gnupg ca-certificates --no-install-recommends \
+    && wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && apt-get install -y -f /tmp/google-chrome.deb || apt-get -fy install \
+    && rm -f /tmp/google-chrome.deb \
+    && rm -rf /var/lib/apt/lists/*
+
+# ========================================
+# 🧩 Tambah utilitas tambahan
+# ========================================
+RUN apt-get update -y && apt-get install -y jq dig --no-install-recommends && rm -rf /var/lib/apt/lists/*
+
+# ========================================
+# 🧩 Buat user container
+# ========================================
+RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
+
+# ========================================
+# 🧩 Lingkungan Puppeteer / Chrome
+# ========================================
+ENV CHROME_BIN=/usr/bin/google-chrome-stable
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_DISABLE_SANDBOX=true
+ENV CHROME_DEVEL_SANDBOX=0
+ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
+ENV NODE_ENV=production
+ENV HOME=/home/container
+ENV PM2_LIMIT=3
+
+# ========================================
+# 🧩 PM2 wrapper (limit proses tanpa kill server)
+# ========================================
+RUN echo '#!/bin/bash' > /usr/local/bin/pm2safe && \
+    echo 'LIMIT=${PM2_LIMIT:-3}' >> /usr/local/bin/pm2safe && \
+    echo 'CURRENT=$(pm2 jlist | jq length 2>/dev/null || echo 0)' >> /usr/local/bin/pm2safe && \
+    echo 'if [ "$1" = "start" ]; then' >> /usr/local/bin/pm2safe && \
+    echo '  if [ "$CURRENT" -ge "$LIMIT" ]; then' >> /usr/local/bin/pm2safe && \
+    echo '    echo "⚠️ PM2 limit of $LIMIT processes reached. Skipping new start." >&2' >> /usr/local/bin/pm2safe && \
+    echo '    exit 0' >> /usr/local/bin/pm2safe && \
+    echo '  fi' >> /usr/local/bin/pm2safe && \
+    echo 'fi' >> /usr/local/bin/pm2safe && \
+    echo 'pm2 "$@"' >> /usr/local/bin/pm2safe && \
+    chmod +x /usr/local/bin/pm2safe
+
+# ========================================
+# 🧩 Copy entrypoint
+# ========================================
+COPY --chown=container:container entrypoint.sh /entrypoint.sh
+RUN chmod 755 /entrypoint.sh
+
+# ========================================
+# 🧩 User dan direktori kerja
+# ========================================
+USER container
+WORKDIR /home/container
+
+# ========================================
+# 🚀 Jalankan container
+# ========================================
+CMD ["/bin/bash", "/entrypoint.sh"]
