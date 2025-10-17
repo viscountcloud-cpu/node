@@ -1,9 +1,6 @@
 #!/bin/bash
 cd /home/container || exit 1
 
-# Tambahkan user ke /etc/passwd agar tidak muncul "I have no name!"
-echo "container:x:$(id -u):$(id -g):container user:/home/container:/bin/bash" >> /etc/passwd 2>/dev/null
-
 # Ubah prompt shell agar tampil seperti "server@hostname:~/"
 export PS1="\[\033[1;36m\]server@\[\033[1;34m\]\h\[\033[0m\]:\[\033[1;37m\]\w\[\033[0m\]\$ "
 
