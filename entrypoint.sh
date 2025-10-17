@@ -14,21 +14,8 @@ DATE=$(date "+%Y-%m-%d %H:%M:%S")
 INTERNAL_IP=$(ip route get 1 | awk '{print $(NF-2);exit}')
 export INTERNAL_IP
 
-# Prompt shell
-PS1='\[\e[1;34m\]\u@\h \[\e[0;37m\]\w \$ \[\e[0m\]'
-export PS1
-
 # Ganti variable startup (misal: STARTUP="node index.js")
 MODIFIED_STARTUP=$(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
-
-# 🔐 Matikan semua kemungkinan interaksi password/keyring
-export DEBIAN_FRONTEND=noninteractive
-export DBUS_SESSION_BUS_ADDRESS=/dev/null
-export CHROME_USER_DATA_DIR="/home/container/.chrome-cache"
-export CHROME_HEADLESS=1
-export NPM_CONFIG_FUND=false
-export NPM_CONFIG_AUDIT=false
-export NPM_CONFIG_INTERACTIVE=false
 
 # Tampilkan informasi environment elegan
 echo -e ""
