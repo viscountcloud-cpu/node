@@ -27,53 +27,52 @@ RUN mkdir -p /home/container/.npm-global \
 ENV PATH="/home/container/.npm-global/bin:${PATH}"
 ENV HOME="/home/container"
 
-# --- Siapkan direktori cache Chrome ---
+# --- Siapkan folder Chrome & cache ---
 RUN mkdir -p /home/container/.local/share/applications \
     && mkdir -p /home/container/.cache \
     && mkdir -p /home/container/.chrome-cache \
     && chown -R container:container /home/container
 
-# --- Direktori kerja ---
 WORKDIR /home/container
 
-# --- Install Puppeteer (bisa dipakai juga untuk Playwright) ---
+# --- Install Puppeteer ---
 RUN npm init -y && npm install puppeteer
 
-# --- Variabel untuk Chrome ---
+# --- Puppeteer environment ---
 ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome-stable"
 ENV PUPPETEER_DISABLE_SANDBOX=true
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-# --- Chrome args (disamakan dengan konfigurasi Playwright) ---
+# --- Chrome flags aman tanpa sandbox & namespace ---
 ENV CHROME_ARGS="\
 --headless=new \
 --no-sandbox \
 --disable-setuid-sandbox \
---disable-dev-shm-usage \
 --disable-gpu \
---disable-cache \
---disable-application-cache \
---disable-offline-load-stale-cache \
+--disable-dev-shm-usage \
 --disable-accelerated-2d-canvas \
+--disable-application-cache \
+--disable-cache \
+--disable-offline-load-stale-cache \
 --disk-cache-size=0 \
 --no-zygote \
 --no-first-run \
 --ignore-certificate-errors \
---aggressive-tab-discard \
---disable-crash-reporter \
---disable-extensions \
 --disable-background-networking \
 --disable-background-timer-throttling \
---disable-backgrounding-occluded-windows \
---disable-client-side-phishing-detection \
---disable-default-apps \
+--disable-extensions \
+--disable-sync \
 --mute-audio \
---user-data-dir=/home/container/.chrome-cache"
+--aggressive-tab-discard \
+--user-data-dir=/home/container/.chrome-cache \
+--single-process"
 
-# Jalankan sebagai user non-root
+# Tambahan ini memaksa Chrome untuk benar-benar non-sandbox mode
+ENV CHROME_DEVEL_SANDBOX=0
+
 USER container
 
-# Copy entrypoint dari parent folder ke root container
+# --- Copy entrypoint ---
 COPY ../entrypoint.sh /entrypoint.sh
 
 CMD ["/bin/bash", "/entrypoint.sh"]
