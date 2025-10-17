@@ -31,11 +31,6 @@ RUN apt-get update -y \
     && rm -rf /var/lib/apt/lists/*
 
 # ========================================
-# 🧩 Tambah utilitas tambahan
-# ========================================
-RUN apt-get update -y && apt-get install -y jq dig --no-install-recommends && rm -rf /var/lib/apt/lists/*
-
-# ========================================
 # 🧩 Buat user container
 # ========================================
 RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
