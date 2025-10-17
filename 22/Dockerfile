@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 
 LABEL author="FanDev" maintainer="FanDev404@pterodactyl.io"
 
-# --- Instalasi dasar & Node.js ---
+# --- Instalasi dasar dan Node.js ---
 RUN apt-get update -y \
     && apt-get install -y curl gnupg wget ca-certificates --no-install-recommends \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
@@ -19,39 +19,61 @@ RUN wget -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chr
 # --- Buat user container ---
 RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
 
-# --- Konfigurasi npm agar bisa digunakan di semua direktori ---
+# --- Konfigurasi npm global ---
 RUN mkdir -p /home/container/.npm-global \
-    && chown -R container:container /home/container \
     && npm config set prefix '/home/container/.npm-global' \
     && echo 'export PATH=$PATH:/home/container/.npm-global/bin' >> /home/container/.bashrc
 
 ENV PATH="/home/container/.npm-global/bin:${PATH}"
 ENV HOME="/home/container"
 
-# --- Siapkan direktori writable untuk Chrome ---
+# --- Siapkan direktori cache Chrome ---
 RUN mkdir -p /home/container/.local/share/applications \
     && mkdir -p /home/container/.cache \
     && mkdir -p /home/container/.chrome-cache \
     && chown -R container:container /home/container
 
-# --- Direktori kerja utama ---
+# --- Direktori kerja ---
 WORKDIR /home/container
 
-# --- Install Puppeteer ---
+# --- Install Puppeteer (bisa dipakai juga untuk Playwright) ---
 RUN npm init -y && npm install puppeteer
 
-# --- Puppeteer environment ---
+# --- Variabel untuk Chrome ---
 ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome-stable"
 ENV PUPPETEER_DISABLE_SANDBOX=true
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-# --- Nonaktifkan sandbox & aktifkan cache Chrome lokal ---
-# Perintah "--no-sandbox" dan "--disable-setuid-sandbox" penting untuk mencegah error "setuid sandbox"
-ENV CHROME_ARGS="--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu --disable-crash-reporter --no-zygote --single-process --disable-extensions --user-data-dir=/home/container/.chrome-cache"
+# --- Chrome args (disamakan dengan konfigurasi Playwright) ---
+ENV CHROME_ARGS="\
+--headless=new \
+--no-sandbox \
+--disable-setuid-sandbox \
+--disable-dev-shm-usage \
+--disable-gpu \
+--disable-cache \
+--disable-application-cache \
+--disable-offline-load-stale-cache \
+--disable-accelerated-2d-canvas \
+--disk-cache-size=0 \
+--no-zygote \
+--no-first-run \
+--ignore-certificate-errors \
+--aggressive-tab-discard \
+--disable-crash-reporter \
+--disable-extensions \
+--disable-background-networking \
+--disable-background-timer-throttling \
+--disable-backgrounding-occluded-windows \
+--disable-client-side-phishing-detection \
+--disable-default-apps \
+--mute-audio \
+--user-data-dir=/home/container/.chrome-cache"
 
+# Jalankan sebagai user non-root
 USER container
 
-# --- Copy entrypoint ---
+# Copy entrypoint dari parent folder ke root container
 COPY ../entrypoint.sh /entrypoint.sh
 
 CMD ["/bin/bash", "/entrypoint.sh"]
