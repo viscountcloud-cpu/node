@@ -29,17 +29,6 @@ RUN apt-get update -y \
     && rm -f /tmp/google-chrome.deb
 
 # ========================================
-# 🧩 Setup user & direktori container
-# ========================================
-RUN groupadd -g 997 container \
-    && useradd -m -d /home/container -g container container \
-    && mkdir -p /home/container/.chrome-cache \
-    && chown -R container:container /home/container \
-    && chmod -R 700 /home/container/.chrome-cache \
-    && chmod 755 /usr/bin/google-chrome-stable \
-    && chown root:container /usr/bin/google-chrome-stable
-
-# ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
