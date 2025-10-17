@@ -35,44 +35,16 @@ RUN mkdir -p /home/container/.local/share/applications \
 
 WORKDIR /home/container
 
-# --- Install Puppeteer ---
+# --- Install Puppeteer (Playwright juga bisa ditambah nanti) ---
 RUN npm init -y && npm install puppeteer
 
-# --- Puppeteer environment ---
+# --- Puppeteer defaults ---
 ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome-stable"
-ENV PUPPETEER_DISABLE_SANDBOX=true
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-# --- Chrome flags aman tanpa sandbox & namespace ---
-ENV CHROME_ARGS="\
---headless=new \
---no-sandbox \
---disable-setuid-sandbox \
---disable-gpu \
---disable-dev-shm-usage \
---disable-accelerated-2d-canvas \
---disable-application-cache \
---disable-cache \
---disable-offline-load-stale-cache \
---disk-cache-size=0 \
---no-zygote \
---no-first-run \
---ignore-certificate-errors \
---disable-background-networking \
---disable-background-timer-throttling \
---disable-extensions \
---disable-sync \
---mute-audio \
---aggressive-tab-discard \
---user-data-dir=/home/container/.chrome-cache \
---single-process"
-
-# Tambahan ini memaksa Chrome untuk benar-benar non-sandbox mode
-ENV CHROME_DEVEL_SANDBOX=0
+# Copy entrypoint
+COPY ../entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 USER container
-
-# --- Copy entrypoint ---
-COPY ../entrypoint.sh /entrypoint.sh
-
 CMD ["/bin/bash", "/entrypoint.sh"]
