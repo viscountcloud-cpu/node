@@ -34,13 +34,6 @@ RUN apt-get update -y \
 RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
 
 # ========================================
-# 🧩 Konfigurasi npm global
-# ========================================
-# RUN mkdir -p /home/container/.npm-global \
-#     && npm config set prefix '/home/container/.npm-global' \
-#     && echo 'export PATH=$PATH:/home/container/.npm-global/bin' >> /home/container/.bashrc
-    
-# ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
@@ -51,7 +44,6 @@ ENV CHROME_DEVEL_SANDBOX=0
 ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
 ENV NODE_ENV=production
 ENV HOME=/home/container
-#ENV PATH="/home/container/.npm-global/bin:${PATH}"
 ENV PM2_LIMIT=3
 
 # ========================================
