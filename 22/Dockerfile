@@ -29,6 +29,11 @@ RUN apt-get update -y \
     && rm -f /tmp/google-chrome.deb
 
 # ========================================
+# 🧩 Buat user container
+# ========================================
+RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
+
+# ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
