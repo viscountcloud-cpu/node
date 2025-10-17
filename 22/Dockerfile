@@ -31,9 +31,11 @@ RUN apt-get update -y \
     && rm -rf /var/lib/apt/lists/*
 
 # ========================================
-# 🧩 Buat user container
+# 🧩 Buat user container & tambahkan ke /etc/passwd
 # ========================================
-RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
+RUN groupadd -g 997 container \
+    && useradd -m -d /home/container -g container container \
+    && echo "container:x:997:997:container user:/home/container:/bin/bash" >> /etc/passwd
 
 # ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
