@@ -5,7 +5,6 @@ LABEL author="FanDev" maintainer="FanDev404@pterodactyl.io"
 # ========================================
 # 🧩 Dasar sistem
 # ========================================
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y \
     && apt-get install -y curl wget gnupg ca-certificates build-essential --no-install-recommends \
