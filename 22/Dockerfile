@@ -9,6 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y \
     && apt-get install -y curl wget gnupg ca-certificates build-essential --no-install-recommends \
+    && apt-get install -y chromium-browser ffmpeg git imagemagick python3 sqlite3 dnsutils zip tar iproute2 iputils-ping build-essential fonts-liberation xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
 # ========================================
