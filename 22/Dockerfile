@@ -28,9 +28,11 @@ RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
 # ========================================
 # 🧩 Install Google Chrome (stable)
 # ========================================
-RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && apt-get install -y ./google-chrome-stable_current_amd64.deb \
-    && rm -f google-chrome-stable_current_amd64.deb
+RUN apt-get update -y \
+    && apt-get install -y wget gnupg ca-certificates --no-install-recommends \
+    && wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && apt-get install -y -f /tmp/google-chrome.deb || apt-get -fy install \
+    && rm -f /tmp/google-chrome.deb
 
 # ========================================
 # 🧩 Buat user container (tanpa akses root)
