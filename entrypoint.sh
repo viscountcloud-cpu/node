@@ -22,7 +22,6 @@ NODE_IP=$(dig +short myip.opendns.com @resolver1.opendns.com 2>/dev/null || echo
 # Informasi software
 NODE_VERSION=$(node -v)
 NPM_VERSION=$(npm -v)
-PM2_VERSION=$(pm2 -v 2>/dev/null || echo "Not Installed")
 GIT_VERSION=$(git --version 2>/dev/null | awk '{print $3}')
 CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
 
@@ -50,7 +49,6 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e ""
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Node.js" "$NODE_VERSION"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "npm" "$NPM_VERSION"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "PM2" "$PM2_VERSION"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Git" "$GIT_VERSION"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Chrome Path" "$CHROME_PATH"
 echo -e ""
