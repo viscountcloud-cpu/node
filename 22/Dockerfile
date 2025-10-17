@@ -52,7 +52,7 @@ ENV CHROME_DEVEL_SANDBOX=0
 ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
 ENV NODE_ENV=production
 ENV HOME=/home/container
-ENV PATH=/home/container/.npm-global/bin:${PATH}
+ENV PATH="/home/container/.npm-global/bin:${PATH}"
 ENV PM2_LIMIT=3
 
 # ========================================
