@@ -35,12 +35,8 @@ RUN groupadd -g 997 container \
     && useradd -m -d /home/container -g container container \
     && mkdir -p /home/container/.chrome-cache \
     && chown -R container:container /home/container \
-    && chmod -R 700 /home/container/.chrome-cache
-
-# ========================================
-# 🧩 Atur permission Chrome untuk user container
-# ========================================
-RUN chmod 755 /usr/bin/google-chrome-stable \
+    && chmod -R 700 /home/container/.chrome-cache \
+    && chmod 755 /usr/bin/google-chrome-stable \
     && chown root:container /usr/bin/google-chrome-stable
 
 # ========================================
