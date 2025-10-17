@@ -31,6 +31,7 @@ ENV HOME="/home/container"
 # --- Siapkan direktori writable untuk Chrome ---
 RUN mkdir -p /home/container/.local/share/applications \
     && mkdir -p /home/container/.cache \
+    && mkdir -p /home/container/.chrome-cache \
     && chown -R container:container /home/container
 
 # --- Direktori kerja utama ---
@@ -44,8 +45,9 @@ ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome-stable"
 ENV PUPPETEER_DISABLE_SANDBOX=true
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-# --- Nonaktifkan crashpad dan sandbox Chrome ---
-ENV CHROME_ARGS="--no-sandbox --disable-dev-shm-usage --disable-gpu --disable-crash-reporter --no-zygote --single-process --disable-extensions"
+# --- Nonaktifkan sandbox & aktifkan cache Chrome lokal ---
+# Perintah "--no-sandbox" dan "--disable-setuid-sandbox" penting untuk mencegah error "setuid sandbox"
+ENV CHROME_ARGS="--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu --disable-crash-reporter --no-zygote --single-process --disable-extensions --user-data-dir=/home/container/.chrome-cache"
 
 USER container
 
