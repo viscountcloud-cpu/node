@@ -53,6 +53,12 @@ echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 
+if [[ -z "${PM2_LIMIT_START}" ]]; then
+     PM2_LIMIT=3
+else
+     PM2_LIMIT=PM2_LIMIT_START
+fi
+
 
 if [[ -z "${MODIFIED_STARTUP}" || "${MODIFIED_STARTUP}" == "bash" ]]; then
     exec bash --init-file /bash_custom
