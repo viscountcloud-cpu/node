@@ -76,10 +76,9 @@ RUN chmod 755 /entrypoint.sh
 # ========================================
 # 🧩 User dan direktori kerja
 # ========================================
-USER container
 WORKDIR /home/container
 
 # ========================================
 # 🚀 Jalankan container
 # ========================================
-CMD ["/bin/bash", "/entrypoint.sh"]
+CMD ["/entrypoint.sh"]
