@@ -5,7 +5,7 @@ LABEL author="FanDev" maintainer="FanDev404@pterodactyl.io"
 # ========================================
 # 🧩 Dasar sistem
 # ========================================
-UN apt-get update -y && \
+RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         curl wget gnupg ca-certificates build-essential git unzip zip python3 python3-pip jq \
         libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libpixman-1-dev libpangocairo-1.0-0 \
