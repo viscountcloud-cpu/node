@@ -1,15 +1,6 @@
 #!/bin/bash
 cd /home/container || exit 1
 
-# === Optional: tambahkan nama user sementara jika bisa menulis ke /etc/passwd ===
-if [ -w /etc/passwd ] && ! getent passwd "$(id -u)" >/dev/null; then
-    echo "server:x:$(id -u):$(id -g):Server User:/home/container:/bin/bash" >> /etc/passwd
-fi
-
-# === Paksa nama tampil sebagai 'server' tanpa tergantung user system ===
-export CUSTOM_USER="server"
-export PS1="\[\033[1;36m\]${CUSTOM_USER}@\[\033[1;34m\]${HOSTNAME}\[\033[0m\]:\[\033[1;37m\]\w\[\033[0m\]\$ "
-
 # === Warna tema (elegan & profesional) ===
 ACCENT='\033[1;34m'     # biru lembut
 DIM='\033[0;37m'        # abu muda
@@ -62,5 +53,12 @@ echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 
-# === Jalankan server utama ===
-eval ${MODIFIED_STARTUP}
+# === Logika untuk startup ===
+# Jika STARTUP berisi "bash", jalankan dengan file konfigurasi khusus
+if [[ "${MODIFIED_STARTUP}" == *"bash"* ]]; then
+    echo -e "${DIM}Detected bash startup. Loading custom shell...${RESET}"
+    exec bash --init-file /bash_custom
+else
+    # Jalankan perintah seperti biasa
+    eval ${MODIFIED_STARTUP}
+fi
