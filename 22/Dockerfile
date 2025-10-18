@@ -69,10 +69,12 @@ RUN echo '#!/bin/bash' > /usr/local/bin/pm2safe && \
     chmod +x /usr/local/bin/pm2safe
 
 # ========================================
-# 🧩 Copy entrypoint
+# 🧩 Copy entrypoint & bash_custom
 # ========================================
 COPY --chown=container:container entrypoint.sh /entrypoint.sh
-RUN chmod 755 /entrypoint.sh
+COPY --chown=container:container bash_custom /bash_custom
+
+RUN chmod 755 /entrypoint.sh /bash_custom
 
 # ========================================
 # 🧩 User dan direktori kerja
