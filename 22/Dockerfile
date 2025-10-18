@@ -82,4 +82,4 @@ WORKDIR /home/container
 # ========================================
 # 🚀 Jalankan container
 # ========================================
-CMD ["/entrypoint.sh"]
+CMD ["/bin/bash", "/entrypoint.sh"]
