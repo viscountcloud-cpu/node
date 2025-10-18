@@ -53,6 +53,5 @@ echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 
-# === Logika untuk startup ===
-# Jika STARTUP berisi "bash", jalankan dengan file konfigurasi khusus
-eval bash --init-file /bash_custom
+
+eval ${MODIFIED_STARTUP}
