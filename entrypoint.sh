@@ -1,6 +1,11 @@
 #!/bin/bash
 cd /home/container || exit 1
 
+# === Optional: tambahkan nama user sementara jika bisa menulis ke /etc/passwd ===
+if [ -w /etc/passwd ] && ! getent passwd "$(id -u)" >/dev/null; then
+    echo "server:x:$(id -u):$(id -g):Server User:/home/container:/bin/bash" >> /etc/passwd
+fi
+
 # === Paksa nama tampil sebagai 'server' tanpa tergantung user system ===
 export CUSTOM_USER="server"
 export HOSTNAME=$(hostname)
