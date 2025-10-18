@@ -74,7 +74,7 @@ RUN echo '#!/bin/bash' > /usr/local/bin/pm2safe && \
 COPY --chown=container:container entrypoint.sh /entrypoint.sh
 COPY --chown=container:container bash_custom /bash_custom
 
-RUN chmod 755 /entrypoint.sh /bash_customm
+RUN chmod +x /entrypoint.sh /bash_custom
 
 # ========================================
 # 🧩 User dan direktori kerja
