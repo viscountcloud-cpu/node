@@ -2,24 +2,18 @@
 cd /home/container || exit 1
 
 # === Perbaiki user agar tidak muncul "I have no name!" ===
+# Jika user tidak dikenali (whoami gagal), buat nama sementara berdasarkan UID
 if ! whoami &>/dev/null; then
-    if [ -w /etc/passwd ]; then
-        echo "container:x:$(id -u):$(id -g):Container User:/home/container:/bin/bash" >> /etc/passwd
-    fi
+    export USER="server"
+else
+    export USER="$(whoami)"
 fi
 
-# === Pastikan direktori dan kepemilikan benar ===
-chown -R container:container /home/container 2>/dev/null || true
+# === Buat prompt shell "server@hostname:~" ===
+HOSTNAME=$(hostname)
+export PS1="\[\033[1;36m\]${USER}@\[\033[1;34m\]${HOSTNAME}\[\033[0m\]:\[\033[1;37m\]\w\[\033[0m\]\$ "
 
-# === Jalankan sebagai user container ===
-if [ "$(id -u)" -eq 0 ]; then
-    exec gosu container /bin/bash "$0" "$@"
-fi
-
-# === Ubah prompt shell agar tampil seperti "server@hostname:~" ===
-export PS1="\[\033[1;36m\]server@\[\033[1;34m\]\h\[\033[0m\]:\[\033[1;37m\]\w\[\033[0m\]\$ "
-
-# 🎨 Warna tema (elegan & profesional)
+# === Warna tema (elegan & profesional) ===
 ACCENT='\033[1;34m'     # biru lembut
 DIM='\033[0;37m'        # abu muda
 TEXT='\033[1;37m'       # putih terang
@@ -27,7 +21,6 @@ BOLD='\033[1m'
 RESET='\033[0m'
 
 # Informasi sistem
-HOSTNAME=$(hostname)
 DATE=$(date "+%Y-%m-%d")
 UPTIME=$(uptime -p | sed 's/up //')
 MEMORY=$(free -h | awk '/Mem:/ {print $3 " / " $2}')
@@ -40,7 +33,7 @@ NPM_VERSION=$(npm -v)
 GIT_VERSION=$(git --version 2>/dev/null | awk '{print $3}')
 CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
 
-# Ganti variable startup (misal: STARTUP="node index.js")
+# Startup command (misal STARTUP="node index.js")
 MODIFIED_STARTUP=$(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
 # ========================================
