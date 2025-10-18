@@ -54,8 +54,7 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e ""
 
 echo -e "${MODIFIED_STARTUP}"
-echo -e "${MODIFIED_STARTUP}" == *"bash"*
-echo -e "${MODIFIED_STARTUP}" == "bash"
+echo -e "${CMD_RUN}"
 
 
 # === Logika untuk startup ===
