@@ -73,13 +73,6 @@ else
     fi
 fi
 
-# Jika nilai 0 → artinya tidak ada limit
-if [[ "${PM2_LIMIT}" == "0" ]]; then
-    export PM2_LIMIT=0
-else
-    export PM2_LIMIT
-fi
-
 if [[ -z "${MODIFIED_STARTUP}" || "${MODIFIED_STARTUP}" == "bash" ]]; then
     exec bash --init-file /bash_custom
 else
