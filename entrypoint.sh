@@ -54,11 +54,17 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e ""
 
 if [[ -z "${PM2_LIMIT_START}" ]]; then
-     PM2_LIMIT=3
+    PM2_LIMIT=3
 else
-     PM2_LIMIT=${PM2_LIMIT_START}
+    PM2_LIMIT=${PM2_LIMIT_START}
 fi
 
+# Jika nilai 0 → artinya tidak ada limit
+if [[ "${PM2_LIMIT}" == "0" ]]; then
+    export PM2_LIMIT=0
+else
+    export PM2_LIMIT
+fi
 
 if [[ -z "${MODIFIED_STARTUP}" || "${MODIFIED_STARTUP}" == "bash" ]]; then
     exec bash --init-file /bash_custom
