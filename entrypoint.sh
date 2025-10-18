@@ -54,7 +54,7 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e ""
 
 
-if [[ "${MODIFIED_STARTUP}" == "bash" ]]; then
+if [[ "${CMD_RUN}" == "bash" ]]; then
     exec bash --init-file /bash_custom
 else
     eval ${MODIFIED_STARTUP}
