@@ -56,7 +56,21 @@ echo -e ""
 if [[ -z "${PM2_LIMIT_START}" ]]; then
     PM2_LIMIT=3
 else
-    PM2_LIMIT=${PM2_LIMIT_START}
+    if [[ "${PM2_LIMIT_START}" == "0" ]]; then
+        PM2_LIMIT=0
+    elif [[ "${PM2_LIMIT_START}" == "1" ]]; then
+        PM2_LIMIT=1
+    elif [[ "${PM2_LIMIT_START}" == "2" ]]; then
+        PM2_LIMIT=2
+    elif [[ "${PM2_LIMIT_START}" == "3" ]]; then
+        PM2_LIMIT=3
+    elif [[ "${PM2_LIMIT_START}" == "4" ]]; then
+        PM2_LIMIT=4
+    elif [[ "${PM2_LIMIT_START}" == "5" ]]; then
+        PM2_LIMIT=5
+    else
+        PM2_LIMIT=3
+    fi
 fi
 
 # Jika nilai 0 → artinya tidak ada limit
