@@ -6,10 +6,14 @@ LABEL author="FanDev" maintainer="FanDev404@pterodactyl.io"
 # 🧩 Dasar sistem
 # ========================================
 RUN apt-get update -y \
-    && apt-get install -y curl wget gnupg ca-certificates build-essential --no-install-recommends \
-    && apt-get install -y chromium-browser ffmpeg git imagemagick python3 sqlite3 dnsutils zip tar iproute2 iputils-ping fonts-liberation xdg-utils jq \
+    && apt-get install -y curl wget gnupg ca-certificates build-essential \
+        git unzip zip python3 python3-pip jq \
+        libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxi6 \
+        libxrandr2 libxrender1 libxss1 libxtst6 libcups2 libnss3 libatk1.0-0 \
+        libatk-bridge2.0-0 libpangocairo-1.0-0 libgtk-3-0 libxkbfile1 libgbm1 \
+        libasound2 \
     && rm -rf /var/lib/apt/lists/*
-
+    
 # ========================================
 # 🧩 Node.js, npm, dan PM2
 # ========================================
@@ -45,6 +49,7 @@ RUN groupadd -g 997 container \
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 ENV PUPPETEER_DISABLE_SANDBOX=true
 ENV CHROME_DEVEL_SANDBOX=0
 ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
@@ -57,9 +62,9 @@ ENV PM2_LIMIT=3
 # ========================================
 COPY --chown=container:container entrypoint.sh /entrypoint.sh
 COPY --chown=container:container bash_custom /bash_custom
-COPY --chown=container:container pm2_limit.sh /usr/local/bin/pm2
+# COPY --chown=container:container pm2_limit.sh /usr/local/bin/pm2
 
-RUN chmod +x /entrypoint.sh /bash_custom /usr/local/bin/pm2
+RUN chmod +x /entrypoint.sh /bash_custom
 
 # ========================================
 # 🧩 User dan direktori kerja
