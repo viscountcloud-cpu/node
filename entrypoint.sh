@@ -73,6 +73,35 @@ else
     fi
 fi
 
+export PM2_LIMIT
+
+# ========================================
+#       DEFINISI PM2SAFE LANGSUNG DI ENTRYPOINT
+# ========================================
+pm2safe() {
+    local LIMIT=${PM2_LIMIT:-0}
+
+    if [[ "$LIMIT" -eq 0 ]]; then
+        echo "ℹ️  PM2 limit disabled (unlimited)."
+        exec pm2 "$@"
+        return
+    fi
+
+    local CURRENT=$(pm2 jlist | jq length 2>/dev/null || echo 0)
+
+    if [[ "$1" == "start" ]]; then
+        if [[ "$CURRENT" -ge "$LIMIT" ]]; then
+            echo "⚠️  PM2 limit ($LIMIT) tercapai — tidak bisa menambah proses baru!"
+            return
+        fi
+    fi
+
+    exec pm2 "$@"
+}
+
+# Gunakan alias supaya semua pemanggilan pm2 otomatis via pm2safe
+alias pm2='pm2safe'
+
 if [[ -z "${MODIFIED_STARTUP}" || "${MODIFIED_STARTUP}" == "bash" ]]; then
     exec bash --init-file /bash_custom
 else
