@@ -1,17 +1,10 @@
 #!/bin/bash
 cd /home/container || exit 1
 
-# === Perbaiki user agar tidak muncul "I have no name!" ===
-# Jika user tidak dikenali (whoami gagal), buat nama sementara berdasarkan UID
-if ! whoami &>/dev/null; then
-    export USER="server"
-else
-    export USER="$(whoami)"
-fi
-
-# === Buat prompt shell "server@hostname:~" ===
-HOSTNAME=$(hostname)
-export PS1="\[\033[1;36m\]${USER}@\[\033[1;34m\]${HOSTNAME}\[\033[0m\]:\[\033[1;37m\]\w\[\033[0m\]\$ "
+# === Paksa nama tampil sebagai 'server' tanpa tergantung user system ===
+export CUSTOM_USER="server"
+export HOSTNAME=$(hostname)
+export PS1="\[\033[1;36m\]${CUSTOM_USER}@\[\033[1;34m\]${HOSTNAME}\[\033[0m\]:\[\033[1;37m\]\w\[\033[0m\]\$ "
 
 # === Warna tema (elegan & profesional) ===
 ACCENT='\033[1;34m'     # biru lembut
@@ -33,7 +26,7 @@ NPM_VERSION=$(npm -v)
 GIT_VERSION=$(git --version 2>/dev/null | awk '{print $3}')
 CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
 
-# Startup command (misal STARTUP="node index.js")
+# Ganti variable startup (misal: STARTUP="node index.js")
 MODIFIED_STARTUP=$(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
 # ========================================
@@ -65,5 +58,5 @@ echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 
-# 🚀 Jalankan server utama
+# === Jalankan server utama ===
 eval ${MODIFIED_STARTUP}
