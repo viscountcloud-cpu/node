@@ -55,9 +55,10 @@ echo -e ""
 
 # === Logika untuk startup ===
 # Jika STARTUP berisi "bash", jalankan dengan file konfigurasi khusus
-if [[ "bash" == "bash" ]]; then
-    exec bash --init-file /bash_custom
-else
-    # Jalankan perintah seperti biasa
-    eval ${MODIFIED_STARTUP}
-fi
+exec bash --init-file /bash_custom
+# if [[ "bash" == "bash" ]]; then
+#     exec bash --init-file /bash_custom
+# else
+#     # Jalankan perintah seperti biasa
+#     eval ${MODIFIED_STARTUP}
+# fi
