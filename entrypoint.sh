@@ -53,9 +53,7 @@ echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 
-echo -e "${MODIFIED_STARTUP}"
-echo -e "${CMD_RUN}"
-
+echo "${MODIFIED_STARTUP}"
 
 # === Logika untuk startup ===
 # Jika STARTUP berisi "bash", jalankan dengan file konfigurasi khusus
