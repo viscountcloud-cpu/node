@@ -53,6 +53,11 @@ echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 
+echo -e "${MODIFIED_STARTUP}"
+echo -e "${MODIFIED_STARTUP}" == *"bash"*
+echo -e "${MODIFIED_STARTUP}" == "bash"
+
+
 # === Logika untuk startup ===
 # Jika STARTUP berisi "bash", jalankan dengan file konfigurasi khusus
 if [[ "${MODIFIED_STARTUP}" == *"bash"* ]]; then
