@@ -42,6 +42,7 @@ RUN groupadd -g 997 container \
 # ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
+ENV USERNAME=server
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
