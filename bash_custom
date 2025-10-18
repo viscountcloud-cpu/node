@@ -6,50 +6,6 @@ fi
 
 export PS1="\[\033[1;36m\]${USERNAME}@\[\033[1;34m\]${HOSTNAME}\[\033[0m\]:\[\033[1;37m\]\w\[\033[0m\]\$ "
 
-
-# Warna
-ACCENT='\033[1;36m'   # cyan terang
-TEXT='\033[1;37m'     # putih terang
-DIM='\033[0;37m'      # abu muda
-BOLD='\033[1m'
-RESET='\033[0m'
-
-clear
-echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
-echo -e "                ${TEXT}${BOLD}Server Information${RESET}"
-echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
-echo ""
-
-DATE=$(date "+%Y-%m-%d %H:%M:%S")
-UPTIME=$(uptime -p | sed 's/up //')
-MEMORY=$(free -h | awk '/Mem:/ {print $3 " / " $2}')
-DISK=$(df -h /home | awk 'NR==2 {print $3 " / " $2 " (" $5 ")"}')
-NODE_IP=$(dig +short myip.opendns.com @resolver1.opendns.com 2>/dev/null || echo "Unavailable")
-
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Hostname" "$HOSTNAME"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "IP Node" "$NODE_IP"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Date" "$DATE"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Memory" "$MEMORY"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Disk" "$DISK"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Uptime" "$UPTIME"
-
-echo ""
-echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
-echo -e "                ${TEXT}${BOLD}Software Information${RESET}"
-echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
-echo ""
-
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Node.js" "$(node -v 2>/dev/null || echo 'Not installed')"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "npm" "$(npm -v 2>/dev/null || echo 'Not installed')"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Git" "$(git --version 2>/dev/null | awk '{print $3}')"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Chrome Path" "${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}"
-
-echo ""
-echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
-echo -e "${TEXT}${BOLD}Shell is ready. Type your command below.${RESET}"
-echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
-echo ""
-
 # === Pastikan kita di home directory ===
 cd /home/container || cd ~
 
