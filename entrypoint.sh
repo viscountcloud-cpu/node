@@ -1,6 +1,11 @@
 #!/bin/bash
 cd /home/container || exit 1
 
+# Pastikan user "container" terdaftar (fix "I have no name!")
+if ! id -u container >/dev/null 2>&1; then
+    echo "container:x:$(id -u):$(id -g):Container User:/home/container:/bin/bash" >> /etc/passwd
+fi
+
 # Ubah prompt shell agar tampil seperti "server@hostname:~/"
 export PS1="\[\033[1;36m\]server@\[\033[1;34m\]\h\[\033[0m\]:\[\033[1;37m\]\w\[\033[0m\]\$ "
 
