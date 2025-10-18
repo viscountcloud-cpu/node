@@ -53,12 +53,9 @@ echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 
-echo ${MODIFIED_STARTUP}
-
 # === Logika untuk startup ===
 # Jika STARTUP berisi "bash", jalankan dengan file konfigurasi khusus
-if [[ "${MODIFIED_STARTUP}" == *"bash"* ]]; then
-    echo -e "${DIM}Detected bash startup. Loading custom shell...${RESET}"
+if [[ "bash" == *"bash"* ]]; then
     exec bash --init-file /bash_custom
 else
     # Jalankan perintah seperti biasa
