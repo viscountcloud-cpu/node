@@ -56,7 +56,7 @@ echo -e ""
 if [[ -z "${PM2_LIMIT_START}" ]]; then
      PM2_LIMIT=3
 else
-     PM2_LIMIT=PM2_LIMIT_START
+     PM2_LIMIT=${PM2_LIMIT_START}
 fi
 
 
