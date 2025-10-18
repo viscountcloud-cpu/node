@@ -20,7 +20,7 @@ NODE_VERSION=$(node -v)
 NPM_VERSION=$(npm -v)
 GIT_VERSION=$(git --version 2>/dev/null | awk '{print $3}')
 CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
-
+HOSTNAME=${HOST_NAME}
 # Ganti variable startup (misal: STARTUP="node index.js")
 MODIFIED_STARTUP=$(echo -e ${CMD_RUN} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
@@ -32,7 +32,7 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e "                ${TEXT}${BOLD}Server Information${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Hostname" "$HOST_NAME"
+printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Hostname" "$HOSTNAME"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "IP Node" "$NODE_IP"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Date" "$DATE"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Memory" "$MEMORY"
