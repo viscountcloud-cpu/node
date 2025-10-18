@@ -1,12 +1,22 @@
 #!/bin/bash
 cd /home/container || exit 1
 
-# Pastikan user "container" terdaftar (fix "I have no name!")
-if ! id -u container >/dev/null 2>&1; then
-    echo "container:x:$(id -u):$(id -g):Container User:/home/container:/bin/bash" >> /etc/passwd
+# === Perbaiki user agar tidak muncul "I have no name!" ===
+if ! whoami &>/dev/null; then
+    if [ -w /etc/passwd ]; then
+        echo "container:x:$(id -u):$(id -g):Container User:/home/container:/bin/bash" >> /etc/passwd
+    fi
 fi
 
-# Ubah prompt shell agar tampil seperti "server@hostname:~/"
+# === Pastikan direktori dan kepemilikan benar ===
+chown -R container:container /home/container 2>/dev/null || true
+
+# === Jalankan sebagai user container ===
+if [ "$(id -u)" -eq 0 ]; then
+    exec gosu container /bin/bash "$0" "$@"
+fi
+
+# === Ubah prompt shell agar tampil seperti "server@hostname:~" ===
 export PS1="\[\033[1;36m\]server@\[\033[1;34m\]\h\[\033[0m\]:\[\033[1;37m\]\w\[\033[0m\]\$ "
 
 # 🎨 Warna tema (elegan & profesional)
