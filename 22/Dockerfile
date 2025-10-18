@@ -7,7 +7,7 @@ LABEL author="FanDev" maintainer="FanDev404@pterodactyl.io"
 # ========================================
 RUN apt-get update -y \
     && apt-get install -y curl wget gnupg ca-certificates build-essential --no-install-recommends \
-    && apt-get install -y chromium-browser ffmpeg git imagemagick python3 sqlite3 dnsutils zip tar iproute2 iputils-ping fonts-liberation xdg-utils \
+    && apt-get install -y chromium-browser ffmpeg git imagemagick python3 sqlite3 dnsutils zip tar iproute2 iputils-ping fonts-liberation xdg-utils jq \
     && rm -rf /var/lib/apt/lists/*
 
 # ========================================
@@ -52,22 +52,6 @@ ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
 ENV NODE_ENV=production
 ENV HOME=/home/container
 ENV PM2_LIMIT=3
-
-# ========================================
-# 🧩 PM2 wrapper (limit proses tanpa kill server)
-# ========================================
-RUN echo '#!/bin/bash' > /usr/local/bin/pm2safe && \
-    echo 'LIMIT=${PM2_LIMIT:-${PM2_LIMIT_START:-3}}' >> /usr/local/bin/pm2safe && \
-    echo 'if [ "$LIMIT" -eq 0 ]; then exec pm2 "$@"; fi' >> /usr/local/bin/pm2safe && \
-    echo 'CURRENT=$(pm2 jlist | jq length 2>/dev/null || echo 0)' >> /usr/local/bin/pm2safe && \
-    echo 'if [ "$1" = "start" ]; then' >> /usr/local/bin/pm2safe && \
-    echo '  if [ "$CURRENT" -ge "$LIMIT" ]; then' >> /usr/local/bin/pm2safe && \
-    echo '    echo "⚠️  PM2 limit of $LIMIT processes reached. Skipping new start." >&2' >> /usr/local/bin/pm2safe && \
-    echo '    exit 0' >> /usr/local/bin/pm2safe && \
-    echo '  fi' >> /usr/local/bin/pm2safe && \
-    echo 'fi' >> /usr/local/bin/pm2safe && \
-    echo 'exec pm2 "$@"' >> /usr/local/bin/pm2safe && \
-    chmod +x /usr/local/bin/pm2safe
 
 # ========================================
 # 🧩 Copy entrypoint & bash_custom
