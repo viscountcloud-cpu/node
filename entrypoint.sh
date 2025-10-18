@@ -22,7 +22,7 @@ GIT_VERSION=$(git --version 2>/dev/null | awk '{print $3}')
 CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
 
 # Ganti variable startup (misal: STARTUP="node index.js")
-MODIFIED_STARTUP=$(echo -e ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')
+MODIFIED_STARTUP=$(echo -e ${CMD_RUN} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
 # ========================================
 #        SERVER INFORMATION
@@ -54,7 +54,7 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e ""
 
 
-if [[ "${CMD_RUN}" == "bash" ]]; then
+if [[ -z "${MODIFIED_STARTUP}" || "${MODIFIED_STARTUP}" == "bash" ]]; then
     exec bash --init-file /bash_custom
 else
     eval ${MODIFIED_STARTUP}
