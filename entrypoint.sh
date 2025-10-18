@@ -8,7 +8,6 @@ fi
 
 # === Paksa nama tampil sebagai 'server' tanpa tergantung user system ===
 export CUSTOM_USER="server"
-export HOSTNAME=$(hostname)
 export PS1="\[\033[1;36m\]${CUSTOM_USER}@\[\033[1;34m\]${HOSTNAME}\[\033[0m\]:\[\033[1;37m\]\w\[\033[0m\]\$ "
 
 # === Warna tema (elegan & profesional) ===
