@@ -76,6 +76,7 @@ RUN chmod 755 /entrypoint.sh
 # ========================================
 # 🧩 User dan direktori kerja
 # ========================================
+USER container
 WORKDIR /home/container
 
 # ========================================
