@@ -71,10 +71,16 @@ RUN echo '#!/bin/bash' > /usr/local/bin/pm2safe && \
 # ========================================
 # 🧩 Copy entrypoint & bash_custom
 # ========================================
-COPY --chown=container:container entrypoint.sh /tmp/entrypoint.sh
-COPY --chown=container:container bash_custom /tmp/bash_custom
+COPY entrypoint.sh /tmp/entrypoint.sh
+COPY bash_custom /tmp/bash_custom
 
-RUN chmod +x /tmp/entrypoint.sh /tmp/bash_custom
+RUN chmod +x /tmp/entrypoint.sh /tmp/bash_custom \
+    && chown container:container /tmp/entrypoint.sh /tmp/bash_custom
+
+# COPY --chown=container:container entrypoint.sh /tmp/entrypoint.sh
+# COPY --chown=container:container bash_custom /tmp/bash_custom
+
+# RUN chmod +x /tmp/entrypoint.sh /tmp/bash_custom
 
 # ========================================
 # 🧩 User dan direktori kerja
@@ -85,4 +91,4 @@ WORKDIR /home/container
 # ========================================
 # 🚀 Jalankan container
 # ========================================
-CMD ["/bin/bash", "/entrypoint.sh"]
+CMD ["/bin/bash", "/tmp/entrypoint.sh"]
