@@ -57,15 +57,16 @@ ENV PM2_LIMIT=3
 # 🧩 PM2 wrapper (limit proses tanpa kill server)
 # ========================================
 RUN echo '#!/bin/bash' > /usr/local/bin/pm2safe && \
-    echo 'LIMIT=${PM2_LIMIT:-3}' >> /usr/local/bin/pm2safe && \
+    echo 'LIMIT=${PM2_LIMIT:-${PM2_LIMIT_START:-3}}' >> /usr/local/bin/pm2safe && \
+    echo 'if [ "$LIMIT" -eq 0 ]; then exec pm2 "$@"; fi' >> /usr/local/bin/pm2safe && \
     echo 'CURRENT=$(pm2 jlist | jq length 2>/dev/null || echo 0)' >> /usr/local/bin/pm2safe && \
     echo 'if [ "$1" = "start" ]; then' >> /usr/local/bin/pm2safe && \
     echo '  if [ "$CURRENT" -ge "$LIMIT" ]; then' >> /usr/local/bin/pm2safe && \
-    echo '    echo "⚠️ PM2 limit of $LIMIT processes reached. Skipping new start." >&2' >> /usr/local/bin/pm2safe && \
+    echo '    echo "⚠️  PM2 limit of $LIMIT processes reached. Skipping new start." >&2' >> /usr/local/bin/pm2safe && \
     echo '    exit 0' >> /usr/local/bin/pm2safe && \
     echo '  fi' >> /usr/local/bin/pm2safe && \
     echo 'fi' >> /usr/local/bin/pm2safe && \
-    echo 'pm2 "$@"' >> /usr/local/bin/pm2safe && \
+    echo 'exec pm2 "$@"' >> /usr/local/bin/pm2safe && \
     chmod +x /usr/local/bin/pm2safe
 
 # ========================================
