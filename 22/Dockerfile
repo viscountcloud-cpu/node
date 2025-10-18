@@ -42,7 +42,6 @@ RUN groupadd -g 997 container \
 # ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
-ENV USERNAME=server
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
@@ -54,28 +53,13 @@ ENV HOME=/home/container
 ENV PM2_LIMIT=3
 
 # ========================================
-# 🧩 PM2 wrapper
-# ========================================
-RUN echo '#!/bin/bash' > /usr/local/bin/pm2 && \
-    echo 'export PM2_HOME=/home/container/.pm2' >> /usr/local/bin/pm2 && \
-    echo 'LIMIT=${PM2_LIMIT:-3}' >> /usr/local/bin/pm2 && \
-    echo 'CURRENT=$(pm2 jlist | jq length 2>/dev/null || echo 0)' >> /usr/local/bin/pm2 && \
-    echo 'if [[ "$1" == "start" ]]; then' >> /usr/local/bin/pm2 && \
-    echo '  if [[ "$LIMIT" -ne 0 && "$CURRENT" -ge "$LIMIT" ]]; then' >> /usr/local/bin/pm2 && \
-    echo '    echo "⚠️ PM2 limit of $LIMIT processes reached. Skipping new start." >&2' >> /usr/local/bin/pm2 && \
-    echo '    exit 0' >> /usr/local/bin/pm2 && \
-    echo '  fi' >> /usr/local/bin/pm2 && \
-    echo 'fi' >> /usr/local/bin/pm2 && \
-    echo 'exec /usr/bin/pm2 "$@"' >> /usr/local/bin/pm2 && \
-    chmod +x /usr/local/bin/pm2
-
-# ========================================
 # 🧩 Copy entrypoint & bash_custom
 # ========================================
 COPY --chown=container:container entrypoint.sh /entrypoint.sh
 COPY --chown=container:container bash_custom /bash_custom
+COPY --chown=container:container pm2_limit.sh /usr/local/bin/pm2
 
-RUN chmod +x /entrypoint.sh /bash_custom
+RUN chmod +x /entrypoint.sh /bash_custom /usr/local/bin/pm2
 
 # ========================================
 # 🧩 User dan direktori kerja
