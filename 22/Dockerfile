@@ -17,7 +17,7 @@ RUN apt-get update -y && \
 # 🧩 Node.js, npm, dan PM2
 # ========================================
 RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
-    && apt-get install -y nodejs \
+    && apt-get install -y nodejs chromium \
     && npm install -g npm@latest pm2 \
     && npm config set fund false \
     && npm config set audit false \
