@@ -34,16 +34,6 @@ RUN apt-get update -y \
     && rm -rf /var/lib/apt/lists/*
 
 # ========================================
-# 🧩 Install chromium (full deps)
-# ========================================
-# Install system dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    fonts-freefont-ttf \
-    chromium && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-# ========================================
 # 🧩 Buat user container dan pastikan /etc/passwd valid
 # ========================================
 RUN groupadd -g 997 container \
@@ -55,9 +45,7 @@ RUN groupadd -g 997 container \
 # ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
-# ENV CHROME_BIN=/usr/bin/google-chrome-stable
-# ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
-ENV CHROME_BIN=/usr/bin/chromium
+ENV CHROME_BIN=/usr/bin/google-chrome-stable
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
