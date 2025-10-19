@@ -14,7 +14,7 @@ RUN apt-get update -y && \
         fonts-liberation libappindicator3-1 libatk-bridge2.0-0 libatk1.0-0 libcups2 libdbus-1-3 \
         libdrm2 libgbm1 libnspr4 libnss3 libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 \
         libxext6 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 libglib2.0-0 libxkbfile1 \
-        libgtk-3-0 libasound2 xdg-utils chromium-browser ttf-freefont && \
+        libgtk-3-0 libasound2 xdg-utils chromium ttf-freefont && \
     rm -rf /var/lib/apt/lists/*
     
 # ========================================
