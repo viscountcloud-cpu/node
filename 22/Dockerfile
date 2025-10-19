@@ -8,10 +8,14 @@ LABEL author="FanDev" maintainer="FanDev404@pterodactyl.io"
 RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         curl wget gnupg ca-certificates build-essential git unzip zip python3 python3-pip jq \
-        libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libpixman-1-dev libpangocairo-1.0-0 \
-        libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxi6 libxrandr2 libxrender1 libxss1 \
-        libxtst6 libcups2 libnss3 libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0 libxkbfile1 libgbm1 libasound2 \
-    && rm -rf /var/lib/apt/lists/*
+        # --- dependencies for node-canvas ---
+        libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libpixman-1-dev \
+        # --- Chrome/Chromium dependencies ---
+        fonts-liberation libappindicator3-1 libatk-bridge2.0-0 libatk1.0-0 libcups2 libdbus-1-3 \
+        libdrm2 libgbm1 libnspr4 libnss3 libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 \
+        libxext6 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 libglib2.0-0 libxkbfile1 \
+        libgtk-3-0 libasound2 xdg-utils chromium-browser ttf-freefont && \
+    rm -rf /var/lib/apt/lists/*
     
 # ========================================
 # 🧩 Node.js, npm, dan PM2
@@ -45,8 +49,11 @@ RUN groupadd -g 997 container \
 # ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
-ENV CHROME_BIN=/usr/bin/google-chrome-stable
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+# ENV CHROME_BIN=/usr/bin/google-chrome-stable
+# ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+ENV CHROME_BIN=/usr/bin/chromium-browser
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 ENV PUPPETEER_DISABLE_SANDBOX=true
