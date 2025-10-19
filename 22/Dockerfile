@@ -17,7 +17,7 @@ RUN apt-get update -y && \
 # 🧩 Node.js, npm, dan PM2
 # ========================================
 RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
-    && apt-get install -y nodejs chromium \
+    && apt-get install -y nodejs \
     && npm install -g npm@latest pm2 \
     && npm config set fund false \
     && npm config set audit false \
@@ -34,6 +34,16 @@ RUN apt-get update -y \
     && rm -rf /var/lib/apt/lists/*
 
 # ========================================
+# 🧩 Install chromium (full deps)
+# ========================================
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    fonts-freefont-ttf \
+    chromium && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+# ========================================
 # 🧩 Buat user container dan pastikan /etc/passwd valid
 # ========================================
 RUN groupadd -g 997 container \
@@ -47,8 +57,8 @@ RUN groupadd -g 997 container \
 # ========================================
 # ENV CHROME_BIN=/usr/bin/google-chrome-stable
 # ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
-ENV CHROME_BIN=/usr/bin/chromium-browser
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV CHROME_BIN=/usr/bin/chromium
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
