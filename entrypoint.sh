@@ -23,6 +23,16 @@ if [[ -z "$NODE_IP" ]]; then
 fi
 NODE_IP=${NODE_IP:-"Unavailable"}
 
+# === Region (deteksi otomatis dari IP publik) ===
+if [[ "$NODE_IP" != "Unavailable" && -n "$NODE_IP" ]]; then
+    NODE_REGION=$(curl -s "http://ip-api.com/json/${NODE_IP}" | jq -r '.country')
+    if [[ -z "$NODE_REGION" || "$NODE_REGION" == "null" ]]; then
+        NODE_REGION="UNKNOWN"
+    fi
+else
+    NODE_REGION="UNKNOWN"
+fi
+
 # Informasi software
 NODE_VERSION=$(node -v)
 NPM_VERSION=$(npm -v)
@@ -41,6 +51,7 @@ echo -e "                ${TEXT}${BOLD}Server Information${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Hostname" "$HOSTNAME"
+printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Region" "$NODE_REGION"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "IP Node" "$NODE_IP"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Date" "$DATE"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Memory" "$MEMORY"
