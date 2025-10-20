@@ -13,6 +13,7 @@ DATE=$(date "+%Y-%m-%d")
 UPTIME=$(uptime -p | sed 's/up //')
 MEMORY=$(free -h | awk '/Mem:/ {print $3 " / " $2}')
 DISK=$(df -h /home | awk 'NR==2 {print $3 " / " $2 " (" $5 ")"}')
+INTERNAL_IP=$(ip route get 1 | awk '{print $(NF-2);exit}')
 
 # === IP publik (lebih andal, dengan fallback) ===
 if command -v dig >/dev/null 2>&1; then
