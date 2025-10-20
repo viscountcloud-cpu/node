@@ -13,7 +13,15 @@ DATE=$(date "+%Y-%m-%d")
 UPTIME=$(uptime -p | sed 's/up //')
 MEMORY=$(free -h | awk '/Mem:/ {print $3 " / " $2}')
 DISK=$(df -h /home | awk 'NR==2 {print $3 " / " $2 " (" $5 ")"}')
-NODE_IP=$(dig +short myip.opendns.com @resolver1.opendns.com 2>/dev/null || echo "Unavailable")
+
+# === IP publik (lebih andal, dengan fallback) ===
+if command -v dig >/dev/null 2>&1; then
+    NODE_IP=$(dig +short myip.opendns.com @resolver1.opendns.com 2>/dev/null)
+fi
+if [[ -z "$NODE_IP" ]]; then
+    NODE_IP=$(curl -s https://api.ipify.org 2>/dev/null || echo "Unavailable")
+fi
+NODE_IP=${NODE_IP:-"Unavailable"}
 
 # Informasi software
 NODE_VERSION=$(node -v)
