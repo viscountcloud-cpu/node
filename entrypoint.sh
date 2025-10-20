@@ -43,6 +43,42 @@ HOSTNAME=${HOST_NAME}
 # Ganti variable startup (misal: STARTUP="node index.js")
 MODIFIED_STARTUP=$(echo -e ${CMD_RUN} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
+
+if [[ "${SETUP_NGINX}" == "ON" ]]; then
+    mkdir -p /home/container/.nginx
+    if [[ ! -f /home/container/.nginx/nginx.conf ]]; then
+    cat <<'EOF' > /home/container/.nginx/nginx.conf
+worker_processes auto;
+pid /tmp/nginx.pid;
+daemon off;
+
+events { worker_connections 768; }
+
+http {
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+
+    server {
+        listen 80;
+        server_name localhost;
+
+        root /home/container;
+        index index.html;
+
+        location / {
+            proxy_pass http://${INTERNAL_IP}:3000;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+        }
+    }
+}
+EOF
+    fi
+fi
+
 # ========================================
 #        SERVER INFORMATION
 # ========================================
@@ -72,6 +108,7 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
+
 
 if [[ -z "${PM2_LIMIT_START}" ]]; then
     PM2_LIMIT=3
