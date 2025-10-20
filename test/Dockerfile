@@ -46,11 +46,6 @@ RUN groupadd -g 997 container \
     && chown -R container:container /home/container
     
 # ========================================
-# 🧩 Nginx default config
-# ========================================
-RUN mkdir -p /home/container/.config
-
-# ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
