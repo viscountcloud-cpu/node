@@ -40,14 +40,15 @@ NPM_VERSION=$(npm -v)
 GIT_VERSION=$(git --version 2>/dev/null | awk '{print $3}')
 CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
 HOSTNAME=${HOST_NAME}
+NGINX_CONF="/home/container/.nginx/nginx.conf"
 # Ganti variable startup (misal: STARTUP="node index.js")
 MODIFIED_STARTUP=$(echo -e ${CMD_RUN} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
 
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
     mkdir -p /home/container/.nginx
-    if [[ ! -f /home/container/.nginx/nginx.conf ]]; then
-    cat <<'EOF' > /home/container/.nginx/nginx.conf
+    if [[ ! -f "$NGINX_CONF" ]]; then
+    cat <<EOF > "$NGINX_CONF"
 worker_processes auto;
 pid /tmp/nginx.pid;
 daemon off;
@@ -55,23 +56,115 @@ daemon off;
 events { worker_connections 768; }
 
 http {
-    sendfile on;
-    tcp_nopush on;
-    tcp_nodelay on;
+     sendfile on;
+     tcp_nopush on;
+     tcp_nodelay on;
+     keepalive_timeout 65;
+     types_hash_max_size 10048;
 
+      types {
+        text/html html htm shtml;
+        text/css css;
+        text/xml xml;
+        image/gif gif;
+        image/jpeg jpeg jpg;
+        application/javascript js;
+        application/atom+xml atom;
+        application/rss+xml rss;
+        text/mathml mml;
+        text/plain txt;
+        text/vnd.sun.j2me.app-descriptor jad;
+        text/vnd.wap.wml wml;
+        text/x-component htc;
+        image/png png;
+        image/tiff tif tiff;
+        image/vnd.wap.wbmp wbmp;
+        image/x-icon ico;
+        image/x-jng jng;
+        image/x-ms-bmp bmp;
+        image/svg+xml svg svgz;
+        image/webp webp;
+        application/font-woff woff;
+        application/java-archive jar war ear;
+        application/json json;
+        application/mac-binhex40 hqx;
+        application/msword doc;
+        application/pdf pdf;
+        application/postscript ps eps ai;
+        application/rtf rtf;
+        application/vnd.apple.mpegurl m3u8;
+        application/vnd.ms-excel xls;
+        application/vnd.ms-fontobject eot;
+        application/vnd.ms-powerpoint ppt;
+        application/vnd.wap.wmlc wmlc;
+        application/vnd.google-earth.kml+xml kml;
+        application/vnd.google-earth.kmz kmz;
+        application/x-7z-compressed 7z;
+        application/x-cocoa cco;
+        application/x-java-archive-diff jardiff;
+        application/x-java-jnlp-file jnlp;
+        application/x-makeself run;
+        application/x-perl pl pm;
+        application/x-pilot prc pdb;
+        application/x-rar-compressed rar;
+        application/x-redhat-package-manager rpm;
+        application/x-sea sea;
+        application/x-shockwave-flash swf;
+        application/x-stuffit sit;
+        application/x-tcl tcl tk;
+        application/x-x509-ca-cert der pem crt;
+        application/x-xpinstall xpi;
+        application/xhtml+xml xhtml;
+        application/xspf+xml xspf;
+        application/zip zip;
+        application/octet-stream bin exe dll;
+        application/octet-stream deb;
+        application/octet-stream dmg;
+        application/octet-stream iso img;
+        application/octet-stream msi msp msm;
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document docx;
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet xlsx;
+        application/vnd.openxmlformats-officedocument.presentationml.presentation pptx;
+        audio/midi mid midi kar;
+        audio/mpeg mp3;
+        audio/ogg ogg;
+        audio/x-m4a m4a;
+        audio/x-realaudio ra;
+        video/3gpp 3gpp 3gp;
+        video/mp2t ts;
+        video/mp4 mp4;
+        video/mpeg mpeg mpg;
+        video/quicktime mov;
+        video/webm webm;
+        video/x-flv flv;
+        video/x-m4v m4v;
+        video/x-mng mng;
+        video/x-ms-asf asx asf;
+        video/x-ms-wmv wmv;
+        video/x-msvideo avi;
+    }
+
+    default_type application/octet-stream;
+
+    proxy_temp_path /tmp;
+    client_body_temp_path /tmp;
+    fastcgi_temp_path /tmp;
+    uwsgi_temp_path /tmp;
+    scgi_temp_path /tmp;
+    
     server {
         listen 80;
-        server_name localhost;
+        server_name ${DOMAIN};
 
         root /home/container;
         index index.html;
 
         location / {
-            proxy_pass http://${INTERNAL_IP}:3000;
+            proxy_pass http://${INTERNAL_IP}:${PORT};
             proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Upgrade \$http_upgrade;
             proxy_set_header Connection "upgrade";
-            proxy_set_header Host $host;
+            proxy_set_header Host \$host;
         }
     }
 }
