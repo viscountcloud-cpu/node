@@ -15,7 +15,7 @@ MEMORY=$(free -h | awk '/Mem:/ {print $3 " / " $2}')
 DISK=$(df -h /home | awk 'NR==2 {print $3 " / " $2 " (" $5 ")"}')
 INTERNAL_IP=$(ip route get 1 | awk '{print $(NF-2);exit}')
 DOMAIN=${DOMAIN:-localhost}
-PORT=3000
+PORT=${PORT:-3000}
 
 
 # === IP publik (lebih andal, dengan fallback) ===
@@ -56,16 +56,18 @@ worker_processes auto;
 pid /tmp/nginx.pid;
 daemon off;
 
-events { worker_connections 768; }
+events {
+    worker_connections 768;
+}
 
 http {
-     sendfile on;
-     tcp_nopush on;
-     tcp_nodelay on;
-     keepalive_timeout 65;
-     types_hash_max_size 10048;
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 10048;
 
-      types {
+    types {
         text/html html htm shtml;
         text/css css;
         text/xml xml;
@@ -154,24 +156,35 @@ http {
     fastcgi_temp_path /tmp;
     uwsgi_temp_path /tmp;
     scgi_temp_path /tmp;
-    
+
     server {
         listen 80;
         server_name ${DOMAIN};
 
+        access_log /dev/null;
+        
         root /home/container;
         index index.html;
 
+        client_max_body_size 100m;
+        client_body_timeout 120s;
+        sendfile off;
+        
         location / {
             proxy_pass http://${INTERNAL_IP}:${PORT};
             proxy_http_version 1.1;
-            proxy_set_header Upgrade \$http_upgrade;
+            proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
-            proxy_set_header Host \$host;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
         }
     }
 }
 EOF
+
+nginx -c "$NGINX_CONF"
     fi
 else 
     if [[ -d /home/container/.nginx ]]; then
