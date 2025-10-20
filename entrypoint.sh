@@ -77,6 +77,10 @@ http {
 }
 EOF
     fi
+else 
+    if [[ -d /home/container/.nginx ]]; then
+       rm -rf /home/container/.nginx
+    fi
 fi
 
 # ========================================
