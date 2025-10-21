@@ -35,7 +35,14 @@ RUN apt-get update -y \
     && apt-get install -y -f /tmp/google-chrome.deb || apt-get -fy install \
     && rm -f /tmp/google-chrome.deb \
     && rm -rf /var/lib/apt/lists/*
-
+    
+# ========================================
+# 🧩 Buat atur nginx
+# ========================================
+RUN mkdir -p /var/log/nginx /home/container/.nginx && \
+    touch /var/log/nginx/access.log /var/log/nginx/error.log && \
+    chmod -R 777 /var/log/nginx /home/container/.nginx
+    
 # ========================================
 # 🧩 Buat user container dan pastikan /etc/passwd valid
 # ========================================
