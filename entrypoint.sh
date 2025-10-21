@@ -55,7 +55,7 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     if [[ ! -f "$NGINX_CONF" ]]; then
     cat <<EOF > "$NGINX_CONF"
 worker_processes auto;
-pid /tmp/nginx.pid;
+pid /home/container/.nginx/nginx.pid;
 error_log /home/container/.nginx/logs/error.log;
 daemon off;
 
