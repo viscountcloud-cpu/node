@@ -185,7 +185,7 @@ http {
 }
 EOF
     fi
-    nginx -c "$NGINX_CONF"
+    # nginx -c "$NGINX_CONF"
 else 
     if [[ -d /home/container/.nginx ]]; then
        rm -rf /home/container/.nginx
