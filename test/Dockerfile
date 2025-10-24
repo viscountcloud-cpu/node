@@ -37,12 +37,13 @@ RUN apt-get update -y \
     && rm -rf /var/lib/apt/lists/*
     
 # ========================================
-# 🧩 Buat user container dan pastikan /etc/passwd valid
+# 🧩 Buat user container
 # ========================================
-RUN groupadd -g 997 container \
-    && useradd -m -u 997 -g container -d /home/container -s /bin/bash container \
-    && chown -R container:container /home/container
-    
+# RUN groupadd -g 997 container \
+#     && useradd -m -u 997 -g container -d /home/container -s /bin/bash container \
+#     && chown -R container:container /home/container
+RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
+
 # ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
@@ -61,12 +62,13 @@ ENV PM2_LIMIT=3
 # ========================================
 # 🧩 Copy entrypoint & bash_custom
 # ========================================
-COPY --chown=container:container entrypoint.sh /entrypoint.sh
-COPY --chown=container:container bash_custom /bash_custom
-# COPY --chown=container:container pm2_limit.sh /usr/local/bin/pm2
+# COPY --chown=container:container entrypoint.sh /entrypoint.sh
+# COPY --chown=container:container bash_custom /bash_custom
 
-RUN chmod +x /entrypoint.sh /bash_custom
+# RUN chmod +x /entrypoint.sh /bash_custom
 
+COPY ../entrypoint.sh /entrypoint.sh
+COPY ../bash_custom /bash_custom
 # ========================================
 # 🧩 User dan direktori kerja
 # ========================================
