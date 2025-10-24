@@ -37,19 +37,10 @@ RUN apt-get update -y \
     && rm -rf /var/lib/apt/lists/*
     
 # ========================================
-# 🧩 Buat atur nginx
-# ========================================
-RUN mkdir -p /var/log/nginx /home/container/.nginx && \
-    touch /var/log/nginx/access.log /var/log/nginx/error.log && \
-    chmod -R 777 /var/log/nginx /home/container/.nginx
-    
-# ========================================
 # 🧩 Buat user container dan pastikan /etc/passwd valid
 # ========================================
 RUN groupadd -g 997 container \
     && useradd -m -u 997 -g container -d /home/container -s /bin/bash container \
-    && echo "container:x:997:997:Container User:/home/container:/bin/bash" >> /etc/passwd \
-    && chmod 644 /etc/passwd \
     && chown -R container:container /home/container
     
 # ========================================
