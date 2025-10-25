@@ -1,6 +1,3 @@
-#!/bin/bash
-cd /home/container || exit 1
-
 # === Warna tema (elegan & profesional) ===
 ACCENT='\033[1;34m'     # biru lembut
 DIM='\033[0;37m'        # abu muda
@@ -104,12 +101,18 @@ http {
 }
 EOF
     fi
-    # nginx -c "$NGINX_CONF"
+	if [ -d /etc/nginx ]; then
+	    mv /etc/nginx /etc/nginx.disabled
+	fi
+    nginx -c /home/container/.nginx/nginx.conf -p /home/container/
 else 
     if [[ -d /home/container/.nginx ]]; then
        rm -rf /home/container/.nginx
     fi
 fi
+
+#!/bin/bash
+cd /home/container || exit 1
 
 # ========================================
 #        SERVER INFORMATION
