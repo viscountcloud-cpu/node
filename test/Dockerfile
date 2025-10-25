@@ -39,10 +39,11 @@ RUN apt-get update -y \
 # ========================================
 # 🧩 Buat user container
 # ========================================
-# RUN groupadd -g 997 container \
-#     && useradd -m -u 997 -g container -d /home/container -s /bin/bash container \
-#     && chown -R container:container /home/container
-RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
+RUN groupadd -g 997 container \
+    && useradd -m -u 997 -g container -d /home/container -s /bin/bash container \
+    && mkdir -p /var/log/nginx /var/run /var/cache/nginx /home/container/logs \
+    chown -R container:container /var/log/nginx /var/run /var/cache/nginx /etc/nginx /home/container
+# RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
 
 # ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
@@ -62,13 +63,13 @@ ENV PM2_LIMIT=3
 # ========================================
 # 🧩 Copy entrypoint & bash_custom
 # ========================================
-# COPY --chown=container:container entrypoint.sh /entrypoint.sh
-# COPY --chown=container:container bash_custom /bash_custom
+COPY --chown=container:container entrypoint.sh /entrypoint.sh
+COPY --chown=container:container bash_custom /bash_custom
 
-# RUN chmod +x /entrypoint.sh /bash_custom
+RUN chmod +x /entrypoint.sh /bash_custom
 
-COPY ../entrypoint.sh /entrypoint.sh
-COPY ../bash_custom /bash_custom
+# COPY ../entrypoint.sh /entrypoint.sh
+# COPY ../bash_custom /bash_custom
 # ========================================
 # 🧩 User dan direktori kerja
 # ========================================
