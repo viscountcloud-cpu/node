@@ -1,3 +1,7 @@
+#!/bin/bash
+cd /home/container || exit 1
+
+
 # === Warna tema (elegan & profesional) ===
 ACCENT='\033[1;34m'     # biru lembut
 DIM='\033[0;37m'        # abu muda
@@ -47,13 +51,11 @@ MODIFIED_STARTUP=$(echo -e ${CMD_RUN} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
     mkdir -p /home/container/.nginx/logs /home/container/.nginx/temp
+    chown -R container:container /home/container/.nginx
     if [[ ! -f "$NGINX_CONF" ]]; then
     cat <<EOF > "$NGINX_CONF"
 worker_processes auto;
 pid /home/container/.nginx/nginx.pid;
-access_log /home/container/.nginx/access.log;
-error_log /home/container/.nginx/error.log;
-error_log /dev/stdout;
 daemon off;
 
 events {
@@ -63,39 +65,21 @@ events {
 http {
     sendfile on;
     tcp_nopush on;
-    tcp_nodelay on;
     keepalive_timeout 65;
-    types_hash_max_size 10048;
-
-    proxy_temp_path /tmp;
-    client_body_temp_path /tmp;
-    fastcgi_temp_path /tmp;
-    uwsgi_temp_path /tmp;
-    scgi_temp_path /tmp;
-    access_log/home/container/.nginx/access.log;
-	access_log /dev/stdout;
-	error_log /home/container/.nginx/error.log;
-	error_log /dev/stdout;
+    types_hash_max_size 2048;
 
     server {
-        listen ${PORT};
+	    listen ${PORT};
         server_name ${DOMAIN};
 
-        access_log /dev/null;
-        
-        root /home/container;
-        index index.html;
+        access_log /home/container/.nginx/access.log;
+	    error_log /home/container/.nginx/error.log;
 
-        client_max_body_size 100m;
-        client_body_timeout 120s;
-        sendfile off;
-        
-        location / {
-            proxy_pass http://${INTERNAL_IP}:${PORT};
-           proxy_set_header Host $http_host;
-           proxy_set_header X-Real-IP $remote_addr;
-           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-           proxy_set_header X-Forwarded-Proto $scheme;
+		location / {
+            proxy_set_header Host \$http_host;
+            proxy_set_header X-Real-IP \$remote_addr;
+            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto \$scheme;
         }
     }
 }
@@ -110,9 +94,6 @@ else
        rm -rf /home/container/.nginx
     fi
 fi
-
-#!/bin/bash
-cd /home/container || exit 1
 
 # ========================================
 #        SERVER INFORMATION
