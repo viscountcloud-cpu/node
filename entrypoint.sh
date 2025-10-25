@@ -50,7 +50,7 @@ MODIFIED_STARTUP=$(echo -e ${CMD_RUN} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
 
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
-    mkdir -p /home/container/.nginx/logs /home/container/.nginx/temp
+    mkdir -p /home/container/.nginx/logs /home/container/.nginx/run /home/container/.nginx/temp
     if [[ ! -f "$NGINX_CONF" ]]; then
     cat <<EOF > "$NGINX_CONF"
 worker_processes auto;
@@ -84,7 +84,7 @@ http {
 }
 EOF
     fi
-    nginx -c /home/container/.nginx/nginx.conf -p /home/container/
+    /usr/sbin/nginx -c /home/container/.nginx/nginx.conf -p /home/container/.nginx/
 else 
     if [[ -d /home/container/.nginx ]]; then
        rm -rf /home/container/.nginx
