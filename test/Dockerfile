@@ -35,15 +35,23 @@ RUN apt-get update -y \
     && apt-get install -y -f /tmp/google-chrome.deb || apt-get -fy install \
     && rm -f /tmp/google-chrome.deb \
     && rm -rf /var/lib/apt/lists/*
-    
+
+
 # ========================================
-# 🧩 Buat user container
+# 🧩 Buat user container non-root
 # ========================================
 RUN groupadd -g 997 container \
     && useradd -m -u 997 -g container -d /home/container -s /bin/bash container \
-    && mkdir -p /var/log/nginx /var/run /var/cache/nginx /home/container/logs \
-    && chown -R container:container /var/log/nginx /var/run /var/cache/nginx /etc/nginx /home/container
+    && mkdir -p /home/container \
+    && chown -R container:container /home/container
+
 # RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
+
+# ========================================
+# 🔧 Perbaiki izin untuk log & Nginx runtime
+# ========================================
+RUN mkdir -p /var/log/nginx /var/run /var/cache/nginx && \
+    chown -R container:container /var/log/nginx /var/run /var/cache/nginx /etc/nginx
 
 # ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
