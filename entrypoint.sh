@@ -54,7 +54,9 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     cat <<EOF > "$NGINX_CONF"
 worker_processes auto;
 pid /home/container/.nginx/nginx.pid;
-error_log /home/container/.nginx/logs/error.log;
+access_log /home/container/.nginx/access.log;
+error_log /home/container/.nginx/error.log;
+error_log /dev/stdout;
 daemon off;
 
 events {
@@ -157,9 +159,13 @@ http {
     fastcgi_temp_path /tmp;
     uwsgi_temp_path /tmp;
     scgi_temp_path /tmp;
+    access_log/home/container/.nginx/access.log;
+	access_log /dev/stdout;
+	error_log /home/container/.nginx/error.log;
+	error_log /dev/stdout;
 
     server {
-        listen 80;
+        listen ${PORT};
         server_name ${DOMAIN};
 
         access_log /dev/null;
@@ -173,13 +179,10 @@ http {
         
         location / {
             proxy_pass http://${INTERNAL_IP}:${PORT};
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
+           proxy_set_header Host $http_host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_set_header X-Forwarded-Proto $scheme;
         }
     }
 }
