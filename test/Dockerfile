@@ -42,7 +42,7 @@ RUN apt-get update -y \
 RUN groupadd -g 997 container \
     && useradd -m -u 997 -g container -d /home/container -s /bin/bash container \
     && mkdir -p /var/log/nginx /var/run /var/cache/nginx /home/container/logs \
-    chown -R container:container /var/log/nginx /var/run /var/cache/nginx /etc/nginx /home/container
+    && chown -R container:container /var/log/nginx /var/run /var/cache/nginx /etc/nginx /home/container
 # RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
 
 # ========================================
