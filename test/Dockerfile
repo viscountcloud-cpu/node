@@ -67,17 +67,25 @@ RUN chmod +x /entrypoint.sh /bash_custom
 RUN mkdir -p /etc/supervisor/conf.d
 COPY <<EOF /etc/supervisor/conf.d/supervisord.conf
 [supervisord]
-nodaemon=true
+logfile=/home/container/supervisord.log
+pidfile=/home/container/supervisord.pid
+nodaemon=false
 
 [program:nginx]
-command=/usr/sbin/nginx -g 'daemon off;'
+command=/usr/sbin/nginx -c /home/container/.nginx/nginx.conf -g 'daemon off;'
+autostart=true
 autorestart=true
+stdout_logfile=/home/container/.nginx/nginx-out.log
+stderr_logfile=/home/container/.nginx/nginx-err.log
 
 [program:app]
 directory=/home/container
 command=/bin/bash /entrypoint.sh
+autostart=true
 autorestart=true
 user=container
+stdout_logfile=/home/container/app/app.log
+stderr_logfile=/home/container/app/app-error.log
 EOF
 
 # ========================================
