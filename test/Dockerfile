@@ -5,7 +5,7 @@ LABEL author="FanDev" maintainer="FanDev404@pterodactyl.io"
 # ========================================
 # 🧩 Dasar sistem
 # ========================================
-RUN apt-get update -y && apt-get upgrade -y \
+RUN apt-get update -y \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         curl wget gnupg ca-certificates build-essential ffmpeg git unzip zip python3 python3-pip jq dnsutils nginx supervisor \
         libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libpixman-1-dev libpangocairo-1.0-0 \
@@ -19,7 +19,7 @@ RUN apt-get update -y && apt-get upgrade -y \
 # ========================================
 # 🧩 Node.js, npm, dan PM2
 # ========================================
-RUN apt-get update -y && apt-get upgrade -y \
+RUN apt-get update -y \
     && curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g npm@latest pm2 \
@@ -34,7 +34,6 @@ RUN wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-
     && apt-get install -y -f /tmp/google-chrome.deb || apt-get -fy install \
     && rm -f /tmp/google-chrome.deb \
     && rm -rf /var/lib/apt/lists/*
-
 
 # ========================================
 # 🧩 Buat user container non-root
@@ -59,6 +58,7 @@ ENV PM2_LIMIT=1
 # ========================================
 WORKDIR /nginx
 WORKDIR /var/log/nginx
+WORKDIR /var/lib/nginx/body
 # ========================================
 # 🧩 Copy entrypoint & bash_custom
 # ========================================
@@ -66,10 +66,9 @@ COPY --chown=container:container entrypoint.sh /entrypoint.sh
 COPY --chown=container:container bash_custom /bash_custom
 COPY --chown=container:container supervisord.conf /supervisord.conf
 COPY --chown=container:container nginx/default.conf /nginx/default.conf
-# COPY --chown=container:container logs/access.log /var/log/nginx/access.log
-# COPY --chown=container:container logs/error.log /var/log/nginx/error.log
-RUN chmod +x /entrypoint.sh /bash_custom /supervisord.conf /nginx/default.conf 
-# /var/log/nginx/access.log /var/log/nginx/error.log
+COPY --chown=container:container logs/access.log /var/log/nginx/access.log
+COPY --chown=container:container logs/error.log /var/log/nginx/error.log
+RUN chmod +x /entrypoint.sh /bash_custom /supervisord.conf /nginx/default.conf /var/log/nginx/access.log /var/log/nginx/error.log
 
 # COPY ../entrypoint.sh /entrypoint.sh
 # COPY ../bash_custom /bash_custom
@@ -77,9 +76,9 @@ RUN chmod +x /entrypoint.sh /bash_custom /supervisord.conf /nginx/default.conf
 # ========================================
 # 🧩 Buat folder & izin log
 # ========================================
-RUN mkdir -p /var/log/nginx \
-    && chmod -R 777 /var/log/nginx \
-    && chown -R container:container /home/container
+# RUN mkdir -p /var/log/nginx \
+#     && chmod -R 777 /var/log/nginx \
+#     && chown -R container:container /home/container
 # ========================================
 # 🧩 User dan direktori kerja
 # ========================================
