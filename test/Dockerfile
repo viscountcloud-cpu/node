@@ -59,6 +59,7 @@ ENV PM2_LIMIT=1
 WORKDIR /nginx
 WORKDIR /var/log/nginx
 WORKDIR /var/lib/nginx/body
+WORKDIR /var/lib/nginx/proxy
 # ========================================
 # 🧩 Copy entrypoint & bash_custom
 # ========================================
