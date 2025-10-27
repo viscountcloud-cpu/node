@@ -29,9 +29,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
 # ========================================
 # 🧩 Install Google Chrome (full deps)
 # ========================================
-RUN apt-get update -y \
-    && apt-get install -y wget gnupg ca-certificates --no-install-recommends \
-    && wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+RUN wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
     && apt-get install -y -f /tmp/google-chrome.deb || apt-get -fy install \
     && rm -f /tmp/google-chrome.deb \
     && rm -rf /var/lib/apt/lists/*
@@ -56,12 +54,18 @@ ENV NODE_ENV=production
 ENV HOME=/home/container
 ENV PM2_LIMIT=1
 # ========================================
+# 🧩 create directory nginx
+# ========================================
+WORKDIR /nginx
+# ========================================
 # 🧩 Copy entrypoint & bash_custom
 # ========================================
 COPY --chown=container:container entrypoint.sh /entrypoint.sh
 COPY --chown=container:container bash_custom /bash_custom
+COPY --chown=container:container supervisord.conf /supervisord.conf
+COPY --chown=container:container supervisord.conf /supervisord.conf
 
-RUN chmod +x /entrypoint.sh /bash_custom
+RUN chmod +x /entrypoint.sh /bash_custom /supervisord.conf
 
 # COPY ../entrypoint.sh /entrypoint.sh
 # COPY ../bash_custom /bash_custom
