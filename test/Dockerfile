@@ -64,10 +64,9 @@ COPY --chown=container:container entrypoint.sh /entrypoint.sh
 COPY --chown=container:container bash_custom /bash_custom
 COPY --chown=container:container supervisord.conf /supervisord.conf
 COPY --chown=container:container nginx/default.conf /nginx/default.conf
-COPY --chown=container:container var/log/nginx/access.log /var/log/nginx/access.log
-COPY --chown=container:container var/log/nginx/error.log /var/log/nginx/error.log
+COPY --chown=container:container var/log/nginx /var/log/nginx
 
-RUN chmod +x /entrypoint.sh /bash_custom /supervisord.conf /nginx/default.conf /var/log/nginx/access.log /var/log/nginx/error.log
+RUN chmod +x /entrypoint.sh /bash_custom /supervisord.conf /nginx/default.conf /var/log/nginx
 
 # COPY ../entrypoint.sh /entrypoint.sh
 # COPY ../bash_custom /bash_custom
