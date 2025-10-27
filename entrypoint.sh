@@ -128,7 +128,7 @@ export PM2_LIMIT
 
 
 if [[ -z "${MODIFIED_STARTUP}" || "${MODIFIED_STARTUP}" == "bash" ]]; then
-    exec bash --init-file /bash_custom
+    exec bash --init-file /app/bash_custom
 else
     eval ${MODIFIED_STARTUP}
 fi
