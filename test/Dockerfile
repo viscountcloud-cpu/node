@@ -46,13 +46,6 @@ RUN groupadd -g 997 container \
     && chown -R container:container /home/container
 
 # RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
-
-# ========================================
-# 🧩 Direktori Nginx lokal
-# ========================================
-RUN mkdir -p /home/container/.nginx/logs /home/container/.nginx/run /home/container/.nginx/temp \
-    && chown -R container:container /home/container
-
 # ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
@@ -61,8 +54,7 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 ENV PUPPETEER_DISABLE_SANDBOX=true
 ENV NODE_ENV=production
 ENV HOME=/home/container
-ENV PM2_LIMIT=3
-ENV SETUP_NGINX=OFF
+ENV PM2_LIMIT=1
 # ========================================
 # 🧩 Copy entrypoint & bash_custom
 # ========================================
