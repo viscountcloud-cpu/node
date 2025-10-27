@@ -19,7 +19,8 @@ if [ ! -f /home/container/.nginx/nginx.conf ]; then
     cp /nginx/default.conf /home/container/.nginx/nginx.conf
 fi
 
-supervisord -c /supervisord.conf
+# supervisord -c /supervisord.conf
+nginx -c /home/container/.nginx/nginx.conf
 
 # Informasi sistem
 DATE=$(date "+%Y-%m-%d")
