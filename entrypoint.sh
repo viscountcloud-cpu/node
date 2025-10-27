@@ -44,52 +44,7 @@ NPM_VERSION=$(npm -v)
 GIT_VERSION=$(git --version 2>/dev/null | awk '{print $3}')
 CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
 HOSTNAME=${HOST_NAME}
-NGINX_CONF="/home/container/.nginx/nginx.conf"
-# Ganti variable startup (misal: STARTUP="node index.js")
 MODIFIED_STARTUP=$(echo -e ${CMD_RUN} | sed -e 's/{{/${/g' -e 's/}}/}/g')
-
-
-if [[ "${SETUP_NGINX}" == "ON" ]]; then
-    mkdir -p /home/container/.nginx/logs /home/container/.nginx/run /home/container/.nginx/temp
-    if [[ ! -f "$NGINX_CONF" ]]; then
-    cat <<EOF > "$NGINX_CONF"
-worker_processes auto;
-pid /home/container/.nginx/nginx.pid;
-daemon off;
-
-events {
-    worker_connections 768;
-}
-
-http {
-    sendfile on;
-    tcp_nopush on;
-    keepalive_timeout 65;
-    types_hash_max_size 2048;
-
-    server {
-	    listen ${PORT};
-        server_name ${DOMAIN};
-
-        access_log /home/container/.nginx/access.log;
-	    error_log /home/container/.nginx/error.log;
-
-		location / {
-            proxy_set_header Host \$http_host;
-            proxy_set_header X-Real-IP \$remote_addr;
-            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto \$scheme;
-        }
-    }
-}
-EOF
-    fi
-    /usr/sbin/nginx -c /home/container/.nginx/nginx.conf -p /home/container/.nginx/
-else 
-    if [[ -d /home/container/.nginx ]]; then
-       rm -rf /home/container/.nginx
-    fi
-fi
 
 # ========================================
 #        SERVER INFORMATION
