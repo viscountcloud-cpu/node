@@ -17,7 +17,6 @@ mkdir -p /home/container/.nginx
 # Jika file nginx.conf belum ada, copy dari default
 if [ ! -f /home/container/.nginx/nginx.conf ]; then
     cp /nginx/default.conf /home/container/.nginx/nginx.conf
-    echo "[INIT] Default nginx.conf dibuat di /home/container/.nginx/nginx.conf"
 fi
 
 supervisord -c /supervisord.conf
