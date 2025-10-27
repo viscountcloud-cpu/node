@@ -54,7 +54,7 @@ ENV NODE_ENV=production
 ENV HOME=/home/container
 ENV PM2_LIMIT=1
 # ========================================
-# 🧩 create directory nginx
+# 🧩 create directory nginx and logs
 # ========================================
 WORKDIR /nginx
 # ========================================
@@ -64,8 +64,10 @@ COPY --chown=container:container entrypoint.sh /entrypoint.sh
 COPY --chown=container:container bash_custom /bash_custom
 COPY --chown=container:container supervisord.conf /supervisord.conf
 COPY --chown=container:container nginx/default.conf /nginx/default.conf
+COPY --chown=container:container var/log/nginx/access.log /var/log/nginx/access.log
+COPY --chown=container:container var/log/nginx/error.log /var/log/nginx/error.log
 
-RUN chmod +x /entrypoint.sh /bash_custom /supervisord.conf /nginx/default.conf
+RUN chmod +x /entrypoint.sh /bash_custom /supervisord.conf /nginx/default.conf /var/log/nginx/access.log /var/log/nginx/error.log
 
 # COPY ../entrypoint.sh /entrypoint.sh
 # COPY ../bash_custom /bash_custom
