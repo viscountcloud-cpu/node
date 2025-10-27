@@ -11,8 +11,7 @@ RESET='\033[0m'
 
 
 
-mkdir -p /home/container/.supervisor/logs
-mkdir -p /home/container/.nginx
+mkdir -p /home/container/.nginx/logs
 
 # Jika file nginx.conf belum ada, copy dari default
 if [ ! -f /home/container/.nginx/nginx.conf ]; then
