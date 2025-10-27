@@ -28,10 +28,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
 # ========================================
 # 🧩 Chrome for Puppeteer
 # ========================================
-RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /usr/share/keyrings/google-linux-keyring.gpg \
-    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-linux-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update && apt-get install -y google-chrome-stable --no-install-recommends \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y \
+    && apt-get install -y wget gnupg ca-certificates --no-install-recommends \
+    && wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && apt-get install -y -f /tmp/google-chrome.deb || apt-get -fy install \
+    && rm -f /tmp/google-chrome.deb \
+    && rm -rf /var/lib/apt/lists/*
 
 # ========================================
 # 🧩 User setup
