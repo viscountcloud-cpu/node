@@ -9,6 +9,19 @@ TEXT='\033[1;37m'       # putih terang
 BOLD='\033[1m'
 RESET='\033[0m'
 
+
+
+mkdir -p /home/container/.supervisor/logs
+mkdir -p /home/container/.nginx
+
+# Jika file nginx.conf belum ada, copy dari default
+if [ ! -f /home/container/.nginx/nginx.conf ]; then
+    cp /nginx/default.conf /home/container/.nginx/nginx.conf
+    echo "[INIT] Default nginx.conf dibuat di /home/container/.nginx/nginx.conf"
+fi
+
+supervisord -c /supervisord.conf
+
 # Informasi sistem
 DATE=$(date "+%Y-%m-%d")
 UPTIME=$(uptime -p | sed 's/up //')
