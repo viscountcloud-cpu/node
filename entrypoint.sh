@@ -11,16 +11,6 @@ RESET='\033[0m'
 
 
 
-mkdir -p /home/container/.nginx/logs
-
-# Jika file nginx.conf belum ada, copy dari default
-if [ ! -f /home/container/.nginx/nginx.conf ]; then
-    cp /nginx/default.conf /home/container/.nginx/nginx.conf
-fi
-
-# supervisord -c /supervisord.conf
-nginx -c /home/container/.nginx/nginx.conf
-
 # Informasi sistem
 DATE=$(date "+%Y-%m-%d")
 UPTIME=$(uptime -p | sed 's/up //')
@@ -29,6 +19,7 @@ DISK=$(df -h /home | awk 'NR==2 {print $3 " / " $2 " (" $5 ")"}')
 INTERNAL_IP=$(ip route get 1 | awk '{print $(NF-2);exit}')
 DOMAIN=${DOMAIN:-localhost}
 PORT=${PORT:-3000}
+
 
 
 # === IP publik (lebih andal, dengan fallback) ===
@@ -57,6 +48,17 @@ GIT_VERSION=$(git --version 2>/dev/null | awk '{print $3}')
 CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
 HOSTNAME=${HOST_NAME}
 MODIFIED_STARTUP=$(echo -e ${CMD_RUN} | sed -e 's/{{/${/g' -e 's/}}/}/g')
+
+
+mkdir -p /home/container/.nginx/logs
+
+# Jika file nginx.conf belum ada, copy dari default
+if [ ! -f /home/container/.nginx/nginx.conf ]; then
+    cp /nginx/default.conf /home/container/.nginx/nginx.conf
+fi
+
+# supervisord -c /supervisord.conf
+nginx -c /home/container/.nginx/nginx.conf
 
 # ========================================
 #        SERVER INFORMATION
