@@ -63,9 +63,9 @@ WORKDIR /nginx
 COPY --chown=container:container entrypoint.sh /entrypoint.sh
 COPY --chown=container:container bash_custom /bash_custom
 COPY --chown=container:container supervisord.conf /supervisord.conf
-COPY --chown=container:container supervisord.conf /supervisord.conf
+COPY --chown=container:container nginx/default.conf /nginx/default.conf
 
-RUN chmod +x /entrypoint.sh /bash_custom /supervisord.conf
+RUN chmod +x /entrypoint.sh /bash_custom /supervisord.conf /nginx/default.conf
 
 # COPY ../entrypoint.sh /entrypoint.sh
 # COPY ../bash_custom /bash_custom
