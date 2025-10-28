@@ -54,13 +54,14 @@ ENV NODE_ENV=production
 ENV HOME=/home/container
 ENV PM2_LIMIT=1
 # ========================================
-# 🧩 create directory nginx and logs
+# 🧩 create directory
 # ========================================
 WORKDIR /app
 WORKDIR /var/log/nginx
 WORKDIR /var/lib/nginx/body
 WORKDIR /var/lib/nginx/proxy
 WORKDIR /var/lib/nginx/fastcgi
+WORKDIR /var/lib/nginx/uwsgi
 # ========================================
 # 🧩 Copy entrypoint & bash_custom
 # ========================================
