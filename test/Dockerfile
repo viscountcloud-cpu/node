@@ -63,6 +63,7 @@ WORKDIR /var/lib/nginx/body
 WORKDIR /var/lib/nginx/proxy
 WORKDIR /var/lib/nginx/fastcgi
 WORKDIR /var/lib/nginx/uwsgi
+WORKDIR /var/lib/nginx/scgi
 # ========================================
 # 🧩 Copy entrypoint & bash_custom
 # ========================================
