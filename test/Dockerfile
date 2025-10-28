@@ -19,9 +19,20 @@ RUN apt-get update -y && \
 # ========================================
 # 🧩 Build Nginx manual (tanpa apt)
 # ========================================
-RUN cd /tmp && \
-    curl -O http://nginx.org/download/nginx-1.24.0.tar.gz && \
-    tar zxvf nginx-1.24.0.tar.gz && cd nginx-1.24.0 && \
+# ========================================
+# 🧩 Build Nginx manual (tanpa apt)
+# ========================================
+RUN apt update && apt install -y \
+    build-essential \
+    libpcre3 \
+    libpcre3-dev \
+    zlib1g \
+    zlib1g-dev \
+    libssl-dev \
+    curl && \
+    cd /tmp && \
+    curl -O http://nginx.org/download/nginx-1.29.2.tar.gz && \
+    tar zxvf nginx-1.29.2.tar.gz && cd nginx-1.29.2 && \
     ./configure \
         --prefix=/etc/nginx \
         --conf-path=/etc/nginx/nginx.conf \
@@ -64,13 +75,6 @@ RUN groupadd -g 997 container \
 # RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
 
 # ========================================
-# 🧩 Perbaikan izin untuk log nginx
-# ========================================
-RUN mkdir -p /var/log/nginx /run/nginx && \
-    chown -R container:container /var/log/nginx /run/nginx && \
-    chmod -R 777 /var/log/nginx /run/nginx
-    
-# ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
@@ -106,13 +110,6 @@ RUN chmod +x /app/entrypoint.sh /app/bash_custom /app/supervisord.conf /nginx/de
 
 # COPY ../entrypoint.sh /entrypoint.sh
 # COPY ../bash_custom /bash_custom
-
-# ========================================
-# 🧩 Buat folder & izin log
-# ========================================
-# RUN mkdir -p /var/log/nginx && \
-#     touch /var/log/nginx/error.log && \
-#     chown -R container:container /var/log/nginx
 
 # ========================================
 # 🧩 User dan direktori kerja
