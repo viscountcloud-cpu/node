@@ -43,6 +43,14 @@ RUN groupadd -g 997 container \
     && chown -R container:container /home/container
 
 # RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
+
+# ========================================
+# 🧩 Perbaikan izin untuk log nginx
+# ========================================
+RUN mkdir -p /var/log/nginx /run/nginx && \
+    chown -R container:container /var/log/nginx /run/nginx && \
+    chmod -R 777 /var/log/nginx /run/nginx
+    
 # ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
@@ -57,7 +65,7 @@ ENV PM2_LIMIT=1
 # ========================================
 WORKDIR /app
 WORKDIR /nginx
-WORKDIR /var/log/nginx
+# WORKDIR /var/log/nginx
 WORKDIR /var/lib/nginx/body
 WORKDIR /var/lib/nginx/proxy
 WORKDIR /var/lib/nginx/fastcgi
@@ -71,10 +79,11 @@ COPY --chown=container:container app/entrypoint.sh /app/entrypoint.sh
 COPY --chown=container:container app/bash_custom /app/bash_custom
 COPY --chown=container:container app/supervisord.conf /app/supervisord.conf
 COPY --chown=container:container default/nginx.conf /nginx/default.conf
-COPY --chown=container:container logs/access.log /var/log/nginx/access.log
-COPY --chown=container:container logs/error.log /var/log/nginx/error.log
+# COPY --chown=container:container logs/access.log /var/log/nginx/access.log
+# COPY --chown=container:container logs/error.log /var/log/nginx/error.log
 COPY --chown=container:container nginx/* /etc/nginx/
-RUN chmod +x /app/entrypoint.sh /app/bash_custom /app/supervisord.conf /nginx/default.conf /var/log/nginx/access.log /var/log/nginx/error.log /etc/nginx/
+RUN chmod +x /app/entrypoint.sh /app/bash_custom /app/supervisord.conf /nginx/default.conf /etc/nginx/
+# /var/log/nginx/access.log /var/log/nginx/error.log
 
 # COPY ../entrypoint.sh /entrypoint.sh
 # COPY ../bash_custom /bash_custom
@@ -82,9 +91,9 @@ RUN chmod +x /app/entrypoint.sh /app/bash_custom /app/supervisord.conf /nginx/de
 # ========================================
 # 🧩 Buat folder & izin log
 # ========================================
-RUN mkdir -p /var/log/nginx && \
-    touch /var/log/nginx/error.log && \
-    chown -R container:container /var/log/nginx
+# RUN mkdir -p /var/log/nginx && \
+#     touch /var/log/nginx/error.log && \
+#     chown -R container:container /var/log/nginx
 
 # ========================================
 # 🧩 User dan direktori kerja
