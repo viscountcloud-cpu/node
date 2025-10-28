@@ -51,6 +51,7 @@ MODIFIED_STARTUP=$(echo -e ${CMD_RUN} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
 
 mkdir -p /home/container/.nginx/logs
+mkdir -p /home/container/.nginx/tmp
 
 # Jika file nginx.conf belum ada, copy dari default
 if [ ! -f /home/container/.nginx/nginx.conf ]; then
