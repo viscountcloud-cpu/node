@@ -11,11 +11,9 @@ RUN apt-get update -y && \
         libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libpixman-1-dev libpangocairo-1.0-0 \
         libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxi6 libxrandr2 libxrender1 libxss1 \
         libxtst6 libcups2 libnss3 libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0 libxkbfile1 libgbm1 libasound2 \
-        fonts-liberation \
-        libappindicator3-1 \
-        xdg-utils \
+        fonts-liberation libappindicator3-1 xdg-utils \
     && rm -rf /var/lib/apt/lists/*
-    
+
 # ========================================
 # 🧩 Node.js, npm, dan PM2
 # ========================================
@@ -35,14 +33,11 @@ RUN wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-
     && rm -rf /var/lib/apt/lists/*
 
 # ========================================
-# 🧩 Buat user container non-root
+# 🧩 Buat user container (tetap ada)
 # ========================================
 RUN groupadd -g 997 container \
-    && useradd -m -u 997 -g container -d /home/container -s /bin/bash container \
-    && mkdir -p /home/container \
-    && chown -R container:container /home/container
+    && useradd -m -u 997 -g container -d /home/container -s /bin/bash container
 
-# RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
 # ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
@@ -52,19 +47,15 @@ ENV PUPPETEER_DISABLE_SANDBOX=true
 ENV NODE_ENV=production
 ENV HOME=/home/container
 ENV PM2_LIMIT=1
+
 # ========================================
-# 🧩 create directory
+# 🧩 Siapkan direktori sistem penting
 # ========================================
-WORKDIR /app
-WORKDIR /nginx
-WORKDIR /var/log/nginx
-WORKDIR /var/lib/nginx/body
-WORKDIR /var/lib/nginx/proxy
-WORKDIR /var/lib/nginx/fastcgi
-WORKDIR /var/lib/nginx/uwsgi
-WORKDIR /var/lib/nginx/scgi
+RUN mkdir -p /app /nginx /var/log/nginx /var/lib/nginx/body /var/lib/nginx/proxy \
+    /var/lib/nginx/fastcgi /var/lib/nginx/uwsgi /var/lib/nginx/scgi /home/container/logs
+
 # ========================================
-# 🧩 Copy entrypoint & bash_custom
+# 🧩 Copy file konfigurasi & entrypoint
 # ========================================
 COPY --chown=container:container entrypoint.sh /app/entrypoint.sh
 COPY --chown=container:container bash_custom /app/bash_custom
@@ -72,21 +63,18 @@ COPY --chown=container:container supervisord.conf /app/supervisord.conf
 COPY --chown=container:container nginx/default.conf /nginx/default.conf
 COPY --chown=container:container logs/access.log /var/log/nginx/access.log
 COPY --chown=container:container logs/error.log /var/log/nginx/error.log
-RUN chmod +x /app/entrypoint.sh /app/bash_custom /app/supervisord.conf /nginx/default.conf /var/log/nginx/access.log /var/log/nginx/error.log
 
-# COPY ../entrypoint.sh /entrypoint.sh
-# COPY ../bash_custom /bash_custom
+RUN chmod +x /app/entrypoint.sh /app/bash_custom /app/supervisord.conf /nginx/default.conf
 
 # ========================================
-# 🧩 Buat folder & izin log
+# 🧩 Pastikan izin penuh untuk semua user
 # ========================================
-# RUN mkdir -p /var/log/nginx \
-#     && chmod -R 777 /var/log/nginx \
-#     && chown -R container:container /home/container
+RUN chmod -R 777 /nginx /var/log/nginx /home/container /var/lib/nginx /app
+
 # ========================================
-# 🧩 User dan direktori kerja
+# 🧩 Jalankan sebagai root
 # ========================================
-USER container
+USER root
 WORKDIR /home/container
 
 # ========================================
