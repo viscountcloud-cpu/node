@@ -55,6 +55,11 @@ RUN mkdir -p /app /nginx /var/log/nginx /var/lib/nginx/body /var/lib/nginx/proxy
     /var/lib/nginx/fastcgi /var/lib/nginx/uwsgi /var/lib/nginx/scgi /home/container/logs
 
 # ========================================
+# 🧩 Override konfigurasi log nginx agar tidak ke /var/log
+# ========================================
+RUN echo 'error_log /dev/stderr;\naccess_log /dev/stdout;' > /etc/nginx/conf.d/logs.conf
+
+# ========================================
 # 🧩 Copy file konfigurasi & entrypoint
 # ========================================
 COPY --chown=container:container entrypoint.sh /app/entrypoint.sh
