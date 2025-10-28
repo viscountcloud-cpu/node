@@ -23,27 +23,27 @@ RUN apt-get update -y && \
 # 🧩 Build Nginx manual (tanpa apt)
 # ========================================
 RUN apt update && apt install -y \
-    build-essential \
-    libpcre3 \
-    libpcre3-dev \
-    zlib1g \
-    zlib1g-dev \
-    libssl-dev \
-    curl && \
+    build-essential libpcre3 libpcre3-dev zlib1g zlib1g-dev libssl-dev curl && \
     cd /tmp && \
     curl -O http://nginx.org/download/nginx-1.29.2.tar.gz && \
     tar zxvf nginx-1.29.2.tar.gz && cd nginx-1.29.2 && \
     ./configure \
-        --prefix=/etc/nginx \
+        --prefix=/usr/local/nginx \
         --conf-path=/etc/nginx/nginx.conf \
         --pid-path=/run/nginx.pid \
         --error-log-path=/dev/stderr \
         --http-log-path=/dev/stdout \
+        --http-client-body-temp-path=/home/container/.nginx/body \
+        --http-fastcgi-temp-path=/home/container/.nginx/fastcgi \
+        --http-proxy-temp-path=/home/container/.nginx/proxy \
+        --http-scgi-temp-path=/home/container/.nginx/scgi \
+        --http-uwsgi-temp-path=/home/container/.nginx/uwsgi \
         --with-http_ssl_module \
         --with-http_v2_module \
         --with-http_gzip_static_module \
         --with-http_stub_status_module && \
     make && make install && \
+    ln -s /usr/local/nginx/sbin/nginx /usr/sbin/nginx && \
     rm -rf /tmp/nginx*
 
 # ========================================
