@@ -82,9 +82,10 @@ RUN chmod +x /app/entrypoint.sh /app/bash_custom /app/supervisord.conf /nginx/de
 # ========================================
 # 🧩 Buat folder & izin log
 # ========================================
-# RUN mkdir -p /var/log/nginx \
-#     && chmod -R 777 /var/log/nginx \
-#     && chown -R container:container /home/container
+RUN mkdir -p /var/log/nginx && \
+    touch /var/log/nginx/error.log && \
+    chown -R container:container /var/log/nginx
+
 # ========================================
 # 🧩 User dan direktori kerja
 # ========================================
