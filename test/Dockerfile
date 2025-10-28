@@ -57,6 +57,7 @@ ENV PM2_LIMIT=1
 # 🧩 create directory
 # ========================================
 WORKDIR /app
+WORKDIR /nginx
 WORKDIR /var/log/nginx
 WORKDIR /var/lib/nginx/body
 WORKDIR /var/lib/nginx/proxy
@@ -68,10 +69,10 @@ WORKDIR /var/lib/nginx/uwsgi
 COPY --chown=container:container entrypoint.sh /app/entrypoint.sh
 COPY --chown=container:container bash_custom /app/bash_custom
 COPY --chown=container:container supervisord.conf /app/supervisord.conf
-COPY --chown=container:container nginx/default.conf /app/default.conf
+COPY --chown=container:container nginx/default.conf /nginx/default.conf
 COPY --chown=container:container logs/access.log /var/log/nginx/access.log
 COPY --chown=container:container logs/error.log /var/log/nginx/error.log
-RUN chmod +x /app/entrypoint.sh /app/bash_custom /app/supervisord.conf /app/default.conf /var/log/nginx/access.log /var/log/nginx/error.log
+RUN chmod +x /app/entrypoint.sh /app/bash_custom /app/supervisord.conf /nginx/default.conf /var/log/nginx/access.log /var/log/nginx/error.log
 
 # COPY ../entrypoint.sh /entrypoint.sh
 # COPY ../bash_custom /bash_custom
