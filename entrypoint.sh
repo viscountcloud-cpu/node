@@ -54,7 +54,7 @@ mkdir -p /home/container/.nginx/logs
 
 # Jika file nginx.conf belum ada, copy dari default
 if [ ! -f /home/container/.nginx/nginx.conf ]; then
-    cp /app/default.conf /home/container/.nginx/nginx.conf
+    cp /nginx/default.conf /home/container/.nginx/nginx.conf
 fi
 
 if [ -f /home/container/.nginx/nginx.conf ]; then
