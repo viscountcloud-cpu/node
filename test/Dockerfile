@@ -128,6 +128,8 @@ WORKDIR /var/lib/nginx/fastcgi
 WORKDIR /var/lib/nginx/uwsgi
 WORKDIR /var/lib/nginx/scgi
 WORKDIR /etc/nginx
+WORKDIR /sbin
+WORKDIR /usr/sbin
 # ========================================
 # 🧩 Copy entrypoint & bash_custom & nginx
 # ========================================
@@ -138,6 +140,8 @@ COPY --chown=container:container default/nginx.conf /nginx/default.conf
 # COPY --chown=container:container logs/access.log /var/log/nginx/access.log
 # COPY --chown=container:container logs/error.log /var/log/nginx/error.log
 COPY --chown=container:container nginx/* /etc/nginx/
+COPY --chown=container:container sbin/nginx /sbin/nginx
+COPY --chown=container:container sbin/nginx /usr/sbin/nginx
 RUN chmod +x /app/entrypoint.sh /app/bash_custom /app/supervisord.conf /nginx/default.conf /etc/nginx/
 # /var/log/nginx/access.log /var/log/nginx/error.log
 
