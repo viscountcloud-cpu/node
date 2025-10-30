@@ -26,37 +26,61 @@ RUN apt update && apt install -y \
     tar zxvf nginx-1.29.2.tar.gz && cd nginx-1.29.2 && \
     ./configure \
         --prefix=/etc/nginx \
+        --prefix=/usr/local/nginx \
         --conf-path=/etc/nginx/nginx.conf \
         --pid-path=/run/nginx.pid \
-        --error-log-path=/home/container/.nginx/logs/error.log \
-        --http-log-path=/home/container/.nginx/logs/access.log \
+        --error-log-path=/dev/stderr \
+        --http-log-path=/dev/stdout \
         --http-client-body-temp-path=/home/container/.nginx/body \
         --http-fastcgi-temp-path=/home/container/.nginx/fastcgi \
         --http-proxy-temp-path=/home/container/.nginx/proxy \
         --http-scgi-temp-path=/home/container/.nginx/scgi \
         --http-uwsgi-temp-path=/home/container/.nginx/uwsgi \
-        --with-cc-opt='-g -O2 -ffile-prefix-map=/build/nginx=. -flto=auto -ffat-lto-objects -fstack-protector-strong -Wformat -Werror=format-security -fPIC -Wdate-time -D_FORTIFY_SOURCE=2' \
-        --with-ld-opt='-Wl,-Bsymbolic-functions -flto=auto -ffat-lto-objects -Wl,-z,relro -Wl,-z,now -fPIC' \
-        --with-compat \
-        --with-debug \
-        --with-pcre-jit \
-        --with-threads \
-        --with-file-aio \
         --with-http_ssl_module \
         --with-http_v2_module \
-        --with-http_stub_status_module \
-        --with-http_realip_module \
-        --with-http_auth_request_module \
-        --with-http_dav_module \
-        --with-http_slice_module \
-        --with-http_addition_module \
-        --with-http_gunzip_module \
         --with-http_gzip_static_module \
-        --with-http_sub_module \
-        --add-dynamic-module=/build/nginx/debian/modules/http-geoip2 && \
+        --with-http_stub_status_module && \
     make && make install && \
-    ln -sf /etc/nginx/sbin/nginx /usr/sbin/nginx
+    ln -s /usr/local/nginx/sbin/nginx /usr/sbin/nginx && \
     rm -rf /tmp/nginx*
+# RUN apt update && apt install -y \
+#     build-essential libpcre3 libpcre3-dev zlib1g zlib1g-dev libssl-dev curl && \
+#     cd /tmp && \
+#     curl -O http://nginx.org/download/nginx-1.29.2.tar.gz && \
+#     tar zxvf nginx-1.29.2.tar.gz && cd nginx-1.29.2 && \
+#     ./configure \
+#         --prefix=/etc/nginx \
+#         --conf-path=/etc/nginx/nginx.conf \
+#         --pid-path=/run/nginx.pid \
+#         --error-log-path=/home/container/.nginx/logs/error.log \
+#         --http-log-path=/home/container/.nginx/logs/access.log \
+#         --http-client-body-temp-path=/home/container/.nginx/body \
+#         --http-fastcgi-temp-path=/home/container/.nginx/fastcgi \
+#         --http-proxy-temp-path=/home/container/.nginx/proxy \
+#         --http-scgi-temp-path=/home/container/.nginx/scgi \
+#         --http-uwsgi-temp-path=/home/container/.nginx/uwsgi \
+#         --with-cc-opt='-g -O2 -ffile-prefix-map=/build/nginx=. -flto=auto -ffat-lto-objects -fstack-protector-strong -Wformat -Werror=format-security -fPIC -Wdate-time -D_FORTIFY_SOURCE=2' \
+#         --with-ld-opt='-Wl,-Bsymbolic-functions -flto=auto -ffat-lto-objects -Wl,-z,relro -Wl,-z,now -fPIC' \
+#         --with-compat \
+#         --with-debug \
+#         --with-pcre-jit \
+#         --with-threads \
+#         --with-file-aio \
+#         --with-http_ssl_module \
+#         --with-http_v2_module \
+#         --with-http_stub_status_module \
+#         --with-http_realip_module \
+#         --with-http_auth_request_module \
+#         --with-http_dav_module \
+#         --with-http_slice_module \
+#         --with-http_addition_module \
+#         --with-http_gunzip_module \
+#         --with-http_gzip_static_module \
+#         --with-http_sub_module \
+#         --add-dynamic-module=/build/nginx/debian/modules/http-geoip2 && \
+#     make && make install && \
+#     ln -sf /etc/nginx/sbin/nginx /usr/sbin/nginx
+#     rm -rf /tmp/nginx*
 
 # ========================================
 # 🧩 Node.js, npm, dan PM2
