@@ -31,14 +31,13 @@ RUN apt update && apt install -y \
         --prefix=/etc/nginx \
         --conf-path=/etc/nginx/nginx.conf \
         --pid-path=/run/nginx.pid \
-        --error-log-path=/dev/stderr \
-        --http-log-path=/dev/stdout \
+        --error-log-path=/home/container/.nginx/logs/error.log \
+        --http-log-path=/home/container/.nginx/logs/access.log \
         --http-client-body-temp-path=/home/container/.nginx/body \
         --http-fastcgi-temp-path=/home/container/.nginx/fastcgi \
         --http-proxy-temp-path=/home/container/.nginx/proxy \
         --http-scgi-temp-path=/home/container/.nginx/scgi \
         --http-uwsgi-temp-path=/home/container/.nginx/uwsgi \
-        --with-http_ssl_module \
         --with-http_v2_module \
         --with-http_gzip_static_module \
         --with-http_stub_status_module \
