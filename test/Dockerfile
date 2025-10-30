@@ -97,6 +97,14 @@ WORKDIR /var/lib/nginx/scgi
 WORKDIR /etc/nginx
 
 # ========================================
+# 🧩 Setup log nginx agar bisa ditulis user container
+# ========================================
+RUN mkdir -p /home/container/logs && \
+    chown -R container:container /home/container/logs && \
+    rm -rf /var/log/nginx && \
+    ln -sf /home/container/logs /var/log/nginx
+    
+# ========================================
 # 🧩 Copy entrypoint & bash_custom & nginx
 # ========================================
 COPY --chown=container:container app/entrypoint.sh /app/entrypoint.sh
@@ -107,7 +115,7 @@ COPY --chown=container:container default/nginx.conf /nginx/default.conf
 # COPY --chown=container:container logs/error.log /var/log/nginx/error.log
 COPY --chown=container:container nginx/* /etc/nginx/
 
-RUN chmod +x /app/entrypoint.sh /app/bash_custom /app/supervisord.conf /nginx/default.conf /etc/nginx/
+RUN chmod +x /app/entrypoint.sh /app/bash_custom /app/supervisord.conf /nginx/default.conf
 # /var/log/nginx/access.log /var/log/nginx/error.log
 
 # COPY ../entrypoint.sh /entrypoint.sh
