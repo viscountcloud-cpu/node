@@ -1,77 +1,67 @@
-# ========================================
-# ⚙️ Base Image
-# ========================================
 FROM ubuntu:22.04
 
 LABEL author="FanDev" maintainer="FanDev404@pterodactyl.io"
 
-# ========================================
-# 🧩 Sistem dasar & dependensi
-# ========================================
+# =============================
+# Base System & Dependencies
+# =============================
 RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         curl wget gnupg ca-certificates build-essential ffmpeg git unzip zip python3 python3-pip jq supervisor nginx dnsutils \
         libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libpixman-1-dev libpangocairo-1.0-0 \
         libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxi6 libxrandr2 libxrender1 libxss1 \
         libxtst6 libcups2 libnss3 libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0 libxkbfile1 libgbm1 libasound2 \
-        fonts-liberation libappindicator3-1 xdg-utils \
-    && rm -rf /var/lib/apt/lists/*
+        fonts-liberation libappindicator3-1 xdg-utils && \
+    rm -rf /var/lib/apt/lists/*
 
-# ========================================
-# 🧩 Node.js, npm, dan PM2
-# ========================================
-RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
-    && apt-get install -y nodejs \
-    && npm install -g npm@latest pm2 \
-    && npm config set fund false \
-    && npm config set audit false \
-    && npm config set progress false
+# =============================
+# Node.js + PM2
+# =============================
+RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g pm2 && \
+    npm config set audit false && npm config set fund false
 
-# ========================================
-# 🧩 Google Chrome (untuk Puppeteer)
-# ========================================
+# =============================
+# Google Chrome
+# =============================
 RUN wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
     && apt-get install -y -f /tmp/google-chrome.deb || apt-get -fy install \
-    && rm -f /tmp/google-chrome.deb \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -f /tmp/google-chrome.deb
 
-# ========================================
-# 🧩 Direktori log & izin www-data
-# ========================================
+# =============================
+# Fix Permissions for Nginx runtime dirs
+# =============================
 RUN mkdir -p /var/log/nginx /var/lib/nginx /run/nginx && \
-    chown -R www-data:adm /var/log/nginx && \
-    chmod -R 755 /var/log/nginx && \
-    chown -R www-data:www-data /var/lib/nginx /run/nginx
+    chown -R www-data:www-data /var/log/nginx /var/lib/nginx /run/nginx && \
+    chmod -R 755 /var/log/nginx /var/lib/nginx /run/nginx
 
-# ========================================
-# 🧩 Lingkungan Puppeteer / Node
-# ========================================
-ENV CHROME_BIN=/usr/bin/google-chrome-stable
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
-ENV PUPPETEER_DISABLE_SANDBOX=true
-ENV NODE_ENV=production
-ENV HOME=/home/container
-ENV PM2_LIMIT=1
-
-# ========================================
-# 🧩 Copy file konfigurasi & script
-# ========================================
-WORKDIR /app
-COPY app/entrypoint.sh /app/entrypoint.sh
-COPY app/bash_custom /app/bash_custom
-COPY app/supervisord.conf /app/supervisord.conf
-
-RUN chmod +x /app/entrypoint.sh /app/bash_custom
-
-# ========================================
-# 🧩 Expose port dan CMD
-# ========================================
-EXPOSE 80
-USER root
+# =============================
+# Working Directory
+# =============================
 WORKDIR /home/container
 
+# =============================
+# Copy app files
+# =============================
+COPY app/entrypoint.sh /app/entrypoint.sh
+COPY app/supervisord.conf /app/supervisord.conf
+RUN chmod +x /app/entrypoint.sh
+
+ENV NODE_ENV=production
+
+# =============================
+# Expose port
+# =============================
+EXPOSE 80
+
+# =============================
+# Run as root (Nginx requires binding port 80)
+# =============================
+USER root
 
 CMD ["/bin/bash", "/app/entrypoint.sh"]
+
 
 # FROM ubuntu:22.04
 
