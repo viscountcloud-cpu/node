@@ -63,7 +63,7 @@ if [ -f /home/container/.nginx/nginx.conf ]; then
     # sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/nginx.conf
 fi
 
-supervisord -c /app/supervisord.conf
+# supervisord -c /app/supervisord.conf
 # nginx -c /home/container/.nginx/nginx.conf
 
 # ========================================
