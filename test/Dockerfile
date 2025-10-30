@@ -19,9 +19,6 @@ RUN apt-get update -y && \
 # ========================================
 # 🧩 Build Nginx manual (tanpa apt)
 # ========================================
-# ========================================
-# 🧩 Build Nginx manual (tanpa apt)
-# ========================================
 RUN apt update && apt install -y \
     build-essential libpcre3 libpcre3-dev zlib1g zlib1g-dev libssl-dev curl && \
     cd /tmp && \
@@ -38,9 +35,6 @@ RUN apt update && apt install -y \
         --http-proxy-temp-path=/home/container/.nginx/proxy \
         --http-scgi-temp-path=/home/container/.nginx/scgi \
         --http-uwsgi-temp-path=/home/container/.nginx/uwsgi \
-        --with-http_v2_module \
-        --with-http_gzip_static_module \
-        --with-http_stub_status_module \
         --with-cc-opt='-g -O2 -ffile-prefix-map=/build/nginx=. -flto=auto -ffat-lto-objects -fstack-protector-strong -Wformat -Werror=format-security -fPIC -Wdate-time -D_FORTIFY_SOURCE=2' \
         --with-ld-opt='-Wl,-Bsymbolic-functions -flto=auto -ffat-lto-objects -Wl,-z,relro -Wl,-z,now -fPIC' \
         --with-compat \
@@ -61,7 +55,7 @@ RUN apt update && apt install -y \
         --with-http_sub_module \
         --add-dynamic-module=/build/nginx/debian/modules/http-geoip2 && \
     make && make install && \
-    ln -s /sbin/nginx /usr/sbin/nginx && \
+    ln -sf /etc/nginx/sbin/nginx /usr/sbin/nginx
     rm -rf /tmp/nginx*
 
 # ========================================
