@@ -117,6 +117,8 @@ RUN chmod +x /app/entrypoint.sh /app/bash_custom /app/supervisord.conf /nginx/de
 # 🧩 shared log directory
 # ========================================
 VOLUME ["/var/log"]
+
+EXPOSE 80
 # ========================================
 # 🧩 User dan direktori kerja
 # ========================================
@@ -127,4 +129,4 @@ WORKDIR /home/container
 # 🚀 Jalankan container
 # ========================================
 CMD ["/bin/bash", "/app/entrypoint.sh"]
-EXPOSE 80
+
