@@ -60,7 +60,6 @@ WORKDIR /app
 COPY app/entrypoint.sh /app/entrypoint.sh
 COPY app/bash_custom /app/bash_custom
 COPY app/supervisord.conf /app/supervisord.conf
-COPY nginx.conf /etc/nginx/nginx.conf
 
 RUN chmod +x /app/entrypoint.sh /app/bash_custom
 
