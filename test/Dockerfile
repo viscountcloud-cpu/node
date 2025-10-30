@@ -1,4 +1,4 @@
-FROM nginx:1.25-alpine
+FROM ubuntu:22.04
 
 LABEL author="FanDev" maintainer="FanDev404@pterodactyl.io"
 
@@ -7,7 +7,7 @@ LABEL author="FanDev" maintainer="FanDev404@pterodactyl.io"
 # ========================================
 RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        curl wget gnupg ca-certificates build-essential ffmpeg git unzip zip python3 python3-pip jq supervisor dnsutils \
+        curl wget gnupg ca-certificates build-essential ffmpeg git unzip zip python3 python3-pip jq supervisor dnsutils nginx iproute2 \
         libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libpixman-1-dev libpangocairo-1.0-0 \
         libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxi6 libxrandr2 libxrender1 libxss1 \
         libxtst6 libcups2 libnss3 libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0 libxkbfile1 libgbm1 libasound2 \
@@ -22,29 +22,48 @@ RUN apt-get update -y && \
 # ========================================
 # 🧩 Build Nginx manual (tanpa apt)
 # ========================================
-# RUN apt update && apt install -y \
-#     build-essential libpcre3 libpcre3-dev zlib1g zlib1g-dev libssl-dev curl && \
-#     cd /tmp && \
-#     curl -O http://nginx.org/download/nginx-1.29.2.tar.gz && \
-#     tar zxvf nginx-1.29.2.tar.gz && cd nginx-1.29.2 && \
-#     ./configure \
-#         --prefix=/etc/nginx \
-#         --conf-path=/etc/nginx/nginx.conf \
-#         --pid-path=/run/nginx.pid \
-#         --error-log-path=/dev/stderr \
-#         --http-log-path=/dev/stdout \
-#         --http-client-body-temp-path=/home/container/.nginx/body \
-#         --http-fastcgi-temp-path=/home/container/.nginx/fastcgi \
-#         --http-proxy-temp-path=/home/container/.nginx/proxy \
-#         --http-scgi-temp-path=/home/container/.nginx/scgi \
-#         --http-uwsgi-temp-path=/home/container/.nginx/uwsgi \
-#         --with-http_ssl_module \
-#         --with-http_v2_module \
-#         --with-http_gzip_static_module \
-#         --with-http_stub_status_module && \
-#     make && make install && \
-#     ln -s /usr/local/nginx/sbin/nginx /usr/sbin/nginx && \
-#     rm -rf /tmp/nginx*
+RUN apt update && apt install -y \
+    build-essential libpcre3 libpcre3-dev zlib1g zlib1g-dev libssl-dev curl && \
+    cd /tmp && \
+    curl -O http://nginx.org/download/nginx-1.29.2.tar.gz && \
+    tar zxvf nginx-1.29.2.tar.gz && cd nginx-1.29.2 && \
+    ./configure \
+        --prefix=/etc/nginx \
+        --conf-path=/etc/nginx/nginx.conf \
+        --pid-path=/run/nginx.pid \
+        --error-log-path=/dev/stderr \
+        --http-log-path=/dev/stdout \
+        --http-client-body-temp-path=/home/container/.nginx/body \
+        --http-fastcgi-temp-path=/home/container/.nginx/fastcgi \
+        --http-proxy-temp-path=/home/container/.nginx/proxy \
+        --http-scgi-temp-path=/home/container/.nginx/scgi \
+        --http-uwsgi-temp-path=/home/container/.nginx/uwsgi \
+        --with-http_ssl_module \
+        --with-http_v2_module \
+        --with-http_gzip_static_module \
+        --with-http_stub_status_module \
+        --with-cc-opt='-g -O2 -ffile-prefix-map=/build/nginx=. -flto=auto -ffat-lto-objects -fstack-protector-strong -Wformat -Werror=format-security -fPIC -Wdate-time -D_FORTIFY_SOURCE=2' \
+        --with-ld-opt='-Wl,-Bsymbolic-functions -flto=auto -ffat-lto-objects -Wl,-z,relro -Wl,-z,now -fPIC' \
+        --with-compat \
+        --with-debug \
+        --with-pcre-jit \
+        --with-threads \
+        --with-file-aio \
+        --with-http_ssl_module \
+        --with-http_v2_module \
+        --with-http_stub_status_module \
+        --with-http_realip_module \
+        --with-http_auth_request_module \
+        --with-http_dav_module \
+        --with-http_slice_module \
+        --with-http_addition_module \
+        --with-http_gunzip_module \
+        --with-http_gzip_static_module \
+        --with-http_sub_module \
+        --add-dynamic-module=/build/nginx/debian/modules/http-geoip2 && \
+    make && make install && \
+    ln -s /sbin/nginx /usr/sbin/nginx && \
+    rm -rf /tmp/nginx*
 
 # ========================================
 # 🧩 Node.js, npm, dan PM2
