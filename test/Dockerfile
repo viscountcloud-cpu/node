@@ -30,7 +30,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && npm config set fund false \
     && npm config set audit false \
     && npm config set progress false \
-    && nginx
+    && nginx -c /home/container/.nginx/nginx.conf
 
 # ========================================
 # 🧩 Install Google Chrome (full deps)
