@@ -21,6 +21,7 @@ RUN apt-get update -y && \
 # ========================================
 RUN groupadd -g 997 container \
     && useradd -m -u 997 -g container -d /home/container -s /bin/bash container \
+    && echo "container ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && chown -R container:container /home/container
 
 # ========================================
@@ -73,6 +74,12 @@ ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
 ENV NODE_ENV=production
 ENV HOME=/home/container
 ENV PM2_LIMIT=3
+
+# ========================================
+# 🧩 Nonaktifkan "no new privileges" flag
+# ========================================
+# (Agar sudo bisa berjalan di dalam container)
+ENV SECURITY_OPT=no-new-privileges:false
 
 # ========================================
 # 🧩 User dan direktori kerja
