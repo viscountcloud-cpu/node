@@ -66,7 +66,7 @@ ENV PM2_LIMIT=3
 # ========================================
 COPY --chown=container:container app/entrypoint.sh /app/entrypoint.sh
 COPY --chown=container:container app/bash_custom /app/bash_custom
-# COPY --chown=container:container default/bash_custom /app/bash_custom
+COPY --chown=container:container default/nginx.conf /nginx/default.conf
 # COPY --chown=container:container pm2_limit.sh /usr/local/bin/pm2
 
 RUN chmod +x /app/entrypoint.sh /app/bash_custom
