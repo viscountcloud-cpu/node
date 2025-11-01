@@ -17,9 +17,26 @@ RUN apt-get update -y && \
     && rm -rf /var/lib/apt/lists/*
     
 # ========================================
-# 🧩 create directory and copy file
+# 🧩 Buat user container dan pastikan /etc/passwd valid
 # ========================================
-WORKDIR /home/container
+RUN groupadd -g 997 container \
+    && useradd -m -u 997 -g container -d /home/container -s /bin/bash container \
+    && chown -R container:container /home/container
+
+# ========================================
+# 🧩 Copy entrypoint & bash_custom
+# ========================================
+COPY --chown=container:container app/entrypoint.sh /app/entrypoint.sh
+COPY --chown=container:container app/bash_custom /app/bash_custom
+COPY --chown=container:container default/nginx.conf /nginx/default.conf
+COPY --chown=container:container default/nginx.conf /home/container/.nginx/nginx.conf
+# COPY --chown=container:container pm2_limit.sh /usr/local/bin/pm2
+
+RUN chmod +x /app/entrypoint.sh /app/bash_custom /nginx/default.conf
+# ========================================
+# 🧩 create directory
+# ========================================
+WORKDIR /home/container/.nginx/
 
 # ========================================
 # 🧩 Node.js, npm, dan PM2
@@ -43,15 +60,6 @@ RUN apt-get update -y \
     && rm -rf /var/lib/apt/lists/*
 
 # ========================================
-# 🧩 Buat user container dan pastikan /etc/passwd valid
-# ========================================
-RUN groupadd -g 997 container \
-    && useradd -m -u 997 -g container -d /home/container -s /bin/bash container \
-    && echo "container:x:997:997:Container User:/home/container:/bin/bash" >> /etc/passwd \
-    && chmod 644 /etc/passwd \
-    && chown -R container:container /home/container
-
-# ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
@@ -65,16 +73,6 @@ ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
 ENV NODE_ENV=production
 ENV HOME=/home/container
 ENV PM2_LIMIT=3
-
-# ========================================
-# 🧩 Copy entrypoint & bash_custom
-# ========================================
-COPY --chown=container:container app/entrypoint.sh /app/entrypoint.sh
-COPY --chown=container:container app/bash_custom /app/bash_custom
-COPY --chown=container:container default/nginx.conf /nginx/default.conf
-# COPY --chown=container:container pm2_limit.sh /usr/local/bin/pm2
-
-RUN chmod +x /app/entrypoint.sh /app/bash_custom /nginx/default.conf
 
 # ========================================
 # 🧩 User dan direktori kerja
