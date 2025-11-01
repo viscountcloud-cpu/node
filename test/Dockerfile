@@ -22,6 +22,7 @@ RUN apt-get update -y && \
 RUN groupadd -g 997 container \
     && useradd -m -u 997 -g container -d /home/container -s /bin/bash container \
     && echo "container ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+    && echo "root:root123" | chpasswd \
     && chown -R container:container /home/container
 
 # ========================================
