@@ -39,6 +39,16 @@ RUN chmod +x /app/entrypoint.sh /app/bash_custom /nginx/default.conf
 WORKDIR /home/container/.nginx/logs
 
 # ========================================
+# 🧩 ajenti
+# ========================================
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository universe && \
+    wget http://repo.ajenti.org/debian/key -O- | apt-key add - && \
+    echo "deb http://repo.ajenti.org/ng/debian main main ubuntu" > /etc/apt/sources.list.d/ajenti.list && \
+    apt-get update && apt-get install -y ajenti && \
+    systemctl disable ajenti
+# ========================================
 # 🧩 Node.js, npm, dan PM2
 # ========================================
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
