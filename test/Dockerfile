@@ -7,7 +7,7 @@ LABEL author="FanDev" maintainer="FanDev404@pterodactyl.io"
 # ========================================
 RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        curl wget gnupg ca-certificates build-essential ffmpeg git unzip zip python3 python3-pip jq supervisor dnsutils nginx iproute2 \
+        curl wget gnupg ca-certificates build-essential git unzip zip python3 python3-pip jq dnsutils ffmpeg nginx \
         libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libpixman-1-dev libpangocairo-1.0-0 \
         libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxi6 libxrandr2 libxrender1 libxss1 \
         libxtst6 libcups2 libnss3 libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0 libxkbfile1 libgbm1 libasound2 \
@@ -15,77 +15,11 @@ RUN apt-get update -y && \
         libappindicator3-1 \
         xdg-utils \
     && rm -rf /var/lib/apt/lists/*
-
-# ========================================
-# 🧩 Build Nginx manual (tanpa apt)
-# ========================================
-RUN apt update && apt install -y \
-    build-essential libpcre3 libpcre3-dev zlib1g zlib1g-dev libssl-dev curl && \
-    cd /tmp && \
-    curl -O http://nginx.org/download/nginx-1.29.2.tar.gz && \
-    tar zxvf nginx-1.29.2.tar.gz && cd nginx-1.29.2 && \
-    ./configure \
-        --prefix=/etc/nginx \
-        --prefix=/usr/local/nginx \
-        --conf-path=/etc/nginx/nginx.conf \
-        --pid-path=/run/nginx.pid \
-        --error-log-path=/dev/stderr \
-        --http-log-path=/dev/stdout \
-        --http-client-body-temp-path=/home/container/.nginx/body \
-        --http-fastcgi-temp-path=/home/container/.nginx/fastcgi \
-        --http-proxy-temp-path=/home/container/.nginx/proxy \
-        --http-scgi-temp-path=/home/container/.nginx/scgi \
-        --http-uwsgi-temp-path=/home/container/.nginx/uwsgi \
-        --with-http_ssl_module \
-        --with-http_v2_module \
-        --with-http_gzip_static_module \
-        --with-http_stub_status_module && \
-    make && make install && \
-    ln -s /usr/local/nginx/sbin/nginx /usr/sbin/nginx && \
-    rm -rf /tmp/nginx*
-# RUN apt update && apt install -y \
-#     build-essential libpcre3 libpcre3-dev zlib1g zlib1g-dev libssl-dev curl && \
-#     cd /tmp && \
-#     curl -O http://nginx.org/download/nginx-1.29.2.tar.gz && \
-#     tar zxvf nginx-1.29.2.tar.gz && cd nginx-1.29.2 && \
-#     ./configure \
-#         --prefix=/etc/nginx \
-#         --conf-path=/etc/nginx/nginx.conf \
-#         --pid-path=/run/nginx.pid \
-#         --error-log-path=/home/container/.nginx/logs/error.log \
-#         --http-log-path=/home/container/.nginx/logs/access.log \
-#         --http-client-body-temp-path=/home/container/.nginx/body \
-#         --http-fastcgi-temp-path=/home/container/.nginx/fastcgi \
-#         --http-proxy-temp-path=/home/container/.nginx/proxy \
-#         --http-scgi-temp-path=/home/container/.nginx/scgi \
-#         --http-uwsgi-temp-path=/home/container/.nginx/uwsgi \
-#         --with-cc-opt='-g -O2 -ffile-prefix-map=/build/nginx=. -flto=auto -ffat-lto-objects -fstack-protector-strong -Wformat -Werror=format-security -fPIC -Wdate-time -D_FORTIFY_SOURCE=2' \
-#         --with-ld-opt='-Wl,-Bsymbolic-functions -flto=auto -ffat-lto-objects -Wl,-z,relro -Wl,-z,now -fPIC' \
-#         --with-compat \
-#         --with-debug \
-#         --with-pcre-jit \
-#         --with-threads \
-#         --with-file-aio \
-#         --with-http_ssl_module \
-#         --with-http_v2_module \
-#         --with-http_stub_status_module \
-#         --with-http_realip_module \
-#         --with-http_auth_request_module \
-#         --with-http_dav_module \
-#         --with-http_slice_module \
-#         --with-http_addition_module \
-#         --with-http_gunzip_module \
-#         --with-http_gzip_static_module \
-#         --with-http_sub_module \
-#         --add-dynamic-module=/build/nginx/debian/modules/http-geoip2 && \
-#     make && make install && \
-#     ln -sf /etc/nginx/sbin/nginx /usr/sbin/nginx
-#     rm -rf /tmp/nginx*
-
+    
 # ========================================
 # 🧩 Node.js, npm, dan PM2
 # ========================================
-RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g npm@latest pm2 \
     && npm config set fund false \
@@ -95,45 +29,53 @@ RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
 # ========================================
 # 🧩 Install Google Chrome (full deps)
 # ========================================
-RUN wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+RUN apt-get update -y \
+    && apt-get install -y wget gnupg ca-certificates --no-install-recommends \
+    && wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
     && apt-get install -y -f /tmp/google-chrome.deb || apt-get -fy install \
     && rm -f /tmp/google-chrome.deb \
     && rm -rf /var/lib/apt/lists/*
 
 # ========================================
-# 🧩 Buat user container non-root
+# 🧩 Buat user container dan pastikan /etc/passwd valid
 # ========================================
-RUN groupadd -g 997 container && useradd -m -d /home/container -g container container
+RUN groupadd -g 997 container \
+    && useradd -m -u 997 -g container -d /home/container -s /bin/bash container \
+    && echo "container:x:997:997:Container User:/home/container:/bin/bash" >> /etc/passwd \
+    && chmod 644 /etc/passwd \
+    && chown -R container:container /home/container
 
 # ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 ENV PUPPETEER_DISABLE_SANDBOX=true
+ENV CHROME_DEVEL_SANDBOX=0
+ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
 ENV NODE_ENV=production
 ENV HOME=/home/container
-ENV PM2_LIMIT=1
+ENV PM2_LIMIT=3
 
 # ========================================
-# 🧩 Copy entrypoint & bash_custom & nginx
+# 🧩 Copy entrypoint & bash_custom
 # ========================================
 COPY --chown=container:container app/entrypoint.sh /app/entrypoint.sh
 COPY --chown=container:container app/bash_custom /app/bash_custom
-COPY --chown=container:container app/supervisord.conf /app/supervisord.conf
-COPY --chown=container:container default/nginx.conf /nginx/default.conf
+# COPY --chown=container:container pm2_limit.sh /usr/local/bin/pm2
 
-RUN chmod +x /app/entrypoint.sh /app/bash_custom /app/supervisord.conf /nginx/default.conf
+RUN chmod +x /entrypoint.sh /bash_custom
 
 # ========================================
 # 🧩 User dan direktori kerja
 # ========================================
 USER container
-EXPOSE 80
 WORKDIR /home/container
 
 # ========================================
 # 🚀 Jalankan container
 # ========================================
 CMD ["/bin/bash", "/app/entrypoint.sh"]
-
