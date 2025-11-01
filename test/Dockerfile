@@ -78,7 +78,6 @@ ENV PM2_LIMIT=3
 # 🧩 User dan direktori kerja
 # ========================================
 USER container
-WORKDIR /home/container
 
 # ========================================
 # 🚀 Jalankan container
