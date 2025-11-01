@@ -36,7 +36,7 @@ RUN chmod +x /app/entrypoint.sh /app/bash_custom /nginx/default.conf
 # ========================================
 # 🧩 create directory
 # ========================================
-WORKDIR /home/container/.nginx/
+WORKDIR /home/container/.nginx/logs
 
 # ========================================
 # 🧩 Node.js, npm, dan PM2
