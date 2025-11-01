@@ -7,7 +7,7 @@ LABEL author="FanDev" maintainer="FanDev404@pterodactyl.io"
 # ========================================
 RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        curl wget gnupg ca-certificates build-essential git unzip zip python3 python3-pip jq dnsutils ffmpeg nginx \
+        curl wget gnupg ca-certificates build-essential git unzip zip python3 python3-pip jq dnsutils ffmpeg nginx sudo \
         libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libpixman-1-dev libpangocairo-1.0-0 \
         libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxi6 libxrandr2 libxrender1 libxss1 \
         libxtst6 libcups2 libnss3 libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0 libxkbfile1 libgbm1 libasound2 \
@@ -46,8 +46,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && npm install -g npm@latest pm2 \
     && npm config set fund false \
     && npm config set audit false \
-    && npm config set progress false \
-    && nginx -c /home/container/.nginx/nginx.conf
+    && npm config set progress false 
+    # && nginx -c /home/container/.nginx/nginx.conf
 
 # ========================================
 # 🧩 Install Google Chrome (full deps)
