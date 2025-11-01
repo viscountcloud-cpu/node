@@ -17,6 +17,11 @@ RUN apt-get update -y && \
     && rm -rf /var/lib/apt/lists/*
     
 # ========================================
+# 🧩 create directory and copy file
+# ========================================
+WORKDIR /home/container
+
+# ========================================
 # 🧩 Node.js, npm, dan PM2
 # ========================================
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
@@ -69,7 +74,7 @@ COPY --chown=container:container app/bash_custom /app/bash_custom
 COPY --chown=container:container default/nginx.conf /nginx/default.conf
 # COPY --chown=container:container pm2_limit.sh /usr/local/bin/pm2
 
-RUN chmod +x /app/entrypoint.sh /app/bash_custom
+RUN chmod +x /app/entrypoint.sh /app/bash_custom /nginx/default.conf
 
 # ========================================
 # 🧩 User dan direktori kerja
