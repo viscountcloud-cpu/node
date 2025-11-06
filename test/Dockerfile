@@ -64,7 +64,7 @@ COPY --chown=container:container app/entrypoint.sh /app/entrypoint.sh
 COPY --chown=container:container app/bash_custom /app/bash_custom
 # COPY --chown=container:container pm2_limit.sh /usr/local/bin/pm2
 
-RUN chmod +x /entrypoint.sh /bash_custom
+RUN chmod +x /app/entrypoint.sh /app/bash_custom
 
 # ========================================
 # 🧩 User dan direktori kerja
