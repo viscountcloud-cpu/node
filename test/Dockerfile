@@ -54,6 +54,7 @@ ENV PM2_LIMIT=3
 # ========================================
 # 🧩 Copy entrypoint & bash_custom
 # ========================================
+WORKDIR /app
 # COPY --chown=container:container entrypoint.sh /entrypoint.sh
 COPY --chown=container:container app/bash_custom /app/bash_custom
 # COPY --chown=container:container pm2_limit.sh /usr/local/bin/pm2
