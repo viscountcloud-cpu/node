@@ -58,10 +58,10 @@ if [ ! -f /home/container/.nginx/nginx.conf ]; then
     cp /nginx/default.conf /home/container/.nginx/nginx.conf
 fi
 
-if [ -f /home/container/.nginx/nginx.conf ]; then
-    sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/nginx.conf
-    # sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/nginx.conf
-fi
+# if [ -f /home/container/.nginx/nginx.conf ]; then
+#     sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/nginx.conf
+#     # sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/nginx.conf
+# fi
 
 # supervisord -c /app/supervisord.conf
 nginx -c /home/container/.nginx/nginx.conf
