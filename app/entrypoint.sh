@@ -64,7 +64,7 @@ if [ -f /home/container/.nginx/nginx.conf ]; then
 fi
 
 # supervisord -c /app/supervisord.conf
-# nginx -c /home/container/.nginx/nginx.conf
+nginx -c /home/container/.nginx/nginx.conf
 
 # ========================================
 #        SERVER INFORMATION
