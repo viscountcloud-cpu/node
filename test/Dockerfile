@@ -55,11 +55,21 @@ ENV CHROME_BIN=/usr/bin/google-chrome-stable
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 ENV HOME=/home/container
 ENV PM2_LIMIT=3
-
+# ========================================
+# 🧩 Direktori temporary Nginx bawaan
+# ========================================
+WORKDIR /app
+RUN mkdir -p \
+    /var/lib/nginx/body \
+    /var/lib/nginx/proxy \
+    /var/lib/nginx/fastcgi \
+    /var/lib/nginx/scgi \
+    /var/lib/nginx/uwsgi && \
+    chown -R container:container /var/lib/nginx
+    
 # ========================================
 # 🧩 Copy entrypoint & bash_custom
 # ========================================
-WORKDIR /app
 COPY --chown=container:container app/entrypoint.sh /app/entrypoint.sh
 COPY --chown=container:container app/bash_custom /app/bash_custom
 # COPY --chown=container:container pm2_limit.sh /usr/local/bin/pm2
