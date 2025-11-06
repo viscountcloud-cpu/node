@@ -35,9 +35,14 @@ RUN apt-get update -y \
     && apt-get install -y -f /tmp/google-chrome.deb || apt-get -fy install \
     && rm -f /tmp/google-chrome.deb \
     && rm -rf /var/lib/apt/lists/*
-
 # ========================================
-# 🧩 Buat user container dan pastikan /etc/passwd valid
+# 🧩 forward request and error logs to docker log collector
+# ========================================
+RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
+    ln -sf /dev/stderr /var/log/nginx/error.log
+    
+# ========================================
+# 🧩 Buat user container
 # ========================================
 RUN groupadd -g 997 container \
     && useradd -m -u 997 -g container -d /home/container -s /bin/bash container \
