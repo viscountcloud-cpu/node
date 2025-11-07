@@ -149,6 +149,7 @@ echo -e ""
         printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfired Login" "${CF_URL}"
     else
         printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "http://${INTERNAL_IP}:${PORT}"
+        printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Domain" "https://${DOMAIN}"
     fi
 echo -e ""
 fi
