@@ -136,8 +136,12 @@ echo -e "                ${TEXT}${BOLD}Cloudfired Informatio${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
     if [[ "$CF_URL" != "" ]]; then
-        printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfire Config" "${CF_CONFIG_FILE}"
-        printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfired Tunnel" "${TUNNEL_NAME}"
+        if [[ "$CF_CONFIG_FILE" != "" ]]; then
+            printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfire Config" "${CF_CONFIG_FILE}"
+        fi
+        if [[ "$TUNNEL_NAME" != "" ]]; then
+            printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfired Tunnel" "${TUNNEL_NAME}"
+        fi
         printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfired Login" "${CF_URL}"
     else
         printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "http://${INTERNAL_IP}:${PORT}"
