@@ -56,10 +56,10 @@ if [ ! -f /home/container/.nginx/default.conf ]; then
     cp /nginx/default.conf /home/container/.nginx/default.conf
 fi
 
-# if [ -f /home/container/.nginx/nginx.conf ]; then
-#     sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
-#     # sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
-# fi
+if [ -f /home/container/.nginx/default.conf ]; then
+    sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
+    sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
+fi
 
 
 CLOUD_DIR="${HOME}/.cloudflared"
@@ -96,9 +96,11 @@ ingress:
   - service: http_status:404
 EOL
 
-                $CLOUDFLARED_BIN tunnel --config "$CF_CONFIG_FILE" run & nginx -c /home/container/.nginx/default.conf
+                $CLOUDFLARED_BIN tunnel --config "$CF_CONFIG_FILE" run & 
+                nginx -c /home/container/.nginx/default.conf
             else
                CF_TEMP_OUT=$($CLOUDFLARED_BIN tunnel --url "http://localhost:$PORT" 2>&1 | grep -oE 'https://[^ ]+' | head -n1 || true)
+               nginx -c /home/container/.nginx/default.conf
             fi
         fi
     fi
