@@ -49,11 +49,10 @@ HOSTNAME=${HOST_NAME}
 MODIFIED_STARTUP=$(echo -e ${CMD_RUN} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
 
-mkdir -p /home/container/.nginx/logs
-mkdir -p /home/container/.nginx/tmp
-
 # Jika file nginx.conf belum ada, copy dari default
-if [ ! -f /home/container/.nginx/nginx.conf ]; then
+if [ ! -f /home/container/.nginx/default.conf ]; then
+    mkdir -p /home/container/.nginx/logs
+    mkdir -p /home/container/.nginx/tmp
     cp /nginx/default.conf /home/container/.nginx/default.conf
 fi
 
@@ -67,6 +66,8 @@ CLOUD_DIR="${HOME}/.cloudflared"
 CLOUD_CERTS="$CLOUD_DIR/cert.pem"
 CLOUDFLARED_BIN=$(command -v cloudflared || true)
 CF_URL=""
+CF_CONFIG_FILE=""
+TUNNEL_NAME=""
 
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
     if [[ -n "$CLOUDFLARED_BIN" ]]; then
@@ -79,6 +80,24 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
             CF_OUT=$(timeout 6s "$CLOUDFLARED_BIN" login 2>&1 || true)
             CF_URL=$(printf '%s' "$CF_OUT" | grep -oE 'https?://[^ )]+' | head -n1 || true)
             CF_URL=${CF_URL:-""}
+        else
+            if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" && -n "$CLOUDFLARED_BIN" ]]; then
+                TUNNEL_NAME=${TUNNEL_NAME:-"mycontainer-tunnel"}
+                TUNNEL_EXIST=$($CLOUDFLARED_BIN tunnel list 2>/dev/null | grep -w "$TUNNEL_NAME" || true)
+                [[ -z "$TUNNEL_EXIST" ]] && $CLOUDFLARED_BIN tunnel create "$TUNNEL_NAME"
+                CF_CONFIG_FILE="$CLOUD_DIR/$TUNNEL_NAME.yml"
+                cat > "$CF_CONFIG_FILE" <<EOL
+tunnel: $TUNNEL_NAME
+credentials-file: $CLOUD_DIR/$TUNNEL_NAME.json
+
+ingress:
+  - hostname: $DOMAIN
+    service: http://localhost:$PORT
+  - service: http_status:404
+EOL
+
+                $CLOUDFLARED_BIN tunnel --config "$CF_CONFIG_FILE" run & nginx -c /home/container/.nginx/default.conf
+            fi
         fi
     fi
 fi 
@@ -117,9 +136,10 @@ echo -e "                ${TEXT}${BOLD}Cloudfired Informatio${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
     if [[ "$CF_URL" != "" ]]; then
-        printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Login" "${CF_URL}"
+        printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfire Config" "${CF_CONFIG_FILE}"
+        printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfired Tunnel" "${TUNNEL_NAME}"
+        printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfired Login" "${CF_URL}"
     else
-        nginx -c /home/container/.nginx/default.conf
         printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "http://${INTERNAL_IP}:${PORT}"
     fi
 echo -e ""
