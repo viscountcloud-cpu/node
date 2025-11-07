@@ -24,8 +24,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && npm install -g npm@latest pm2 \
     && npm config set fund false \
     && npm config set audit false \
-    && npm config set progress false \
-    && alias cr='cloudflared'
+    && npm config set progress false 
 
 # ========================================
 # 🧩 Install Google Chrome and Install Cloudflared (full deps)
