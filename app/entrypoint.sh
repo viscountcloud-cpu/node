@@ -53,7 +53,9 @@ MODIFIED_STARTUP=$(echo -e ${CMD_RUN} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 if [ ! -f /home/container/.nginx/default.conf ]; then
     mkdir -p /home/container/.nginx/logs
     mkdir -p /home/container/.nginx/tmp
+    mkdir -p /home/container/webroot
     cp /nginx/default.conf /home/container/.nginx/default.conf
+    cp /webroot/index.html /home/container/webroot/index.html
 fi
 
 if [ -f /home/container/.nginx/default.conf ]; then
