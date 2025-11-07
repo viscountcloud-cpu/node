@@ -107,7 +107,7 @@ fi
 # ========================================
 #        SERVER INFORMATION
 # ========================================
-
+clear
 echo -e ""
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e "                ${TEXT}${BOLD}Server Information${RESET}"
