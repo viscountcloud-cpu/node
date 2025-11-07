@@ -38,6 +38,10 @@ RUN apt-get update -y \
     && rm -f /tmp/cloudflared.deb \
     && rm -f /tmp/google-chrome.deb \
     && rm -rf /var/lib/apt/lists/*
+# ========================================
+# 🧩 settings allias
+# ========================================
+RUN echo "alias cr='cloudflared'" >> /etc/bash.bashrc
 
 # ========================================
 # 🧩 forward request and error logs to docker log collector
