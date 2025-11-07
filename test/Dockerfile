@@ -38,10 +38,6 @@ RUN apt-get update -y \
     && rm -f /tmp/cloudflared.deb \
     && rm -f /tmp/google-chrome.deb \
     && rm -rf /var/lib/apt/lists/*
-# ========================================
-# 🧩 settings allias
-# ========================================
-RUN echo "alias cr='cloudflared'" >> /etc/bash.bashrc
 
 # ========================================
 # 🧩 forward request and error logs to docker log collector
@@ -68,14 +64,6 @@ ENV PM2_LIMIT=3
 # ========================================
 WORKDIR /app
 WORKDIR /nginx
-WORKDIR /etc/nginx
-RUN mkdir -p \
-    /var/lib/nginx/body \
-    /var/lib/nginx/proxy \
-    /var/lib/nginx/fastcgi \
-    /var/lib/nginx/scgi \
-    /var/lib/nginx/uwsgi && \
-    chown -R container:container /var/lib/nginx
     
 # ========================================
 # 🧩 Copy entrypoint & bash_custom
@@ -83,7 +71,6 @@ RUN mkdir -p \
 COPY --chown=container:container app/entrypoint.sh /app/entrypoint.sh
 COPY --chown=container:container app/bash_custom /app/bash_custom
 COPY --chown=container:container default/nginx.conf /nginx/default.conf
-# COPY --chown=container:container nginx/* /etc/nginx
 # COPY --chown=container:container pm2_limit.sh /usr/local/bin/pm2
 
 RUN chmod +x /app/entrypoint.sh /app/bash_custom /nginx/default.conf
