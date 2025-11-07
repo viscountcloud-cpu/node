@@ -9,5 +9,6 @@ export PS1="root@${HOSTNAME}:\w\$ "
 # === Pastikan kita di home directory ===
 cd /home/container || cd ~
 
+alias cr='cloudflared'
 # === Jalankan interactive bash ===
 exec bash --noprofile --norc
