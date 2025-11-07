@@ -62,12 +62,71 @@ fi
 #     # sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
 # fi
 
+
+CLOUD_DIR="${HOME}/.cloudflared"
+CLOUD_CERTS="$CLOUD_DIR/cert.pem"
+CLOUDFLARED_BIN=$(command -v cloudflared || true)
+
+if [[ -z "$CLOUDFLARED_BIN" ]]; then
+    echo -e "${DIM}Cloudflared tidak terpasang. Lewati langkah login.${RESET}"
+else
+    mkdir -p "${CLOUD_DIR}"
+
+    CLOUD_AUTHED=false
+    for f in "${CLOUD_CERTS[@]}"; do
+        if [[ -f "$f" ]]; then
+            echo -e "${DIM}Ditemukan kredensial cloudflared: ${f}${RESET}"
+            CLOUD_AUTHED=true
+            break
+        fi
+    done
+
+    if [[ "$CLOUD_AUTHED" != true ]]; then
+        echo -e ""
+        echo -e "${ACCENT}${BOLD}Cloudflared belum ter-autentikasi.${RESET}"
+        echo -e "${TEXT}Mencoba mendapatkan URL login headless dari cloudflared...${RESET}"
+        echo -e ""
+
+        CF_OUT=$(timeout 6s "${CLOUDFLARED_BIN}" login 2>&1 || true)
+        CF_URL=$(echo "$CF_OUT" | grep -oE 'https?://[^ ]+' | head -n1)
+
+        if [[ -n "$CF_URL" ]]; then
+            echo -e "${BOLD}Buka URL ini di browser Anda untuk login ke Cloudflare:${RESET}"
+            echo -e ""
+            echo -e "${ACCENT}${CF_URL}${RESET}"
+            echo -e ""
+            echo -e "${DIM}Setelah otorisasi selesai, cloudflared akan menyimpan kredensial di ~/.cloudflared/cert.pem${RESET}"
+        else
+            echo -e "${DIM}Gagal mengekstrak URL otomatis. Anda dapat menjalankan perintah berikut pada mesin yang punya browser:${RESET}"
+            echo -e ""
+            echo -e "${ACCENT}cloudflared login${RESET}"
+            echo -e ""
+        fi
+
+        echo -e "${TEXT}Tunggu otorisasi di browser lalu tekan ENTER untuk melanjutkan (atau Ctrl+C untuk keluar).${RESET}"
+        read -r -p ""
+        AUTH_OK=false
+        for f in "${CLOUD_CERTS[@]}"; do
+            if [[ -f "$f" ]]; then
+                echo -e "${DIM}Kredensial cloudflared ditemukan: ${f}${RESET}"
+                AUTH_OK=true
+                break
+            fi
+        done
+
+        if [[ "$AUTH_OK" != true ]]; then
+            echo -e "${ACCENT}Peringatan:${RESET} kredensial cloudflared masih belum ditemukan. Beberapa fitur mungkin tidak berjalan."
+        fi
+    fi
+fi
+
 # supervisord -c /app/supervisord.conf
 nginx -c /home/container/.nginx/default.conf
 
 # ========================================
 #        SERVER INFORMATION
 # ========================================
+
 echo -e ""
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e "                ${TEXT}${BOLD}Server Information${RESET}"
