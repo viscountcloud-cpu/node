@@ -24,28 +24,22 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && npm install -g npm@latest pm2 \
     && npm config set fund false \
     && npm config set audit false \
-    && npm config set progress false
+    && npm config set progress false \
+    && alias cr='cloudflared'
 
 # ========================================
-# 🧩 Install Google Chrome (full deps)
+# 🧩 Install Google Chrome and Install Cloudflared (full deps)
 # ========================================
 RUN apt-get update -y \
     && apt-get install -y wget gnupg ca-certificates --no-install-recommends \
     && wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && wget -q -O /tmp/cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb \
+    && apt-get install -y -f /tmp/cloudflared.deb || apt-get -fy install \
     && apt-get install -y -f /tmp/google-chrome.deb || apt-get -fy install \
+    && rm /tmp/cloudflared.deb \
     && rm -f /tmp/google-chrome.deb \
     && rm -rf /var/lib/apt/lists/*
 
-# ========================================
-# 🧩 Install Cloudflared
-# ========================================
-RUN apt-get update -y \
-    && apt-get install -y wget gnupg ca-certificates --no-install-recommends \
-    && wget -q -O /tmp/cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb \
-    && apt-get install -y -f /tmp/cloudflared.deb || apt-get -fy install \
-    && rm /tmp/cloudflared.deb \
-    && rm -rf /var/lib/apt/lists/*
-    
 # ========================================
 # 🧩 forward request and error logs to docker log collector
 # ========================================
