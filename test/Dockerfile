@@ -39,9 +39,12 @@ RUN apt-get update -y \
 # ========================================
 # 🧩 Install Cloudflared
 # ========================================
-RUN wget -q -O /tmp/cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb \
-    && dpkg -i /tmp/cloudflared.deb \
-    && rm /tmp/cloudflared.deb
+RUN apt-get update -y \
+    && apt-get install -y wget gnupg ca-certificates --no-install-recommends \
+    && wget -q -O /tmp/cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb \
+    && apt-get install -y -f /tmp/cloudflared.deb || apt-get -fy install \
+    && rm /tmp/cloudflared.deb \
+    && rm -rf /var/lib/apt/lists/*
     
 # ========================================
 # 🧩 forward request and error logs to docker log collector
