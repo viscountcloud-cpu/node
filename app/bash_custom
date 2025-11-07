@@ -11,4 +11,4 @@ export PS1="root@${HOSTNAME}:\w\$ "
 cd /home/container || cd ~
 
 # === Jalankan interactive bash ===
-exec bash
+exec bash --noprofile --norc
