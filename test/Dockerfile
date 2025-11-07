@@ -36,7 +36,7 @@ RUN apt-get update -y \
     && wget -q -O /tmp/cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb \
     && apt-get install -y -f /tmp/cloudflared.deb || apt-get -fy install \
     && apt-get install -y -f /tmp/google-chrome.deb || apt-get -fy install \
-    && rm /tmp/cloudflared.deb \
+    && rm -f /tmp/cloudflared.deb \
     && rm -f /tmp/google-chrome.deb \
     && rm -rf /var/lib/apt/lists/*
 
