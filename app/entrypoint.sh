@@ -1,6 +1,6 @@
 #!/bin/bash
 cd /home/container || exit 1
-
+alias cr='cloudflared'
 
 # === Warna tema (elegan & profesional) ===
 ACCENT='\033[1;34m'     # biru lembut
