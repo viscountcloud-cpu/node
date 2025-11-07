@@ -97,6 +97,8 @@ ingress:
 EOL
 
                 $CLOUDFLARED_BIN tunnel --config "$CF_CONFIG_FILE" run & nginx -c /home/container/.nginx/default.conf
+            else
+               CF_TEMP_OUT=$($CLOUDFLARED_BIN tunnel --url "http://localhost:$PORT" 2>&1 | grep -oE 'https://[^ ]+' | head -n1 || true)
             fi
         fi
     fi
