@@ -70,14 +70,14 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
         sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
         sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
     fi
-    if [ -f "$CLOUD_CERTS" ]; then
+    # if [ -f "$CLOUD_CERTS" ]; then
 
-        if [ ! -f "$CLOUD_CONFIG" ]; then
+    #     if [ ! -f "$CLOUD_CONFIG" ]; then
         
-        fi
-    else 
+    #     fi
+    # else 
 
-    fi
+    # fi
 fi
 
 
