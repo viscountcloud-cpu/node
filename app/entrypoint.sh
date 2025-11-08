@@ -64,49 +64,49 @@ if [ -f /home/container/.nginx/default.conf ]; then
 fi
 
 
-CLOUD_DIR="${HOME}/.cloudflared"
-CLOUD_CERTS="$CLOUD_DIR/cert.pem"
-CLOUDFLARED_BIN=$(command -v cloudflared || true)
-CF_URL=""
-CF_CONFIG_FILE=""
-TUNNEL_NAME=""
+# CLOUD_DIR="${HOME}/.cloudflared"
+# CLOUD_CERTS="$CLOUD_DIR/cert.pem"
+# CLOUDFLARED_BIN=$(command -v cloudflared || true)
+# CF_URL=""
+# CF_CONFIG_FILE=""
+# TUNNEL_NAME=""
 
-if [[ "${SETUP_NGINX}" == "ON" ]]; then
-    if [[ -n "$CLOUDFLARED_BIN" ]]; then
-        mkdir -p "$CLOUD_DIR"
-        CLOUD_AUTHED=false
-        for f in "${CLOUD_CERTS[@]}"; do
-            [[ -f "$f" ]] && CLOUD_AUTHED=true && break
-        done
-        if [[ "$CLOUD_AUTHED" != true ]]; then
-            CF_OUT=$(timeout 6s "$CLOUDFLARED_BIN" login 2>&1 || true)
-            CF_URL=$(printf '%s' "$CF_OUT" | grep -oE 'https?://[^ )]+' | head -n1 || true)
-            CF_URL=${CF_URL:-""}
-        else
-            if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" && -n "$CLOUDFLARED_BIN" ]]; then
-                TUNNEL_NAME=${TUNNEL_NAME:-"mycontainer-tunnel"}
-                TUNNEL_EXIST=$($CLOUDFLARED_BIN tunnel list 2>/dev/null | grep -w "$TUNNEL_NAME" || true)
-                [[ -z "$TUNNEL_EXIST" ]] && $CLOUDFLARED_BIN tunnel create "$TUNNEL_NAME"
-                CF_CONFIG_FILE="$CLOUD_DIR/$TUNNEL_NAME.yml"
-                cat > "$CF_CONFIG_FILE" <<EOL
-tunnel: $TUNNEL_NAME
-credentials-file: $CLOUD_DIR/$TUNNEL_NAME.json
+# if [[ "${SETUP_NGINX}" == "ON" ]]; then
+#     if [[ -n "$CLOUDFLARED_BIN" ]]; then
+#         mkdir -p "$CLOUD_DIR"
+#         CLOUD_AUTHED=false
+#         for f in "${CLOUD_CERTS[@]}"; do
+#             [[ -f "$f" ]] && CLOUD_AUTHED=true && break
+#         done
+#         if [[ "$CLOUD_AUTHED" != true ]]; then
+#             CF_OUT=$(timeout 6s "$CLOUDFLARED_BIN" login 2>&1 || true)
+#             CF_URL=$(printf '%s' "$CF_OUT" | grep -oE 'https?://[^ )]+' | head -n1 || true)
+#             CF_URL=${CF_URL:-""}
+#         else
+#             if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" && -n "$CLOUDFLARED_BIN" ]]; then
+#                 TUNNEL_NAME=${TUNNEL_NAME:-"mycontainer-tunnel"}
+#                 TUNNEL_EXIST=$($CLOUDFLARED_BIN tunnel list 2>/dev/null | grep -w "$TUNNEL_NAME" || true)
+#                 [[ -z "$TUNNEL_EXIST" ]] && $CLOUDFLARED_BIN tunnel create "$TUNNEL_NAME"
+#                 CF_CONFIG_FILE="$CLOUD_DIR/$TUNNEL_NAME.yml"
+#                 cat > "$CF_CONFIG_FILE" <<EOL
+# tunnel: $TUNNEL_NAME
+# credentials-file: $CLOUD_DIR/$TUNNEL_NAME.json
 
-ingress:
-  - hostname: $DOMAIN
-    service: http://localhost:$PORT
-  - service: http_status:404
-EOL
+# ingress:
+#   - hostname: $DOMAIN
+#     service: http://localhost:$PORT
+#   - service: http_status:404
+# EOL
 
-                $CLOUDFLARED_BIN tunnel --config "$CF_CONFIG_FILE" run & 
-                nginx -c /home/container/.nginx/default.conf
-            else
-               CF_TEMP_OUT=$($CLOUDFLARED_BIN tunnel --url "http://localhost:$PORT" 2>&1 | grep -oE 'https://[^ ]+' | head -n1 || true)
-               nginx -c /home/container/.nginx/default.conf
-            fi
-        fi
-    fi
-fi 
+#                 $CLOUDFLARED_BIN tunnel --config "$CF_CONFIG_FILE" run & 
+#                 nginx -c /home/container/.nginx/default.conf
+#             else
+#                CF_TEMP_OUT=$($CLOUDFLARED_BIN tunnel --url "http://localhost:$PORT" 2>&1 | grep -oE 'https://[^ ]+' | head -n1 || true)
+#                nginx -c /home/container/.nginx/default.conf
+#             fi
+#         fi
+#     fi
+# fi 
 
 # supervisord -c /app/supervisord.conf
 
@@ -141,18 +141,21 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e "                ${TEXT}${BOLD}Cloudfired Informatio${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
-    if [[ "$CF_URL" != "" ]]; then
-        if [[ "$CF_CONFIG_FILE" != "" ]]; then
-            printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfire Config" "${CF_CONFIG_FILE}"
-        fi
-        if [[ "$TUNNEL_NAME" != "" ]]; then
-            printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfired Tunnel" "${TUNNEL_NAME}"
-        fi
-        printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfired Login" "${CF_URL}"
-    else
-        printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "http://${INTERNAL_IP}:${PORT}"
-        printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Domain" "https://${DOMAIN}"
-    fi
+
+printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "http://${INTERNAL_IP}:${PORT}"
+printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Domain" "https://${DOMAIN}"
+    # if [[ "$CF_URL" != "" ]]; then
+    #     if [[ "$CF_CONFIG_FILE" != "" ]]; then
+    #         printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfire Config" "${CF_CONFIG_FILE}"
+    #     fi
+    #     if [[ "$TUNNEL_NAME" != "" ]]; then
+    #         printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfired Tunnel" "${TUNNEL_NAME}"
+    #     fi
+    #     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfired Login" "${CF_URL}"
+    # else
+    #     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "http://${INTERNAL_IP}:${PORT}"
+    #     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Domain" "https://${DOMAIN}"
+    # fi
 echo -e ""
 fi
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
