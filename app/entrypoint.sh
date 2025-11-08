@@ -53,7 +53,7 @@ CLOUD_DIR="/home/container/.cloudflared"
 CLOUD_CERTS="$CLOUD_DIR/cert.pem"
 CLOUD_CONFIG="$CLOUD_DIR/config.yml"
 CLOUDFLARED_BIN=$(command -v cloudflared || true)
-TUNNEL_NAME=""
+LOCAL_HOST="http://${INTERNAL_IP}:${PORT}"
 
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
     mkdir -p /home/container/.nginx
@@ -70,23 +70,28 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     fi
     if [ -f "$CLOUD_CERTS" ]; then
         if [ ! -f "$CLOUD_CONFIG" ]; then
-             TUNNEL_EXIST=$($CLOUDFLARED_BIN tunnel list 2>/dev/null | grep -w "$HOSTNAME" || true)
-             [[ -z "$TUNNEL_EXIST" ]] && $CLOUDFLARED_BIN tunnel create "$TUNNEL_NAME"
              if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" ]]; then
-                 cat > "$CLOUD_CONFIG" <<EOL
+                 TUNNEL_EXIST=$($CLOUDFLARED_BIN tunnel list 2>/dev/null | grep -w "$HOSTNAME" || true)
+                 [[ -z "$TUNNEL_EXIST" ]] && $CLOUDFLARED_BIN tunnel create "$HOSTNAME"
+                     cat > "$CLOUD_CONFIG" <<EOL
 tunnel: $HOSTNAME
 credentials-file: $CLOUD_DIR/$HOSTNAME.json
 
 ingress:
   - hostname: $DOMAIN
-    service: http://localhost:$PORT
+    service: $LOCAL_HOST
   - service: http_status:404
 EOL
-             fi
-        fi
-        if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" ]]; then
-            $CLOUDFLARED_BIN tunnel run &
-            nginx -c /home/container/.nginx/default.conf
+                cloudflared tunnel route dns $HOSTNAME $DOMAIN
+                nginx -c /home/container/.nginx/default.conf & cloudflared tunnel run
+            fi
+        else 
+            if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" ]]; then
+                 TUNNEL_EXIST=$($CLOUDFLARED_BIN tunnel list 2>/dev/null | grep -w "$HOSTNAME" || true)
+                 [[ -z "$TUNNEL_EXIST" ]] && $CLOUDFLARED_BIN tunnel create "$HOSTNAME"
+                 cloudflared tunnel route dns $HOSTNAME $DOMAIN
+                 nginx -c /home/container/.nginx/default.conf & cloudflared tunnel run $HOSTNAME
+            fi
         fi
     fi
 fi
