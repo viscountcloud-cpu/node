@@ -53,8 +53,6 @@ CLOUD_DIR="/home/container/.cloudflared"
 CLOUD_CERTS="$CLOUD_DIR/cert.pem"
 CLOUD_CONFIG="$CLOUD_DIR/config.yml"
 CLOUDFLARED_BIN=$(command -v cloudflared || true)
-CF_URL=""
-CF_CONFIG_FILE=""
 TUNNEL_NAME=""
 
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
@@ -70,53 +68,29 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
         sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
         sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
     fi
-    # if [ -f "$CLOUD_CERTS" ]; then
+    if [ -f "$CLOUD_CERTS" ]; then
+        if [ ! -f "$CLOUD_CONFIG" ]; then
+             TUNNEL_EXIST=$($CLOUDFLARED_BIN tunnel list 2>/dev/null | grep -w "$HOSTNAME" || true)
+             [[ -z "$TUNNEL_EXIST" ]] && $CLOUDFLARED_BIN tunnel create "$TUNNEL_NAME"
+             if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" ]]; then
+                 cat > "$CLOUD_CONFIG" <<EOL
+tunnel: $HOSTNAME
+credentials-file: $CLOUD_DIR/$HOSTNAME.json
 
-    #     if [ ! -f "$CLOUD_CONFIG" ]; then
-        
-    #     fi
-    # else 
-
-    # fi
+ingress:
+  - hostname: $DOMAIN
+    service: http://localhost:$PORT
+  - service: http_status:404
+EOL
+             fi
+        fi
+        if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" ]]; then
+            $CLOUDFLARED_BIN tunnel run &
+            nginx -c /home/container/.nginx/default.conf
+        fi
+    fi
 fi
 
-
-# if [[ "${SETUP_NGINX}" == "ON" ]]; then
-#     if [[ -n "$CLOUDFLARED_BIN" ]]; then
-#         mkdir -p "$CLOUD_DIR"
-#         CLOUD_AUTHED=false
-#         for f in "${CLOUD_CERTS[@]}"; do
-#             [[ -f "$f" ]] && CLOUD_AUTHED=true && break
-#         done
-#         if [[ "$CLOUD_AUTHED" != true ]]; then
-#             CF_OUT=$(timeout 6s "$CLOUDFLARED_BIN" login 2>&1 || true)
-#             CF_URL=$(printf '%s' "$CF_OUT" | grep -oE 'https?://[^ )]+' | head -n1 || true)
-#             CF_URL=${CF_URL:-""}
-#         else
-#             if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" && -n "$CLOUDFLARED_BIN" ]]; then
-#                 TUNNEL_NAME=${TUNNEL_NAME:-"mycontainer-tunnel"}
-#                 TUNNEL_EXIST=$($CLOUDFLARED_BIN tunnel list 2>/dev/null | grep -w "$TUNNEL_NAME" || true)
-#                 [[ -z "$TUNNEL_EXIST" ]] && $CLOUDFLARED_BIN tunnel create "$TUNNEL_NAME"
-#                 CF_CONFIG_FILE="$CLOUD_DIR/$TUNNEL_NAME.yml"
-#                 cat > "$CF_CONFIG_FILE" <<EOL
-# tunnel: $TUNNEL_NAME
-# credentials-file: $CLOUD_DIR/$TUNNEL_NAME.json
-
-# ingress:
-#   - hostname: $DOMAIN
-#     service: http://localhost:$PORT
-#   - service: http_status:404
-# EOL
-
-#                 $CLOUDFLARED_BIN tunnel --config "$CF_CONFIG_FILE" run & 
-#                 nginx -c /home/container/.nginx/default.conf
-#             else
-#                CF_TEMP_OUT=$($CLOUDFLARED_BIN tunnel --url "http://localhost:$PORT" 2>&1 | grep -oE 'https://[^ ]+' | head -n1 || true)
-#                nginx -c /home/container/.nginx/default.conf
-#             fi
-#         fi
-#     fi
-# fi 
 
 # supervisord -c /app/supervisord.conf
 
@@ -129,7 +103,7 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e "                ${TEXT}${BOLD}Server Information${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Hostname" "$HOSTNAME"
+printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Hostname" "$HOST_NAME"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Region" "$NODE_REGION"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "IP Node" "$NODE_IP"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Date" "$DATE"
