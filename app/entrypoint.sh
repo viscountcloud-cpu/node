@@ -45,7 +45,7 @@ NODE_VERSION=$(node -v)
 NPM_VERSION=$(npm -v)
 GIT_VERSION=$(git --version 2>/dev/null | awk '{print $3}')
 CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
-HOSTNAME=${HOST_NAME}
+# HOSTNAME=${HOST_NAME}
 MODIFIED_STARTUP=$(echo -e ${CMD_RUN} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
 
