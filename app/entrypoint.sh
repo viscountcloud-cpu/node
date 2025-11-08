@@ -93,6 +93,8 @@ EOL
                  nginx -c /home/container/.nginx/default.conf & cloudflared tunnel run $HOSTNAME
             fi
         fi
+    else 
+    cloudflared login
     fi
 fi
 
