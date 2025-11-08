@@ -70,9 +70,9 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     fi
     if [ -f "$CLOUD_CERTS" ]; then
         if [ ! -f "$CLOUD_CONFIG" ]; then
-             if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" ]]; then
-                 TUNNEL_EXIST=$($CLOUDFLARED_BIN tunnel list 2>/dev/null | grep -w "$HOSTNAME" || true)
-                 [[ -z "$TUNNEL_EXIST" ]] && $CLOUDFLARED_BIN tunnel create "$HOSTNAME"
+            TUNNEL_EXIST=$($CLOUDFLARED_BIN tunnel list 2>/dev/null | grep -w "$HOSTNAME" || true)
+            [[ -z "$TUNNEL_EXIST" ]] && $CLOUDFLARED_BIN tunnel create "$HOSTNAME"
+            if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" ]]; then
                      cat > "$CLOUD_CONFIG" <<EOL
 tunnel: $HOSTNAME
 credentials-file: $CLOUD_DIR/$HOSTNAME.json
@@ -82,20 +82,13 @@ ingress:
     service: $LOCAL_HOST
   - service: http_status:404
 EOL
-                cloudflared tunnel route dns $HOSTNAME $DOMAIN
-                nginx -c /home/container/.nginx/default.conf & cloudflared tunnel run
-            fi
-        else 
-            if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" ]]; then
-                 TUNNEL_EXIST=$($CLOUDFLARED_BIN tunnel list 2>/dev/null | grep -w "$HOSTNAME" || true)
-                 [[ -z "$TUNNEL_EXIST" ]] && $CLOUDFLARED_BIN tunnel create "$HOSTNAME"
-                 cloudflared tunnel route dns $HOSTNAME $DOMAIN
-                 nginx -c /home/container/.nginx/default.conf & cloudflared tunnel run $HOSTNAME
             fi
         fi
-    else 
-    # $CLOUDFLARED_BIN login
-    cloudflared login
+        if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" ]]; then
+            cloudflared tunnel route dns $HOSTNAME $DOMAIN >/dev/null 2>&1 &
+            nginx -c /home/container/.nginx/default.conf >/dev/null 2>&1 &
+            cloudflared tunnel run $HOSTNAME >/dev/null 2>&1 &
+        fi
     fi
 fi
 
