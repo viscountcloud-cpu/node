@@ -49,27 +49,37 @@ HOSTNAME=${HOST_NAME}
 MODIFIED_STARTUP=$(echo -e ${CMD_RUN} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
 
-# Jika file nginx.conf belum ada, copy dari default
-if [ ! -f /home/container/.nginx/default.conf ]; then
-    mkdir -p /home/container/.nginx/logs
-    mkdir -p /home/container/.nginx/tmp
+CLOUD_DIR="/home/container/.cloudflared"
+CLOUD_CERTS="$CLOUD_DIR/cert.pem"
+CLOUD_CONFIG="$CLOUD_DIR/config.yml"
+CLOUDFLARED_BIN=$(command -v cloudflared || true)
+CF_URL=""
+CF_CONFIG_FILE=""
+TUNNEL_NAME=""
+
+if [[ "${SETUP_NGINX}" == "ON" ]]; then
+    mkdir -p /home/container/.nginx
     mkdir -p /home/container/webroot
-    cp /nginx/default.conf /home/container/.nginx/default.conf
-    cp /webroot/index.html /home/container/webroot/index.html
+    if [ ! -f /home/container/.nginx/default.conf ]; then
+        cp /nginx/default.conf /home/container/.nginx/default.conf
+    fi
+    if [ ! -f /home/container/webroot/index.html ]; then
+        cp /webroot/index.html /home/container/webroot/index.html
+    fi
+    if [ -f /home/container/.nginx/default.conf ]; then
+        sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
+        sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
+    fi
+    if [ -f "$CLOUD_CERTS" ]; then
+
+        if [ ! -f "$CLOUD_CONFIG" ]; then
+        
+        fi
+    else 
+
+    fi
 fi
 
-if [ -f /home/container/.nginx/default.conf ]; then
-    sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
-    sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
-fi
-
-
-# CLOUD_DIR="${HOME}/.cloudflared"
-# CLOUD_CERTS="$CLOUD_DIR/cert.pem"
-# CLOUDFLARED_BIN=$(command -v cloudflared || true)
-# CF_URL=""
-# CF_CONFIG_FILE=""
-# TUNNEL_NAME=""
 
 # if [[ "${SETUP_NGINX}" == "ON" ]]; then
 #     if [[ -n "$CLOUDFLARED_BIN" ]]; then
