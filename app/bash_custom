@@ -4,7 +4,7 @@ if [ -w /etc/passwd ] && ! getent passwd "$(id -u)" >/dev/null; then
     echo "server:x:$(id -u):$(id -g):Server User:/home/container:/bin/bash" >> /etc/passwd
 fi
 
-export PS1="root@${HOSTNAME}:\w\$ "
+export PS1="root@${HOST_NAME}:\w\$ "
 
 # === Pastikan kita di home directory ===
 
