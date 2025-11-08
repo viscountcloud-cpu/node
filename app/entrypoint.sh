@@ -94,7 +94,8 @@ EOL
             fi
         fi
     else 
-    $CLOUDFLARED_BIN login
+    # $CLOUDFLARED_BIN login
+    cloudflared login
     fi
 fi
 
