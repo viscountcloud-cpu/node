@@ -1,14 +1,15 @@
-
 #!/bin/bash
-# === Optional: tambahkan nama user sementara jika bisa menulis ke /etc/passwd ===
+
+# Tambahkan user sementara (opsional)
 if [ -w /etc/passwd ] && ! getent passwd "$(id -u)" >/dev/null; then
     echo "server:x:$(id -u):$(id -g):Server User:/home/container:/bin/bash" >> /etc/passwd
 fi
 
-export PS1="root@${HOST_NAME}:\w\$ "
+# Set prompt PS1 langsung di shell ini
+PS1="root@${HOST_NAME:-container}:\w\$ "
 
-# === Pastikan kita di home directory ===
-
+# Pindah ke home
 cd /home/container || cd ~
-exec bash --noprofile --norc 
 
+# Jalankan shell interaktif langsung (tanpa exec bash lagi)
+bash
