@@ -69,8 +69,9 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
         sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
     fi
     if [ -f "$CLOUD_CERTS" ]; then
-        TUNNEL_EXIST=$($CLOUDFLARED_BIN tunnel list 2>/dev/null | grep -w "$HOSTNAME" || true)
-        [[ -z "$TUNNEL_EXIST" ]] && $CLOUDFLARED_BIN tunnel create "$HOSTNAME"
+        # TUNNEL_EXIST=$($CLOUDFLARED_BIN tunnel list 2>/dev/null | grep -w "$HOSTNAME" || true)
+        # [[ -z "$TUNNEL_EXIST" ]] && 
+        $CLOUDFLARED_BIN tunnel create "$HOSTNAME"
         if [ ! -f "$CLOUD_CONFIG" ]; then
             if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" ]]; then
                      cat > "$CLOUD_CONFIG" <<EOL
