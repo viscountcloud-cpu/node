@@ -2,46 +2,46 @@
 REAL_CLOUDFLARED=$(command -v cloudflared || true)
 
 # === Definisikan fungsi wrapper di environment (tidak menulis file) ===
+# --- definisi fungsi cloudflared langsung di environment (tidak menulis file) ---
 cloudflared() {
-    local REAL_CF="${REAL_CLOUDFLARED}"
+    # cari binary cloudflared asli
+    local REAL_CF
+    REAL_CF=$(command -v cloudflared 2>/dev/null || true)
 
-    # jika REAL_CF kosong atau menunjuk ke sesuatu yang tidak executable, coba beberapa lokasi umum
-    if [[ -z "$REAL_CF" || ! -x "$REAL_CF" ]]; then
+    # jika command -v menemukan fungsi kita sendiri (atau kosong), coba lokasi umum
+    if [[ -z "$REAL_CF" || "$REAL_CF" == "$(type -P cloudflared 2>/dev/null)" ]]; then
         for p in /usr/local/bin/cloudflared /usr/bin/cloudflared /bin/cloudflared; do
-            if [[ -x "$p" ]]; then
+            if [[ -x "$p" && "$p" != "$(type -P cloudflared 2>/dev/null)" ]]; then
                 REAL_CF="$p"
                 break
             fi
         done
-        # fallback ke PATH lookup
-        if [[ -z "$REAL_CF" ]]; then
-            REAL_CF=$(command -v cloudflared 2>/dev/null || true)
-        fi
     fi
 
-    # helper: panggil binary asli atau keluarkan error
-    _call_real() {
-        if [[ -n "$REAL_CF" && -x "$REAL_CF" ]]; then
-            exec "$REAL_CF" "$@"
-        else
-            echo "Error: 'cloudflared' binary not found in container. Install cloudflared or ensure it's in PATH." >&2
-            return 127
-        fi
-    }
+    # final fallback ke PATH (boleh menemukan wrapper juga, tapi biasanya baik)
+    if [[ -z "$REAL_CF" ]]; then
+        REAL_CF=$(command -v cloudflared 2>/dev/null || true)
+    fi
 
-    # khusus: cloudflared tunnel create [name?]
+    if [[ -z "$REAL_CF" || ! -x "$REAL_CF" ]]; then
+        echo "Error: 'cloudflared' binary not found. Install it or ensure it's in PATH." >&2
+        return 127
+    fi
+
+    # khusus: jika perintahnya 'cloudflared tunnel create' tanpa nama
     if [[ "$1" == "tunnel" && "$2" == "create" ]]; then
-        # nama disediakan
         if [[ -n "$3" ]]; then
-            _call_real "$@"
+            # ada nama -> teruskan apa adanya
+            "$REAL_CF" "$@"
             return $?
         fi
 
-        # nama tidak disediakan -> gunakan HOSTNAME jika ada
+        # jika tidak ada nama -> gunakan HOSTNAME jika ter-set
         if [[ -n "${HOSTNAME}" ]]; then
-            # panggil: cloudflared tunnel create $HOSTNAME [tambahan]
+            # panggil: cloudflared tunnel create $HOSTNAME [opsional args...]
             shift 2
-            exec "$REAL_CF" tunnel create "${HOSTNAME}" "$@"
+            "$REAL_CF" tunnel create "${HOSTNAME}" "$@"
+            return $?
         else
             echo "Error: tunnel name not provided and \$HOSTNAME is empty." >&2
             echo "Usage: cloudflared tunnel create <name>" >&2
@@ -49,9 +49,10 @@ cloudflared() {
         fi
     fi
 
-    # default: teruskan semua argumen
-    _call_real "$@"
+    # default: teruskan
+    "$REAL_CF" "$@"
 }
+
 
 # Export fungsi supaya tersedia di bash yang diexec selanjutnya (catatan: hanya untuk bash)
 export -f cloudflared 2>/dev/null || true
