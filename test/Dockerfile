@@ -44,7 +44,7 @@ RUN apt-get update -y \
 # ========================================
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log && \
-    ln -sf "$(command -v cloudflared)" /usr/local/bin/cr
+    ln -sf /usr/bin/cloudflared /usr/bin/cr
 
 # ========================================
 # 🧩 Buat user container
