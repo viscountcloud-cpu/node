@@ -11,7 +11,6 @@ export PS1="root@${HOST_NAME}:\w\$ "
 
 cd /home/container || cd ~
 
-exec bash -c alias "cloudflared tunnel create=cloudflared tunnel create ${HOSTNAME}"; 
-exec bash --noprofile --norc"
+exec bash -c alias "cloudflared tunnel create=cloudflared tunnel create ${HOSTNAME}" --noprofile --norc"
 
 
