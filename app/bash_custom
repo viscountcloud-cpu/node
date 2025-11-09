@@ -10,6 +10,5 @@ export PS1="root@${HOST_NAME}:\w\$ "
 # === Pastikan kita di home directory ===
 
 cd /home/container || cd ~
-exec bash --noprofile --norc -c alias "cloudflared tunnel create=cloudflared tunnel create ${HOSTNAME}"
-
+exec bash --noprofile --norc 
 
