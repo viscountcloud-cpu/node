@@ -43,8 +43,9 @@ RUN apt-get update -y \
 # 🧩 forward request and error logs to docker log collector
 # ========================================
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
-    ln -sf /dev/stderr /var/log/nginx/error.log
-    
+    ln -sf /dev/stderr /var/log/nginx/error.log && \
+    ln -sf "$(command -v cloudflared)" /usr/local/bin/cr
+
 # ========================================
 # 🧩 Buat user container
 # ========================================
