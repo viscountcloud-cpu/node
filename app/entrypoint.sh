@@ -49,49 +49,49 @@ CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
 MODIFIED_STARTUP=$(echo -e ${CMD_RUN} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
 
-CLOUD_DIR="/home/container/.cloudflared"
-CLOUD_CERTS="$CLOUD_DIR/cert.pem"
-CLOUD_CONFIG="$CLOUD_DIR/config.yml"
-CLOUDFLARED_BIN=$(command -v cloudflared || true)
-LOCAL_HOST="http://${INTERNAL_IP}:${PORT}"
+# CLOUD_DIR="/home/container/.cloudflared"
+# CLOUD_CERTS="$CLOUD_DIR/cert.pem"
+# CLOUD_CONFIG="$CLOUD_DIR/config.yml"
+# CLOUDFLARED_BIN=$(command -v cloudflared || true)
+# LOCAL_HOST="http://${INTERNAL_IP}:${PORT}"
 
-if [[ "${SETUP_NGINX}" == "ON" ]]; then
-    mkdir -p /home/container/.nginx
-    mkdir -p /home/container/webroot
-    if [ ! -f /home/container/.nginx/default.conf ]; then
-        cp /nginx/default.conf /home/container/.nginx/default.conf
-    fi
-    if [ ! -f /home/container/webroot/index.html ]; then
-        cp /webroot/index.html /home/container/webroot/index.html
-    fi
-    if [ -f /home/container/.nginx/default.conf ]; then
-        sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
-        sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
-    fi
-    if [ -f "$CLOUD_CERTS" ]; then
-        # TUNNEL_EXIST=$($CLOUDFLARED_BIN tunnel list 2>/dev/null | grep -w "$HOSTNAME" || true)
-        # [[ -z "$TUNNEL_EXIST" ]] && 
-        $CLOUDFLARED_BIN tunnel create "$HOSTNAME"
-        if [ ! -f "$CLOUD_CONFIG" ]; then
-            if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" ]]; then
-                     cat > "$CLOUD_CONFIG" <<EOL
-tunnel: $HOSTNAME
-credentials-file: $CLOUD_DIR/$HOSTNAME.json
+# if [[ "${SETUP_NGINX}" == "ON" ]]; then
+#     mkdir -p /home/container/.nginx
+#     mkdir -p /home/container/webroot
+#     if [ ! -f /home/container/.nginx/default.conf ]; then
+#         cp /nginx/default.conf /home/container/.nginx/default.conf
+#     fi
+#     if [ ! -f /home/container/webroot/index.html ]; then
+#         cp /webroot/index.html /home/container/webroot/index.html
+#     fi
+#     if [ -f /home/container/.nginx/default.conf ]; then
+#         sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
+#         sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
+#     fi
+#     if [ -f "$CLOUD_CERTS" ]; then
+#         # TUNNEL_EXIST=$($CLOUDFLARED_BIN tunnel list 2>/dev/null | grep -w "$HOSTNAME" || true)
+#         # [[ -z "$TUNNEL_EXIST" ]] && 
+#         $CLOUDFLARED_BIN tunnel create "$HOSTNAME"
+#         if [ ! -f "$CLOUD_CONFIG" ]; then
+#             if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" ]]; then
+#                      cat > "$CLOUD_CONFIG" <<EOL
+# tunnel: $HOSTNAME
+# credentials-file: $CLOUD_DIR/$HOSTNAME.json
 
-ingress:
-  - hostname: $DOMAIN
-    service: $LOCAL_HOST
-  - service: http_status:404
-EOL
-            fi
-        fi
-        if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" ]]; then
-            cloudflared tunnel route dns $HOSTNAME $DOMAIN >/dev/null 2>&1 &
-            nginx -c /home/container/.nginx/default.conf >/dev/null 2>&1 &
-            cloudflared tunnel run $HOSTNAME >/dev/null 2>&1 &
-        fi
-    fi
-fi
+# ingress:
+#   - hostname: $DOMAIN
+#     service: $LOCAL_HOST
+#   - service: http_status:404
+# EOL
+#             fi
+#         fi
+#         if [[ "$DOMAIN" != "localhost" && -n "$DOMAIN" ]]; then
+#             cloudflared tunnel route dns $HOSTNAME $DOMAIN >/dev/null 2>&1 &
+#             nginx -c /home/container/.nginx/default.conf >/dev/null 2>&1 &
+#             cloudflared tunnel run $HOSTNAME >/dev/null 2>&1 &
+#         fi
+#     fi
+# fi
 
 
 # supervisord -c /app/supervisord.conf
