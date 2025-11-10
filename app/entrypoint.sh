@@ -105,7 +105,7 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e "                ${TEXT}${BOLD}Server Information${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Hostname" "$HOST_NAME"
+printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Hostname" "$HOSTNAME"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Region" "$NODE_REGION"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "IP Node" "$NODE_IP"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Date" "$DATE"
