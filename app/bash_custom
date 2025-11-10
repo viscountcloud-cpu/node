@@ -12,4 +12,4 @@ PS1="root@${HOST_NAME:-container}:\w\$ "
 cd /home/container || cd ~
 
 # Jalankan shell interaktif langsung (tanpa exec bash lagi)
-bash
+exec bash --noprofile --norc
