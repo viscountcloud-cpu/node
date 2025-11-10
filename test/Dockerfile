@@ -49,8 +49,8 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
 # ========================================
 # 🧩 Buat user container
 # ========================================
-RUN groupadd -g 998 container \
-    && useradd -m -u 998 -g container -d /home/container -s /bin/bash container \
+RUN groupadd -g 997 root \
+    && useradd -m -u 998 -g root -d /home/container -s /bin/bash container \
     && chown -R container:container /home/container
 
 # ========================================
@@ -75,7 +75,7 @@ COPY --chown=container:container app/entrypoint.sh /app/entrypoint.sh
 COPY --chown=container:container app/bash_custom /app/bash_custom
 COPY --chown=container:container default/nginx.conf /nginx/default.conf
 COPY --chown=container:container webroot/index.html /webroot/index.html
-COPY --chown=container:container /app/debian_chroot /etc/debian_chroot
+# COPY --chown=container:container /app/debian_chroot /etc/debian_chroot
 
 
 
