@@ -47,11 +47,11 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /usr/bin/cloudflared /usr/bin/cr
 
 # ========================================
-# 🧩 Buat user container
+# 🧩 Buat user server
 # ========================================
-RUN groupadd -g 997 container \
-    && useradd -m -u 998 -g container -d /home/container -s /bin/bash container \
-    && chown -R container:container /home/container
+RUN groupadd -g 997 server \
+    && useradd -m -u 998 -g server -d /home/container -s /bin/bash server \
+    && chown -R server:server /home/container
 
 # ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
@@ -71,25 +71,25 @@ WORKDIR /webroot
 # ========================================
 # 🧩 Copy entrypoint & bash_custom
 # ========================================
-COPY --chown=container:container app/entrypoint.sh /app/entrypoint.sh
-COPY --chown=container:container app/bash_custom /app/bash_custom
-COPY --chown=container:container default/nginx.conf /nginx/default.conf
-COPY --chown=container:container webroot/index.html /webroot/index.html
-# COPY --chown=container:container /app/debian_chroot /etc/debian_chroot
+COPY --chown=server:server app/entrypoint.sh /app/entrypoint.sh
+COPY --chown=server:server app/bash_custom /app/bash_custom
+COPY --chown=server:server default/nginx.conf /nginx/default.conf
+COPY --chown=server:server webroot/index.html /webroot/index.html
+# COPY --chown=server:server /app/debian_chroot /etc/debian_chroot
 
 
 
-# COPY --chown=container:container pm2_limit.sh /usr/local/bin/pm2
+# COPY --chown=server:server pm2_limit.sh /usr/local/bin/pm2
 
 RUN chmod +x /app/entrypoint.sh /app/bash_custom /nginx/default.conf /webroot/index.html
 
 # ========================================
 # 🧩 User dan direktori kerja
 # ========================================
-USER container
+USER server
 WORKDIR /home/container
 
 # ========================================
-# 🚀 Jalankan container
+# 🚀 Jalankan server
 # ========================================
 CMD ["/bin/bash", "/app/entrypoint.sh"]
