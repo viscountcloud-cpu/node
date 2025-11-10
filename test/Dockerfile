@@ -49,8 +49,8 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
 # ========================================
 # 🧩 Buat user container
 # ========================================
-RUN groupadd -g 997 root \
-    && useradd -m -u 998 -g root -d /home/container -s /bin/bash container \
+RUN groupadd -g 997 container \
+    && useradd -m -u 998 -g container -d /home/container -s /bin/bash container \
     && chown -R container:container /home/container
 
 # ========================================
