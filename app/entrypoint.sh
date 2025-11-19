@@ -80,6 +80,26 @@ fi
 
 # supervisord -c /app/supervisord.conf
 
+if [[ "${NODE_VERSION}" == "24" ]]; then
+    nvm use 24
+elif [[ "${NODE_VERSION}" == "23" ]]; then
+    nvm use 23
+elif [[ "${NODE_VERSION}" == "22" ]]; then
+    nvm use 22
+elif [[ "${NODE_VERSION}" == "21" ]]; then
+    nvm use 21
+elif [[ "${NODE_VERSION}" == "20" ]]; then
+    nvm use 20
+elif [[ "${NODE_VERSION}" == "19" ]]; then
+    nvm use 19
+elif [[ "${NODE_VERSION}" == "18" ]]; then
+    nvm use 18
+elif [[ "${NODE_VERSION}" == "17" ]]; then
+    nvm use 17
+elif [[ "${NODE_VERSION}" == "16" ]]; then
+    nvm use 16
+fi
+
 # ========================================
 #        SERVER INFORMATION
 # ========================================
@@ -133,25 +153,6 @@ echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 
-if [[ "${NODE_VERSION}" == "24" ]]; then
-    nvm use 24
-elif [[ "${NODE_VERSION}" == "23" ]]; then
-    nvm use 23
-elif [[ "${NODE_VERSION}" == "22" ]]; then
-    nvm use 22
-elif [[ "${NODE_VERSION}" == "21" ]]; then
-    nvm use 21
-elif [[ "${NODE_VERSION}" == "20" ]]; then
-    nvm use 20
-elif [[ "${NODE_VERSION}" == "19" ]]; then
-    nvm use 19
-elif [[ "${NODE_VERSION}" == "18" ]]; then
-    nvm use 18
-elif [[ "${NODE_VERSION}" == "17" ]]; then
-    nvm use 17
-elif [[ "${NODE_VERSION}" == "16" ]]; then
-    nvm use 16
-fi
     
 if [[ -z "${PM2_LIMIT_START}" ]]; then
     PM2_LIMIT=3
