@@ -19,7 +19,7 @@ RUN apt-get update -y && \
 # ========================================
 # 🧩 Node.js, npm, dan PM2
 # ========================================
-ENV NVM_DIR=/root/.nvm
+ENV NVM_DIR=/app/.nvm
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
     && . "$NVM_DIR/nvm.sh" \
@@ -65,7 +65,7 @@ RUN groupadd -g 997 server \
 # ========================================
 # 🧩 Aktifkan NVM untuk user “server”
 # ========================================
-RUN echo 'export NVM_DIR="/root/.nvm"' >> /home/container/.bashrc \
+RUN echo 'export NVM_DIR="/app/.nvm"' >> /home/container/.bashrc \
     && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /home/container/.bashrc
     
 # ========================================
