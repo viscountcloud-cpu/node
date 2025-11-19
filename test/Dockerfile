@@ -19,12 +19,22 @@ RUN apt-get update -y && \
 # ========================================
 # 🧩 Node.js, npm, dan PM2
 # ========================================
-RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
-    && apt-get install -y nodejs \
-    && npm install -g npm@latest pm2 \
+ENV NVM_DIR=/root/.nvm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# Install semua versi Node via NVM
+RUN . "$NVM_DIR/nvm.sh" \
+    && nvm install 16 \
+    && nvm install 18 \
+    && nvm install 20 \
+    && nvm install 22 \
+    && nvm install 24 \
+    && nvm alias default 24 \
+    && nvm use 20 \
+    && npm install -g pm2 \
     && npm config set fund false \
     && npm config set audit false \
-    && npm config set progress false 
+    && npm config set progress false
 
 # ========================================
 # 🧩 Install Google Chrome and Install Cloudflared (full deps)
