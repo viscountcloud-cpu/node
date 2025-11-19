@@ -1,4 +1,4 @@
-name: build nodejs-basic
+name: build node
 
 on:
   push:
