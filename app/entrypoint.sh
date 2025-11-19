@@ -75,7 +75,6 @@ rm -rf /home/container/webroot
 fi
 
 if [ ! -d "/home/container/.nvm" ]; then
-    export NVM_DIR="/home/container/.nvm"
     cp /app/.nvm /home/container/.nvm
 fi
 
