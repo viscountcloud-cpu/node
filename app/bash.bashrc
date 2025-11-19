@@ -8,16 +8,6 @@ fi
 
 export CLOUDFLARED_HOME="/home/container/.cloudflared"
 
-if [ ! -L /root/.cloudflared ]; then
-    rm -rf /root/.cloudflared 2>/dev/null
-    ln -s "$CLOUDFLARED_HOME" /root/.cloudflared
-fi
-
-if [ ! -L /etc/cloudflared ]; then
-    rm -rf /etc/cloudflared 2>/dev/null
-    ln -s "$CLOUDFLARED_HOME" /etc/cloudflared
-fi
-
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
     TUNNEL_NAME="${HOSTNAME}"
     TUNNEL_FILE="$CLOUDFLARED_HOME/${TUNNEL_NAME}.json"
@@ -35,17 +25,17 @@ tunnel: ${TUNNEL_NAME}
 credentials-file: ${TUNNEL_FILE}
 
 ingress:
+  - hostname: example.com
     service: http://localhost:$SERVER_PORT
   - service: http_status:404
-
-proxy-dns: true
-proxy-dns-address: 0.0.0.0
-proxy-dns-port: 53
-proxy-dns-upstream:
-  - https://1.1.1.1/dns-query
-  - https://1.0.0.1/dns-query
 EOF
-    echo "[Cloudflared] Tunnel berhasil dibuat."
+
+        if ! pgrep -f "cloudflared tunnel run ${TUNNEL_NAME}" >/dev/null; then
+            echo "[Cloudflared] Menjalankan tunnel ${TUNNEL_NAME}..."
+            nohup "$CLOUDFLARED_BIN" tunnel run "$TUNNEL_NAME" --config "$CONFIG_FILE" >/dev/null 2>&1 &
+        else 
+
+        fi
     fi
 
 fi
