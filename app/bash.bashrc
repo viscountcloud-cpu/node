@@ -35,7 +35,7 @@ tunnel: ${TUNNEL_NAME}
 credentials-file: ${TUNNEL_FILE}
 
 ingress:
-    service: http://localhost:3000
+    service: http://localhost:$SERVER_PORT
   - service: http_status:404
 
 proxy-dns: true
