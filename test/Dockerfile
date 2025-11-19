@@ -19,11 +19,8 @@ RUN apt-get update -y && \
 # ========================================
 # 🧩 Node.js, npm, dan PM2
 # ========================================
-ENV NVM_DIR=/root/.nvm
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-
-# Install semua versi Node via NVM
-RUN . "$NVM_DIR/nvm.sh" \
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
+    && /root/.nvm/nvm.sh \
     && nvm install 16 \
     && nvm install 18 \
     && nvm install 20 \
@@ -69,6 +66,7 @@ RUN groupadd -g 997 server \
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 ENV HOME=/home/container
+ENV NVM_DIR=/root/.nvm
 ENV PM2_LIMIT=3
 # ========================================
 # 🧩 Direktori temporary Nginx bawaan
@@ -85,7 +83,7 @@ COPY --chown=server:server app/entrypoint.sh /app/entrypoint.sh
 COPY --chown=server:server app/bash_custom /app/bash_custom
 COPY --chown=server:server default/nginx.conf /nginx/default.conf
 COPY --chown=server:server webroot/index.html /webroot/index.html
-COPY --chown=server:server /app/hostname /etc/hostname
+# COPY --chown=server:server /app/hostname /etc/hostname
 
 
 
