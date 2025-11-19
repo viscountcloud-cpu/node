@@ -33,8 +33,9 @@ EOF
         if ! pgrep -f "cloudflared tunnel run ${TUNNEL_NAME}" >/dev/null; then
             echo "[Cloudflared] Menjalankan tunnel ${TUNNEL_NAME}..."
             nohup "$CLOUDFLARED_BIN" tunnel run "$TUNNEL_NAME" --config "$CONFIG_FILE" >/dev/null 2>&1 &
-        else 
-
+        elif! pgrep -f "cr tunnel run ${TUNNEL_NAME}" >/dev/null; then
+            echo "[Cloudflared] Menjalankan tunnel ${TUNNEL_NAME}..."
+            nohup "$CLOUDFLARED_BIN" tunnel run "$TUNNEL_NAME" --config "$CONFIG_FILE" >/dev/null 2>&1 &
         fi
     fi
 
