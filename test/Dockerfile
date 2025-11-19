@@ -63,6 +63,12 @@ RUN groupadd -g 997 server \
     && chown -R server:server /home/container
 
 # ========================================
+# 🧩 Aktifkan NVM untuk user “server”
+# ========================================
+RUN echo 'export NVM_DIR="/root/.nvm"' >> /home/container/.bashrc \
+    && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /home/container/.bashrc
+    
+# ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
