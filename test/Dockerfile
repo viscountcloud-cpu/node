@@ -19,15 +19,17 @@ RUN apt-get update -y && \
 # ========================================
 # 🧩 Node.js, npm, dan PM2
 # ========================================
+ENV NVM_DIR=/root/.nvm
+
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
-    && ./root/.nvm/nvm.sh \
+    && . "$NVM_DIR/nvm.sh" \
     && nvm install 16 \
     && nvm install 18 \
     && nvm install 20 \
     && nvm install 22 \
     && nvm install 24 \
     && nvm alias default 24 \
-    && nvm use 20 \
+    && nvm use 24 \
     && npm install -g pm2 \
     && npm config set fund false \
     && npm config set audit false \
