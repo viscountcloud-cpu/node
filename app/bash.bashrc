@@ -18,7 +18,7 @@ fi
 # set a fancy prompt (non-color, overwrite the one in /etc/profile)
 # but only if not SUDOing and have SUDO_PS1 set; then assume smart user.
 if ! [ -n "${SUDO_USER}" -a -n "${SUDO_PS1}" ]; then
-  PS1="root@luckycat:\w\$ "
+  PS1="root@${HOST_NAME}:\w\$ "
 fi
 
 
