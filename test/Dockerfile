@@ -27,10 +27,16 @@ WORKDIR /webroot
 # ========================================
 # 🧩 Node.js, npm, dan PM2
 # ========================================
-ENV NVM_DIR=/app/.nvm
+ENV NVM_DIR=/root/.nvm
+
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g npm@latest pm2 \
+    && npm config set fund false \
+    && npm config set audit false \
+    && npm config set progress false
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
-    && mv /root/.nvm /app/.nvm \
     && . "$NVM_DIR/nvm.sh" \
     && nvm install 16 \
     && nvm install 18 \
@@ -38,12 +44,9 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | b
     && nvm install 22 \
     && nvm install 24 \
     && nvm alias default 24 \
-    && nvm use 24 \
-    && npm install -g pm2 \
-    && npm config set fund false \
-    && npm config set audit false \
-    && npm config set progress false
+    && nvm use 24
 
+RUN mv /root/.nvm /app/.nvm 
 # ========================================
 # 🧩 Install Google Chrome and Install Cloudflared (full deps)
 # ========================================
@@ -74,8 +77,8 @@ RUN groupadd -g 997 server \
 # ========================================
 # 🧩 Aktifkan NVM untuk user “server”
 # ========================================
-RUN echo 'export NVM_DIR=/app/.nvm' >> /home/container/.bashrc && \
-    echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' >> /home/container/.bashrc
+# RUN echo 'export NVM_DIR=/app/.nvm' >> /home/container/.bashrc && \
+#     echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' >> /home/container/.bashrc
     
 # ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
