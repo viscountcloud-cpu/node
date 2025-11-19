@@ -31,6 +31,17 @@ fi
 #  fi
 #fi
 
+export CLOUDFLARED_HOME="/home/container/.cloudflared"
+
+if [ ! -L /root/.cloudflared ]; then
+    rm -rf /root/.cloudflared 2>/dev/null
+    ln -s "$CLOUDFLARED_HOME" /root/.cloudflared
+fi
+
+if [ ! -L /etc/cloudflared ]; then
+    rm -rf /etc/cloudflared 2>/dev/null
+    ln -s "$CLOUDFLARED_HOME" /etc/cloudflared
+fi
 
 if [ -d "/home/container/.nvm" ]; then
     export NVM_DIR="/home/container/.nvm"
@@ -38,7 +49,6 @@ else
     export NVM_DIR="/app/.nvm"
 fi
 
-export CLOUDFLARED_HOME="/home/container/.cloudflared"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
