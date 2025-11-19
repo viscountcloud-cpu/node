@@ -39,14 +39,16 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
     && . "$NVM_DIR/nvm.sh" \
     && nvm install 16 \
+    && nvm install 17 \
     && nvm install 18 \
+    && nvm install 19 \
     && nvm install 20 \
     && nvm install 22 \
     && nvm install 24 \
     && nvm alias default 24 \
     && nvm use 24
 
-RUN mv /root/.nvm /app/.nvm 
+RUN mv /root/.nvm /app/.nvm
 # ========================================
 # 🧩 Install Google Chrome and Install Cloudflared (full deps)
 # ========================================
@@ -94,7 +96,6 @@ ENV PM2_LIMIT=3
 # 🧩 Copy entrypoint & bash_custom
 # ========================================
 COPY --chown=server:server app/entrypoint.sh /app/entrypoint.sh
-COPY --chown=server:server app/bash_custom /app/bash_custom
 COPY --chown=server:server default/nginx.conf /nginx/default.conf
 COPY --chown=server:server webroot/index.html /webroot/index.html
 COPY --chown=server:server /app/bash.bashrc /etc/bash.bashrc
@@ -103,7 +104,7 @@ COPY --chown=server:server /app/bash.bashrc /etc/bash.bashrc
 
 # COPY --chown=server:server pm2_limit.sh /usr/local/bin/pm2
 
-RUN chmod +x /app/entrypoint.sh /app/bash_custom /nginx/default.conf /webroot/index.html
+RUN chmod +x /app/entrypoint.sh /nginx/default.conf /webroot/index.html
 
 # ========================================
 # 🧩 User dan direktori kerja
