@@ -53,6 +53,28 @@ fi
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 
+NVM_BIN="$(command -v nvm)"
+
+if [[ "${NODE_VERSION}" == "24" ]]; then
+    "$NVM_BIN" use 24
+elif [[ "${NODE_VERSION}" == "23" ]]; then
+    "$NVM_BIN" use 23
+elif [[ "${NODE_VERSION}" == "22" ]]; then
+    "$NVM_BIN" use 22
+elif [[ "${NODE_VERSION}" == "21" ]]; then
+    "$NVM_BIN" use 21
+elif [[ "${NODE_VERSION}" == "20" ]]; then
+    "$NVM_BIN" use 20
+elif [[ "${NODE_VERSION}" == "19" ]]; then
+    "$NVM_BIN" use 19
+elif [[ "${NODE_VERSION}" == "18" ]]; then
+    "$NVM_BIN" use 18
+elif [[ "${NODE_VERSION}" == "17" ]]; then
+    "$NVM_BIN" use 17
+elif [[ "${NODE_VERSION}" == "16" ]]; then
+    "$NVM_BIN" use 16
+fi
+
 if [ ! -e "$HOME/.sudo_as_admin_successful" ] && [ ! -e "$HOME/.hushlogin" ] ; then
     case " $(groups) " in *\ admin\ *|*\ sudo\ *)
     if [ -x /usr/bin/sudo ]; then
