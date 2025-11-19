@@ -16,7 +16,7 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     if [ ! -f "$TUNNEL_FILE" ]; then
         "$CLOUDFLARED_BIN" tunnel create "$TUNNEL_NAME"
         FOUND_JSON=$(ls "$CLOUDFLARED_HOME"/*.json 2>/dev/null | head -n 1)
-        FOUND_JSON=${CLOUDFLARED_HOME}/${FOUND_JSON}
+        #FOUND_JSON=${CLOUDFLARED_HOME}/${FOUND_JSON}
         if [ ! "$FOUND_JSON" = "$NEW_JSON_PATH" ]; then
             mv "$FOUND_JSON" "$TUNNEL_FILE"
         fi
