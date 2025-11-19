@@ -15,7 +15,15 @@ RUN apt-get update -y && \
         libappindicator3-1 \
         xdg-utils \
     && rm -rf /var/lib/apt/lists/*
-    
+
+# ========================================
+# 🧩 Direktori temporary Nginx bawaan
+# ========================================
+WORKDIR /app
+WORKDIR /etc
+WORKDIR /nginx
+WORKDIR /webroot
+
 # ========================================
 # 🧩 Node.js, npm, dan PM2
 # ========================================
@@ -78,13 +86,6 @@ ENV HOME=/home/container
 ENV NVM_DIR=/root/.nvm
 ENV PATH="$NVM_DIR/versions/node/v*/bin:$PATH"
 ENV PM2_LIMIT=3
-# ========================================
-# 🧩 Direktori temporary Nginx bawaan
-# ========================================
-WORKDIR /app
-WORKDIR /etc
-WORKDIR /nginx
-WORKDIR /webroot
     
 # ========================================
 # 🧩 Copy entrypoint & bash_custom
