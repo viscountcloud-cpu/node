@@ -93,10 +93,6 @@ COPY --chown=server:server default/nginx.conf /nginx/default.conf
 COPY --chown=server:server webroot/index.html /webroot/index.html
 COPY --chown=server:server /app/bash.bashrc /etc/bash.bashrc
 
-
-
-# COPY --chown=server:server pm2_limit.sh /usr/local/bin/pm2
-
 RUN chmod +x /app/entrypoint.sh /nginx/default.conf /webroot/index.html /app/.nvm
 
 # ========================================
