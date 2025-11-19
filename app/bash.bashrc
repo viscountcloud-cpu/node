@@ -31,6 +31,12 @@ fi
 #  fi
 #fi
 
+
+export NVM_DIR="/app/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+
 # sudo hint
 if [ ! -e "$HOME/.sudo_as_admin_successful" ] && [ ! -e "$HOME/.hushlogin" ] ; then
     case " $(groups) " in *\ admin\ *|*\ sudo\ *)
