@@ -69,6 +69,9 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     if [ -f /home/container/.nginx/default.conf ]; then
         nginx -c /home/container/.nginx/default.conf
     fi
+else
+rm -rf /home/container/.nginx
+rm -rf /home/container/webroot
 fi
 
 
