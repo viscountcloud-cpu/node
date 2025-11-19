@@ -22,6 +22,7 @@ RUN apt-get update -y && \
 ENV NVM_DIR=/app/.nvm
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
+    && mv /root/.nvm /app/.nvm \
     && . "$NVM_DIR/nvm.sh" \
     && nvm install 16 \
     && nvm install 18 \
@@ -65,8 +66,8 @@ RUN groupadd -g 997 server \
 # ========================================
 # 🧩 Aktifkan NVM untuk user “server”
 # ========================================
-RUN echo 'export NVM_DIR="/app/.nvm"' >> /home/container/.bashrc \
-    && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /home/container/.bashrc
+RUN echo 'export NVM_DIR=/app/.nvm' >> /home/container/.bashrc && \
+    echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' >> /home/container/.bashrc
     
 # ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
