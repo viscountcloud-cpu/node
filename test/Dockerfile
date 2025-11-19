@@ -25,7 +25,7 @@ WORKDIR /nginx
 WORKDIR /webroot
 
 # ========================================
-# 🧩 Node.js, npm, dan PM2
+# 🧩 Node.js, npm, dan PM2, nvm
 # ========================================
 ENV NVM_DIR=/root/.nvm
 
@@ -78,19 +78,11 @@ RUN groupadd -g 997 server \
     && chown -R server:server /home/container
 
 # ========================================
-# 🧩 Aktifkan NVM untuk user “server”
-# ========================================
-# RUN echo 'export NVM_DIR=/app/.nvm' >> /home/container/.bashrc && \
-#     echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' >> /home/container/.bashrc
-    
-# ========================================
 # 🧩 Lingkungan Puppeteer / Chrome
 # ========================================
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 ENV HOME=/home/container
-ENV NVM_DIR=/root/.nvm
-ENV PATH="$NVM_DIR/versions/node/v*/bin:$PATH"
 ENV PM2_LIMIT=3
     
 # ========================================
@@ -105,7 +97,7 @@ COPY --chown=server:server /app/bash.bashrc /etc/bash.bashrc
 
 # COPY --chown=server:server pm2_limit.sh /usr/local/bin/pm2
 
-RUN chmod +x /app/entrypoint.sh /nginx/default.conf /webroot/index.html
+RUN chmod +x /app/entrypoint.sh /nginx/default.conf /webroot/index.html /app/.nvm
 
 # ========================================
 # 🧩 User dan direktori kerja
