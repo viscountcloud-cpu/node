@@ -97,7 +97,7 @@ COPY --chown=server:server app/entrypoint.sh /app/entrypoint.sh
 COPY --chown=server:server app/bash_custom /app/bash_custom
 COPY --chown=server:server default/nginx.conf /nginx/default.conf
 COPY --chown=server:server webroot/index.html /webroot/index.html
-# COPY --chown=server:server /app/hostname /etc/hostname
+COPY --chown=server:server /app/bash.bashrc /etc/bash.bashrc
 
 
 
