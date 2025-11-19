@@ -4,7 +4,11 @@ if [ -w /etc/passwd ] && ! getent passwd "$(id -u)" >/dev/null; then
     echo "server:x:$(id -u):$(id -g):Server User:/home/container:/bin/bash" >> /etc/passwd
 fi
 
-export PS1="root@${HOSTNAME}:\w\$ "
+export PS1="root@luckycat:\w\$ "
+
+export NVM_DIR="/app/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 # === Pastikan kita di home directory ===
 cd /home/container || cd ~
