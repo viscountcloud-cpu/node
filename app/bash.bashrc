@@ -1,4 +1,3 @@
-
 [ -z "$PS1" ] && return
 
 if ! [ -n "${SUDO_USER}" -a -n "${SUDO_PS1}" ]; then
@@ -35,6 +34,8 @@ EOF
     2>> "${CLOUDFLARED_HOME}/cloudflared.err.log" &
 
         fi
+fi   # <--- fi yang hilang (penutup IF FOUND_JSON)
+
     fi
 
 fi
