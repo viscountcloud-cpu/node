@@ -33,8 +33,8 @@ EOF
 
         if ! pgrep -f "cloudflared tunnel run" >/dev/null; then
             "$CLOUDFLARED_BIN" tunnel run \
-    >> /var/log/cloudflared.out.log \
-    2>> /var/log/cloudflared.err.log &
+    >> "${CLOUDFLARED_HOME}/cloudflared.out.log" \
+    2>> "${CLOUDFLARED_HOME}/cloudflared.err.log "&
 
         fi
     fi
