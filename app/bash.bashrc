@@ -15,12 +15,12 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
         "$CLOUDFLARED_BIN" tunnel create "$TUNNEL_NAME" >/dev/null 2>&1 &
         FOUND_JSON=$(ls "$CLOUDFLARED_HOME"/*.json 2>/dev/null | head -n 1)
         #FOUND_JSON=${CLOUDFLARED_HOME}/${FOUND_JSON}
-        if [ -n "$FOUND_JSON" ] && [ "$FOUND_JSON" != "$NEW_JSON_PATH" ]; then
-
+        if [ -n "$FOUND_JSON" ] && [ "$FOUND_JSON" != "$TUNNEL_FILE" ]; then
+            mv "$FOUND_JSON" "$TUNNEL_FILE"
+        fi
         if [[ "$DOMAIN" != example.com ]]; then
             "$CLOUDFLARED_BIN" tunnel route dns "$TUNNEL_NAME" "$DOMAIN" >/dev/null 2>&1 &
         fi
-
         cat > "$CONFIG_FILE" <<EOF
 tunnel: ${TUNNEL_NAME}
 credentials-file: ${TUNNEL_FILE}
@@ -37,7 +37,6 @@ EOF
     2>> "${CLOUDFLARED_HOME}/cloudflared.err.log" &
 
         fi
-fi   # <--- fi yang hilang (penutup IF FOUND_JSON)
 
     fi
 
