@@ -58,6 +58,7 @@ LOCAL_HOST="http://${INTERNAL_IP}:${PORT}"
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
     mkdir -p /home/container/.nginx
     mkdir -p /home/container/webroot
+    mkdir -p "${CLOUD_DIR}/logs"
     if [ ! -f /home/container/.nginx/default.conf ]; then
         cp /nginx/default.conf /home/container/.nginx/default.conf
         sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
