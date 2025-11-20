@@ -78,10 +78,10 @@ rm -rf /home/container/.nginx
 rm -rf /home/container/webroot
 fi
 
-if [ ! -d "/home/container/.nvm" ]; then
-    mkdir -p /home/container/.nvm
-    cp /app/.nvm/* /home/container/.nvm
-fi
+# if [ ! -d "/home/container/.nvm" ]; then
+#     mkdir -p /home/container/.nvm
+#     cp /app/.nvm/* /home/container/.nvm
+# fi
 
 
 if [ -d "/home/container/.nvm" ]; then
