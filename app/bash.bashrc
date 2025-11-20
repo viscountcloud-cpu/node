@@ -6,6 +6,7 @@ fi
 
 export CLOUDFLARED_HOME="/home/container/.cloudflared"
 
+
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
     TUNNEL_NAME="ServerWeb-${HOSTNAME}"
     TUNNEL_FILE="$CLOUDFLARED_HOME/${HOSTNAME}.json"
@@ -17,10 +18,11 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
         if [ -n "$FOUND_JSON" ] && [ "$FOUND_JSON" != "$TUNNEL_FILE" ]; then
             mv "$FOUND_JSON" "$TUNNEL_FILE"
         fi
-        if [[ "$DOMAIN" != example.com ]]; then
-            "$CLOUDFLARED_BIN" tunnel route dns "$TUNNEL_NAME" "$DOMAIN" >/dev/null 2>&1 &
-        fi
-        cat > "$CONFIG_FILE" <<EOF
+    fi
+    if [[ "$DOMAIN" != example.com ]]; then
+        "$CLOUDFLARED_BIN" tunnel route dns "$TUNNEL_NAME" "$DOMAIN" >/dev/null 2>&1 &
+    fi
+    cat > "$CONFIG_FILE" <<EOF
 tunnel: ${TUNNEL_NAME}
 credentials-file: ${TUNNEL_FILE}
 
@@ -30,15 +32,11 @@ ingress:
   - service: http_status:404
 EOF
 
-        if ! pgrep -f "cloudflared tunnel run" >/dev/null; then
-            "$CLOUDFLARED_BIN" tunnel run \
+    if ! pgrep -f "cloudflared tunnel run" >/dev/null; then
+        "$CLOUDFLARED_BIN" tunnel run \
     >> "${CLOUDFLARED_HOME}/cloudflared.out.log" \
     2>> "${CLOUDFLARED_HOME}/cloudflared.err.log" &
-
-        fi
-
     fi
-
 fi
 
 
