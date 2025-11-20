@@ -13,17 +13,20 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     CONFIG_FILE="$CLOUDFLARED_HOME/config.yml"
     CERT_FILE="$CLOUDFLARED_HOME/cert.pem"
     CLOUDFLARED_BIN="$(command -v cloudflared || echo /usr/local/bin/cloudflared)"
-    if [ ! -f "$TUNNEL_FILE" ]; then
-        "$CLOUDFLARED_BIN" tunnel create "$TUNNEL_NAME" >/dev/null 2>&1 &
-        FOUND_JSON=$(ls "$CLOUDFLARED_HOME"/*.json 2>/dev/null | head -n 1)
-        if [ -n "$FOUND_JSON" ] && [ "$FOUND_JSON" != "$TUNNEL_FILE" ]; then
-            mv "$FOUND_JSON" "$TUNNEL_FILE"
+    if [ ! -f "$CERT_FILE" ]; then
+        "$CLOUDFLARED_BIN" login
+    else
+        if [ ! -f "$TUNNEL_FILE" ]; then
+            "$CLOUDFLARED_BIN" tunnel create "$TUNNEL_NAME" >/dev/null 2>&1 &
+            FOUND_JSON=$(ls "$CLOUDFLARED_HOME"/*.json 2>/dev/null | head -n 1)
+            if [ -n "$FOUND_JSON" ] && [ "$FOUND_JSON" != "$TUNNEL_FILE" ]; then
+                mv "$FOUND_JSON" "$TUNNEL_FILE"
+            fi
         fi
-    fi
-    if [[ "$DOMAIN" != example.com ]]; then
-        "$CLOUDFLARED_BIN" tunnel route dns "$TUNNEL_NAME" "$DOMAIN" >/dev/null 2>&1 &
-    fi
-    cat > "$CONFIG_FILE" <<EOF
+        if [[ "$DOMAIN" != example.com ]]; then
+            "$CLOUDFLARED_BIN" tunnel route dns "$TUNNEL_NAME" "$DOMAIN" >/dev/null 2>&1 &
+        fi
+        cat > "$CONFIG_FILE" <<EOF
 tunnel: ${TUNNEL_NAME}
 credentials-file: ${TUNNEL_FILE}
 
@@ -32,11 +35,11 @@ ingress:
     service: http://localhost:$SERVER_PORT
   - service: http_status:404
 EOF
-
-    if ! pgrep -f "cloudflared tunnel run" >/dev/null; then
-        "$CLOUDFLARED_BIN" tunnel run \
-    >> "${CLOUDFLARED_HOME}/cloudflared.out.log" \
-    2>> "${CLOUDFLARED_HOME}/cloudflared.err.log" &
+        if ! pgrep -f "cloudflared tunnel run" >/dev/null; then
+            "$CLOUDFLARED_BIN" tunnel run \
+        >> "${CLOUDFLARED_HOME}/cloudflared.out.log" \
+        2>> "${CLOUDFLARED_HOME}/cloudflared.err.log" &
+        fi
     fi
 fi
 
