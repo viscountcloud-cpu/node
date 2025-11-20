@@ -40,6 +40,17 @@ fi   # <--- fi yang hilang (penutup IF FOUND_JSON)
 
 fi
 
+
+
+
+if [ -d "/home/container/.nvm" ]; then
+    export NVM_DIR="/home/container/.nvm"
+else
+    export NVM_DIR="/app/.nvm"
+fi
+
+
+
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
