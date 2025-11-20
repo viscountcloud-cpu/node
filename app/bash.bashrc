@@ -5,7 +5,6 @@ if ! [ -n "${SUDO_USER}" -a -n "${SUDO_PS1}" ]; then
   PS1="root@${HOST_NAME}:\w\$ "
 fi
 
-
 export CLOUDFLARED_HOME="/home/container/.cloudflared"
 
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
