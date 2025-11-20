@@ -26,7 +26,7 @@ tunnel: ${TUNNEL_NAME}
 credentials-file: ${TUNNEL_FILE}
 
 ingress:
-  - hostname: example.com
+  - hostname: ${DOMAIN}
     service: http://localhost:$SERVER_PORT
   - service: http_status:404
 EOF
