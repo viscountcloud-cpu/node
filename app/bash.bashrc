@@ -8,6 +8,34 @@ export CLOUDFLARED_HOME="/home/container/.cloudflared"
 
 
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
+    mkdir -p /home/container/.nginx
+    mkdir -p /home/container/webroot
+    mkdir -p /home/container/.cloudflared/logs
+    if [ ! -f /home/container/.nginx/default.conf ]; then
+        cp /nginx/default.conf /home/container/.nginx/default.conf
+        sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
+        if [[ "$DOMAIN" != example.com ]]; then
+            sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
+        else
+            sed -i "s|server_name .*;|server_name localhost;|g" /home/container/.nginx/default.conf
+        fi
+    fi
+    if [ ! -f /home/container/webroot/index.html ]; then
+        cp /webroot/index.html /home/container/webroot/index.html
+    fi
+    if [ -f /home/container/.nginx/default.conf ]; then
+        nginx -c /home/container/.nginx/default.conf
+    fi
+
+
+
+
+
+
+
+
+
+
     TUNNEL_NAME="ServerWeb-${HOSTNAME}"
     TUNNEL_FILE="$CLOUDFLARED_HOME/${HOSTNAME}.json"
     CONFIG_FILE="$CLOUDFLARED_HOME/config.yml"
