@@ -24,7 +24,9 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
             fi
         fi
         if [[ "$DOMAIN" != example.com ]]; then
-            "$CLOUDFLARED_BIN" tunnel route dns "$TUNNEL_NAME" "$DOMAIN" >/dev/null 2>&1 &
+            "$CLOUDFLARED_BIN" tunnel route dns "$TUNNEL_NAME" "$DOMAIN" \
+        >> "${CLOUDFLARED_HOME}/logs/dns.out.log" \
+        2>> "${CLOUDFLARED_HOME}/logs/dns.err.log" &
         fi
         cat > "$CONFIG_FILE" <<EOF
 tunnel: ${TUNNEL_NAME}
@@ -37,8 +39,8 @@ ingress:
 EOF
         if ! pgrep -f "cloudflared tunnel run" >/dev/null; then
             "$CLOUDFLARED_BIN" tunnel run \
-        >> "${CLOUDFLARED_HOME}/cloudflared.out.log" \
-        2>> "${CLOUDFLARED_HOME}/cloudflared.err.log" &
+        >> "${CLOUDFLARED_HOME}/logs/run.out.log" \
+        2>> "${CLOUDFLARED_HOME}/logs/run.err.log" &
         fi
     fi
 fi
