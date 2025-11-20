@@ -71,6 +71,9 @@ EOF
         2>> "${CLOUDFLARED_HOME}/logs/run.err.log" &
         fi
     fi
+else 
+rm -rf /home/container/.nginx
+rm -rf /home/container/webroot
 fi
 
 
