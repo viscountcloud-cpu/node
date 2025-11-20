@@ -8,7 +8,7 @@ export CLOUDFLARED_HOME="/home/container/.cloudflared"
 
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
     TUNNEL_NAME="ServerWeb-${HOSTNAME}"
-    TUNNEL_FILE="$CLOUDFLARED_HOME/${TUNNEL_NAME}.json"
+    TUNNEL_FILE="$CLOUDFLARED_HOME/${HOSTNAME}.json"
     CONFIG_FILE="$CLOUDFLARED_HOME/config.yml"
     CLOUDFLARED_BIN="$(command -v cloudflared || echo /usr/local/bin/cloudflared)"
     if [ ! -f "$TUNNEL_FILE" ]; then
