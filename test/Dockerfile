@@ -46,7 +46,7 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | b
     && nvm install 22 \
     && nvm install 23 \
     && nvm install 24 \
-    && nvm alias default 24 \
+    && nvm alias default 23 \
     && nvm use 23
 
 RUN mv /root/.nvm /app/.nvm
