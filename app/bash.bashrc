@@ -32,7 +32,7 @@ ingress:
 EOF
 
         if ! pgrep -f "cloudflared tunnel run" >/dev/null; then
-            "$CLOUDFLARED_BIN" tunnel run "$TUNNEL_NAME" --config "$CONFIG_FILE" \
+            "$CLOUDFLARED_BIN" tunnel run \
     >> /var/log/cloudflared.out.log \
     2>> /var/log/cloudflared.err.log &
 
@@ -41,6 +41,14 @@ EOF
 
 fi
 
+if [ -d "/home/container/.nvm" ]; then
+    export NVM_DIR="/home/container/.nvm"
+else
+    export NVM_DIR="/app/.nvm"
+fi
+
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 
 if [ ! -e "$HOME/.sudo_as_admin_successful" ] && [ ! -e "$HOME/.hushlogin" ] ; then
