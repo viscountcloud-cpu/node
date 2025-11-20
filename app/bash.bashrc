@@ -13,7 +13,7 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     CONFIG_FILE="$CLOUDFLARED_HOME/config.yml"
     CLOUDFLARED_BIN="$(command -v cloudflared || echo /usr/local/bin/cloudflared)"
     if [ ! -f "$TUNNEL_FILE" ]; then
-        "$CLOUDFLARED_BIN" tunnel create "$TUNNEL_NAME"
+        "$CLOUDFLARED_BIN" tunnel create "$TUNNEL_NAME" >/dev/null 2>&1 &
         FOUND_JSON=$(ls "$CLOUDFLARED_HOME"/*.json 2>/dev/null | head -n 1)
         #FOUND_JSON=${CLOUDFLARED_HOME}/${FOUND_JSON}
         if [ ! "$FOUND_JSON" = "$NEW_JSON_PATH" ]; then
@@ -30,12 +30,11 @@ ingress:
   - service: http_status:404
 EOF
 
-        if ! pgrep -f "cloudflared tunnel run ${TUNNEL_NAME}" >/dev/null; then
-            echo "[Cloudflared] Menjalankan tunnel ${TUNNEL_NAME}..."
-            nohup "$CLOUDFLARED_BIN" tunnel run "$TUNNEL_NAME" --config "$CONFIG_FILE" >/dev/null 2>&1 &
-        elif ! pgrep -f "cr tunnel run ${TUNNEL_NAME}" >/dev/null; then
-            echo "[Cloudflared] Menjalankan tunnel ${TUNNEL_NAME}..."
-            nohup "$CLOUDFLARED_BIN" tunnel run "$TUNNEL_NAME" --config "$CONFIG_FILE" >/dev/null 2>&1 &
+        if ! pgrep -f "cloudflared tunnel run" >/dev/null; then
+            "$CLOUDFLARED_BIN" tunnel run "$TUNNEL_NAME" --config "$CONFIG_FILE" \
+    >> /var/log/cloudflared.out.log \
+    2>> /var/log/cloudflared.err.log &
+
         fi
     fi
 
