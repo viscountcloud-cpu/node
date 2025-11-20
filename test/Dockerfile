@@ -46,8 +46,8 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | b
     && nvm install 22 \
     && nvm install 23 \
     && nvm install 24 \
-    && nvm alias default 23 \
-    && nvm use 23
+    && nvm alias default 24 \
+    && nvm use 24
 
 RUN mv /root/.nvm /app/.nvm
 # ========================================
@@ -91,7 +91,8 @@ ENV PM2_LIMIT=3
 COPY --chown=server:server app/entrypoint.sh /app/entrypoint.sh
 COPY --chown=server:server default/nginx.conf /nginx/default.conf
 COPY --chown=server:server webroot/index.html /webroot/index.html
-COPY --chown=server:server /app/bash.bashrc /etc/bash.bashrc
+COPY --chown=server:server app/bash.bashrc /etc/bash.bashrc
+COPY --chown=server:server app/.nvm/* /app/.nvm
 
 RUN chmod +x /app/entrypoint.sh /nginx/default.conf /webroot/index.html /app/.nvm
 
