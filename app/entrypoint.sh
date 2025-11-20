@@ -48,69 +48,6 @@ CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
 # HOSTNAME=${HOST_NAME}
 MODIFIED_STARTUP=$(echo -e ${CMD_RUN} | sed -e 's/{{/${/g' -e 's/}}/}/g')
 
-
-if [[ "${SETUP_NGINX}" == "ON" ]]; then
-    mkdir -p /home/container/.nginx
-    mkdir -p /home/container/webroot
-    mkdir -p /home/container/.cloudflared/logs
-    if [ ! -f /home/container/.nginx/default.conf ]; then
-        cp /nginx/default.conf /home/container/.nginx/default.conf
-        sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
-        if [[ "$DOMAIN" != example.com ]]; then
-            sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
-        else
-            sed -i "s|server_name .*;|server_name localhost;|g" /home/container/.nginx/default.conf
-        fi
-    fi
-    if [ ! -f /home/container/webroot/index.html ]; then
-        cp /webroot/index.html /home/container/webroot/index.html
-    fi
-    if [ -f /home/container/.nginx/default.conf ]; then
-        nginx -c /home/container/.nginx/default.conf
-    fi
-else
-rm -rf /home/container/.nginx
-rm -rf /home/container/webroot
-fi
-
-# if [ ! -d "/home/container/.nvm" ]; then
-#     mkdir -p /home/container/.nvm
-#     cp /app/.nvm/* /home/container/.nvm
-# fi
-
-
-if [ -d "/home/container/.nvm" ]; then
-    export NVM_DIR="/home/container/.nvm"
-else
-    export NVM_DIR="/app/.nvm"
-fi
-
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-
-NVM_BIN="$(command -v nvm)"
-
-if [[ "${NODE_VERSION}" == "24" ]]; then
-    "$NVM_BIN" use 24
-elif [[ "${NODE_VERSION}" == "23" ]]; then
-    "$NVM_BIN" use 23
-elif [[ "${NODE_VERSION}" == "22" ]]; then
-    "$NVM_BIN" use 22
-elif [[ "${NODE_VERSION}" == "21" ]]; then
-    "$NVM_BIN" use 21
-elif [[ "${NODE_VERSION}" == "20" ]]; then
-    "$NVM_BIN" use 20
-elif [[ "${NODE_VERSION}" == "19" ]]; then
-    "$NVM_BIN" use 19
-elif [[ "${NODE_VERSION}" == "18" ]]; then
-    "$NVM_BIN" use 18
-elif [[ "${NODE_VERSION}" == "17" ]]; then
-    "$NVM_BIN" use 17
-elif [[ "${NODE_VERSION}" == "16" ]]; then
-    "$NVM_BIN" use 16
-fi
-
 # ========================================
 #        SERVER INFORMATION
 # ========================================
