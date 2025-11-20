@@ -63,6 +63,8 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
         sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
         if [[ "$DOMAIN" != example.com ]]; then
             sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
+        elif [[ "$DOMAIN" == example.com ]]; then
+            sed -i "s|server_name .*;|server_name localhost;|g" /home/container/.nginx/default.conf
         fi
     fi
     if [ ! -f /home/container/webroot/index.html ]; then
