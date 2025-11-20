@@ -15,7 +15,7 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
         "$CLOUDFLARED_BIN" tunnel create "$TUNNEL_NAME" >/dev/null 2>&1 &
         FOUND_JSON=$(ls "$CLOUDFLARED_HOME"/*.json 2>/dev/null | head -n 1)
         #FOUND_JSON=${CLOUDFLARED_HOME}/${FOUND_JSON}
-        if [ ! "$FOUND_JSON" = "$NEW_JSON_PATH" ]; then
+        if [ -n "$FOUND_JSON" ] && [ "$FOUND_JSON" != "$NEW_JSON_PATH" ]; then
 
         if [[ "$DOMAIN" != example.com ]]; then
             "$CLOUDFLARED_BIN" tunnel route dns "$TUNNEL_NAME" "$DOMAIN" >/dev/null 2>&1 &
