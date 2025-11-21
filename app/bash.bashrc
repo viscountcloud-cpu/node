@@ -44,12 +44,7 @@ else
     NODE_REGION="UNKNOWN"
 fi
 
-# Informasi software
-NODE_VERSION=$(node -v)
-NPM_VERSION=$(npm -v)
-GIT_VERSION=$(git --version 2>/dev/null | awk '{print $3}')
-CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
-# HOSTNAME=${HOST_NAME}
+
 
 
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
@@ -124,6 +119,14 @@ fi
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 
+# Informasi software
+NODE_VERSION=$(node -v)
+NPM_VERSION=$(npm -v)
+NVM_VERSION=$(nvm -v)
+GIT_VERSION=$(git --version 2>/dev/null | awk '{print $3}')
+CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
+# HOSTNAME=${HOST_NAME}
+
 if [ ! -e "$HOME/.sudo_as_admin_successful" ] && [ ! -e "$HOME/.hushlogin" ] ; then
     case " $(groups) " in *\ admin\ *|*\ sudo\ *)
     if [ -x /usr/bin/sudo ]; then
@@ -151,8 +154,6 @@ if [ -x /usr/lib/command-not-found -o -x /usr/share/command-not-found/command-no
 		fi
 	}
 fi
-
-
 
 
 # ========================================
@@ -186,21 +187,8 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e "                ${TEXT}${BOLD}Cloudfired Informatio${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
-
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "http://${NODE_IP}:${PORT}"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Domain" "https://${DOMAIN}"
-    # if [[ "$CF_URL" != "" ]]; then
-    #     if [[ "$CF_CONFIG_FILE" != "" ]]; then
-    #         printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfire Config" "${CF_CONFIG_FILE}"
-    #     fi
-    #     if [[ "$TUNNEL_NAME" != "" ]]; then
-    #         printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfired Tunnel" "${TUNNEL_NAME}"
-    #     fi
-    #     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Cloudfired Login" "${CF_URL}"
-    # else
-    #     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "http://${INTERNAL_IP}:${PORT}"
-    #     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Domain" "https://${DOMAIN}"
-    # fi
 echo -e ""
 fi
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
@@ -210,6 +198,7 @@ echo -e ""
 
 
 if [[ "${CMD_RUN}" == "npm start" ]]; then
-
-
-${CMD_RUN}
+    npm start
+elif [[ "${CMD_RUN}" == "npm start" ]]; then
+    npm i
+fi
