@@ -65,7 +65,8 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     CERT_FILE="$CLOUDFLARED_HOME/cert.pem"
     CLOUDFLARED_BIN="$(command -v cloudflared || echo /usr/local/bin/cloudflared)"
     if [ ! -f "$CERT_FILE" ]; then
-        "$CLOUDFLARED_BIN" login
+        LOGIN_OUTPUT=$("$CLOUDFLARED_BIN" login 2>&1 | tee -a "${CLOUDFLARED_HOME}/logs/login.log")
+        LOGIN_URL=$(echo "$LOGIN_OUTPUT" | grep -Eo 'https?://[^ ]+')
     else
         if [ ! -f "$TUNNEL_FILE" ]; then
             "$CLOUDFLARED_BIN" tunnel create "$TUNNEL_NAME" >/dev/null 2>&1 &
@@ -141,6 +142,7 @@ NPM_VERSION=$(npm -v)
 NVM_VERSION=$(nvm -v)
 GIT_VERSION=$(git --version 2>/dev/null | awk '{print $3}')
 CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
+DOMAIN=${DOMAIN:-null}
 # HOSTNAME=${HOST_NAME}
 
 if [ ! -e "$HOME/.sudo_as_admin_successful" ] && [ ! -e "$HOME/.hushlogin" ] ; then
@@ -176,20 +178,9 @@ if [[ "$WEBROOT" != "/home/container" && "$SETUP_NGINX" == "ON" ]]; then
     cd "$WEBROOT"
 fi
 
-check_url() {
-    local url="$1"
-    if curl --silent --head --fail "$url" >/dev/null 2>&1; then
-        echo "🟢"
-    else
-        echo "🔴"
-    fi
-}
-
 # URL
 LOCAL_URL="http://${NODE_IP}:${PORT}"
 DOMAIN_URL="https://${DOMAIN}"
-
-
 
 # ========================================
 #        SERVER INFORMATION
@@ -223,9 +214,13 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e "                ${TEXT}${BOLD}Cloudfired Informatio${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "$LOCAL_URL"
-if [[ "$DOMAIN" != example.com ]]; then
-    printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Domain" "$DOMAIN_URL"
+if [[ "$LOGIN_URL" != null ]]; then
+    printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "$LOCAL_URL"
+    if [[ "$DOMAIN" != example.com ]]; then
+        printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Domain" "$DOMAIN_URL"
+    fi
+else 
+    printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Login" "$LOGIN_URL"
 fi
 echo -e ""
 fi
