@@ -56,8 +56,8 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     if [ ! -f /home/container/webroot/index.html ]; then
         cp /webroot/index.html /home/container/webroot/index.html
     fi
-    if [ -f /home/container/.nginx/default.conf ]; then
-        nginx -c /home/container/.nginx/default.conf
+    if [[ "$WEBROOT" != "/home/container" ]]; then
+        sed -i "s|root .*;|root ${WEBROOT};|g" /home/container/.nginx/default.conf
     fi
     TUNNEL_NAME="ServerWeb-${HOSTNAME}"
     TUNNEL_FILE="$CLOUDFLARED_HOME/${HOSTNAME}.json"
@@ -94,7 +94,9 @@ EOF
         else
             sed -i "s|server_name .*;|server_name localhost;|g" /home/container/.nginx/default.conf
         fi
-        
+        if [ -f /home/container/.nginx/default.conf ]; then
+            nginx -c /home/container/.nginx/default.conf
+        fi
         "$CLOUDFLARED_BIN" tunnel run \
             >> "${CLOUDFLARED_HOME}/logs/run.out.log" \
             2>> "${CLOUDFLARED_HOME}/logs/run.err.log" &
