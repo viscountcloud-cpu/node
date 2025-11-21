@@ -215,14 +215,14 @@ echo -e "                ${TEXT}${BOLD}Cloudflared Informatio${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 if [[ "$LOGIN_URL" != null ]]; then
+    printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Login" "$LOGIN_URL"
+else 
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Root" "$WEBROOT"
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Config" "/home/container/.nginx/default.conf"
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "$LOCAL_URL"
     if [[ "$DOMAIN" != example.com ]]; then
         printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Domain" "$DOMAIN_URL"
     fi
-else 
-    printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Login" "$LOGIN_URL"
 fi
 echo -e ""
 fi
