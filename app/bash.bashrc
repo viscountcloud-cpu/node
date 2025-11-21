@@ -214,8 +214,16 @@ echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 
-if [[ "${CMD_RUN}" == "npm start" ]]; then
-    npm start
+if [[ "${WEBROOT}" == "ON" ]]; then
+    cd "$WEBROOT"
+fi
+
+if [[ "${AUTO_INSTALL}" == "ON" ]]; then
+    if [[ "${CMD_RUN}" == "npm start" ]]; then
+        npm i && npm start
+    else
+        npm i
+    fi
 elif [[ "${CMD_RUN}" == "npm start" ]]; then
-    npm i
+    npm start
 fi
