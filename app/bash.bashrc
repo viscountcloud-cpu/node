@@ -107,6 +107,15 @@ ingress:
 EOF
             fi
         else
+            cat > "$CONFIG_FILE" <<EOF
+tunnel: ${TUNNEL_NAME}
+credentials-file: ${TUNNEL_FILE}
+
+ingress:
+  - hostname: ${DOMAIN}
+    service: http://localhost:$SERVER_PORT
+  - service: http_status:404
+EOF
             sed -i "s|server_name .*;|server_name localhost;|g" /home/container/.nginx/default.conf
         fi
         if [ -f /home/container/.nginx/default.conf ]; then
