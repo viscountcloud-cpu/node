@@ -20,12 +20,8 @@ UPTIME=$(uptime -p | sed 's/up //')
 MEMORY=$(free -h | awk '/Mem:/ {print $3 " / " $2}')
 DISK=$(df -h /home | awk 'NR==2 {print $3 " / " $2 " (" $5 ")"}')
 INTERNAL_IP=$(ip route get 1 | awk '{print $(NF-2);exit}')
-DOMAIN="${DOMAIN:-example.com}"
+DOMAIN=${DOMAIN:-example.com}
 PORT=${SERVER_PORT:-${PORT:-8080}}
-
-if [[ "$DOMAIN" == "example.com" ]]; then
-    DOMAIN=example.com
-fi
 
 # === IP publik (lebih andal, dengan fallback) ===
 if command -v dig >/dev/null 2>&1; then
@@ -199,6 +195,25 @@ echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 
+if [[ "${NODE_VERSION}" == "24" ]]; then
+    nvm use 24
+elif [[ "${NODE_VERSION}" == "23" ]]; then
+    nvm use 23
+elif [[ "${NODE_VERSION}" == "22" ]]; then
+    nvm use 22
+elif [[ "${NODE_VERSION}" == "21" ]]; then
+    nvm use 21
+elif [[ "${NODE_VERSION}" == "20" ]]; then
+    nvm use 20
+elif [[ "${NODE_VERSION}" == "19" ]]; then
+    nvm use 19
+elif [[ "${NODE_VERSION}" == "18" ]]; then
+    nvm use 18
+elif [[ "${NODE_VERSION}" == "17" ]]; then
+    nvm use 17
+elif [[ "${NODE_VERSION}" == "16" ]]; then
+    nvm use 16
+fi
 
 if [[ "${CMD_RUN}" == "npm start" ]]; then
     npm start
