@@ -118,25 +118,7 @@ fi
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-if [[ "${NODEJS_VERSION}" == "24" ]]; then
-    nvm use 24
-elif [[ "${NODEJS_VERSION}" == "23" ]]; then
-    nvm use 23
-elif [[ "${NODEJS_VERSION}" == "22" ]]; then
-    nvm use 22
-elif [[ "${NODEJS_VERSION}" == "21" ]]; then
-    nvm use 21
-elif [[ "${NODEJS_VERSION}" == "20" ]]; then
-    nvm use 20
-elif [[ "${NODEJS_VERSION}" == "19" ]]; then
-    nvm use 19
-elif [[ "${NODEJS_VERSION}" == "18" ]]; then
-    nvm use 18
-elif [[ "${NODEJS_VERSION}" == "17" ]]; then
-    nvm use 17
-elif [[ "${NODEJS_VERSION}" == "16" ]]; then
-    nvm use 16
-fi
+
 
 # Informasi software
 NODE_VERSION=$(node -v)
