@@ -179,6 +179,25 @@ if [[ "$WEBROOT" != "/home/container" && "$SETUP_NGINX" == "ON" ]]; then
     cd "$WEBROOT"
 fi
 
+check_url() {
+    local url="$1"
+    if curl --silent --head --fail "$url" >/dev/null 2>&1; then
+        echo "🟢"
+    else
+        echo "🔴"
+    fi
+}
+
+# URL
+LOCAL_URL="http://${NODE_IP}:${PORT}"
+DOMAIN_URL="https://${DOMAIN}"
+
+# Cek status
+LOCAL_STATUS=$(check_url "$LOCAL_URL")
+if [[ "$DOMAIN" != example.com ]]; then
+    DOMAIN_STATUS=$(check_url "$DOMAIN_URL")
+fi
+
 # ========================================
 #        SERVER INFORMATION
 # ========================================
@@ -211,8 +230,10 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e "                ${TEXT}${BOLD}Cloudfired Informatio${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "http://${NODE_IP}:${PORT}"
-printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Domain" "https://${DOMAIN}"
+printf "${DIM}%-18s${RESET}${TEXT}: %s %s\n" "Localhost" "$LOCAL_URL" "$LOCAL_STATUS"
+if [[ "$DOMAIN" != example.com ]]; then
+    printf "${DIM}%-18s${RESET}${TEXT}: %s %s\n" "Domain" "$DOMAIN_URL" "$DOMAIN_STATUS"
+fi
 echo -e ""
 fi
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
