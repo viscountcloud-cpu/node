@@ -65,11 +65,28 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     CERT_FILE="$CLOUDFLARED_HOME/cert.pem"
     CLOUDFLARED_BIN="$(command -v cloudflared || echo /usr/local/bin/cloudflared)"
     if [ ! -f "$CERT_FILE" ]; then
-        LOGIN_OUTPUT=$("$CLOUDFLARED_BIN" login 2>&1 | tee -a "${CLOUDFLARED_HOME}/logs/login.log")
-        LOGIN_URL=$(echo "$LOGIN_OUTPUT" | grep -Eo 'https?://[^ ]+')
+       "$CLOUDFLARED_BIN" login >> "$LOGIN_LOG" 2>&1 &
+sleep 1
+
+# Ambil URL pertama yang muncul di log (jika ada)
+LOGIN_URL=$(grep -Eo 'https?://[^ ]+' "$LOGIN_LOG" | head -n 1 || true)
+
+# Jika grep belum menemukan URL, coba tunggu sedikit dan coba lagi (opsional)
+if [[ -z "$LOGIN_URL" ]]; then
+  # tunggu sampai 5 detik total, memeriksa setiap 1 detik
+  for i in 1 2 3 4 5; do
+    sleep 1
+    LOGIN_URL=$(grep -Eo 'https?://[^ ]+' "$LOGIN_LOG" | head -n 1 || true)
+    [[ -n "$LOGIN_URL" ]] && break
+  done
+fi
+        # LOGIN_OUTPUT=$("$CLOUDFLARED_BIN" login 2>&1 | tee -a "${CLOUDFLARED_HOME}/logs/login.log")
+        # LOGIN_URL=$(echo "$LOGIN_OUTPUT" | grep -Eo 'https?://[^ ]+')
     else
         if [ ! -f "$TUNNEL_FILE" ]; then
-            "$CLOUDFLARED_BIN" tunnel create "$TUNNEL_NAME" >/dev/null 2>&1 &
+            "$CLOUDFLARED_BIN" tunnel create "$TUNNEL_NAME"  \
+                >> "${CLOUDFLARED_HOME}/logs/tunnel.out.log" \
+                2>> "${CLOUDFLARED_HOME}/logs/tunnel.err.log" &
             FOUND_JSON=$(ls "$CLOUDFLARED_HOME"/*.json 2>/dev/null | head -n 1)
             if [ -n "$FOUND_JSON" ] && [ "$FOUND_JSON" != "$TUNNEL_FILE" ]; then
                 mv "$FOUND_JSON" "$TUNNEL_FILE"
