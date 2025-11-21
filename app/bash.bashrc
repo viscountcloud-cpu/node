@@ -211,10 +211,12 @@ printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Chrome Path" "$CHROME_PATH"
 echo -e ""
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
-echo -e "                ${TEXT}${BOLD}Cloudfired Informatio${RESET}"
+echo -e "                ${TEXT}${BOLD}Cloudflared Informatio${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 if [[ "$LOGIN_URL" != null ]]; then
+    printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Root" "$WEBROOT"
+    printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Config" "/home/container/.nginx/default.conf"
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "$LOCAL_URL"
     if [[ "$DOMAIN" != example.com ]]; then
         printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Domain" "$DOMAIN_URL"
