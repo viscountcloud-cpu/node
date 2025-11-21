@@ -173,6 +173,10 @@ if [ -x /usr/lib/command-not-found -o -x /usr/share/command-not-found/command-no
 fi
 
 
+if [[ "$WEBROOT" != "/home/container" && "$SETUP_NGINX" == "ON" ]]; then
+    cd "$WEBROOT"
+fi
+
 # ========================================
 #        SERVER INFORMATION
 # ========================================
@@ -214,9 +218,6 @@ echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 
-if [[ "${WEBROOT}" == "ON" ]]; then
-    cd "$WEBROOT"
-fi
 
 if [[ "${AUTO_INSTALL}" == "ON" ]]; then
     if [[ "${CMD_RUN}" == "npm start" ]]; then
