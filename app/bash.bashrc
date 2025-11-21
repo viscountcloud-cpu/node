@@ -179,6 +179,7 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e ""
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Node.js" "$NODE_VERSION"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "npm" "$NPM_VERSION"
+printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "nvm" "$NVM_VERSION"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Git" "$GIT_VERSION"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Chrome Path" "$CHROME_PATH"
 echo -e ""
