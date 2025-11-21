@@ -52,7 +52,6 @@ CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
 # HOSTNAME=${HOST_NAME}
 
 
-
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
     mkdir -p /home/container/.nginx
     mkdir -p /home/container/webroot
@@ -119,7 +118,6 @@ if [ -d "/home/container/.nvm" ]; then
 else
     export NVM_DIR="/app/.nvm"
 fi
-
 
 
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -209,3 +207,9 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e "${TEXT}${BOLD}Launching container process...${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
+
+
+if [[ "${CMD_RUN}" == "npm start" ]]; then
+
+
+${CMD_RUN}
