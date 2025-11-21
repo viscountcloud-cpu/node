@@ -20,10 +20,12 @@ UPTIME=$(uptime -p | sed 's/up //')
 MEMORY=$(free -h | awk '/Mem:/ {print $3 " / " $2}')
 DISK=$(df -h /home | awk 'NR==2 {print $3 " / " $2 " (" $5 ")"}')
 INTERNAL_IP=$(ip route get 1 | awk '{print $(NF-2);exit}')
-DOMAIN=${DOMAIN:-example.com}
+DOMAIN="${DOMAIN:-example.com}"
 PORT=${SERVER_PORT:-${PORT:-8080}}
 
-
+if [[ "$DOMAIN" == "example.com" ]]; then
+    DOMAIN=example.com
+fi
 
 # === IP publik (lebih andal, dengan fallback) ===
 if command -v dig >/dev/null 2>&1; then
