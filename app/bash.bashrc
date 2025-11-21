@@ -189,12 +189,6 @@ check_url() {
 LOCAL_URL="http://${NODE_IP}:${PORT}"
 DOMAIN_URL="https://${DOMAIN}"
 
-# Cek status
-LOCAL_STATUS=$(check_url "$LOCAL_URL")
-if [[ "$DOMAIN" != example.com ]]; then
-    DOMAIN_STATUS=$(check_url "$DOMAIN_URL")
-fi
-
 
 
 # ========================================
@@ -229,9 +223,9 @@ echo -e "${ACCENT}${BOLD}──────────────────�
 echo -e "                ${TEXT}${BOLD}Cloudfired Informatio${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
-printf "${DIM}%-18s${RESET}${TEXT}: %s %s\n" "Localhost" "$LOCAL_URL" "$LOCAL_STATUS"
+printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "$LOCAL_URL"
 if [[ "$DOMAIN" != example.com ]]; then
-    printf "${DIM}%-18s${RESET}${TEXT}: %s %s\n" "Domain" "$DOMAIN_URL" "$DOMAIN_STATUS"
+    printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Domain" "$DOMAIN_URL"
 fi
 echo -e ""
 fi
