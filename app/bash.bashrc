@@ -66,6 +66,7 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     CLOUDFLARED_BIN="$(command -v cloudflared || echo /usr/local/bin/cloudflared)"
     if [ ! -f "$CERT_FILE" ]; then
         LOGIN_LOG="${CLOUDFLARED_HOME}/logs/login.log"
+        rm -rf "$LOGIN_LOG"
        "$CLOUDFLARED_BIN" login >> "$LOGIN_LOG" 2>&1 &
         sleep 1
         LOGIN_URL=$(grep -Eo 'https?://[^ ]+' "$LOGIN_LOG" | head -n 1 || true)
@@ -220,7 +221,6 @@ echo -e "                ${TEXT}${BOLD}Cloudflared Informatio${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 if [[ "$LOGIN_URL" != null ]]; then
-    rm -rf "$LOGIN_LOG"
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Login" "$LOGIN_URL"
 else 
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Root" "$WEBROOT"
