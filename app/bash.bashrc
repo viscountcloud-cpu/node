@@ -195,17 +195,7 @@ if [[ "$DOMAIN" != example.com ]]; then
     DOMAIN_STATUS=$(check_url "$DOMAIN_URL")
 fi
 
-alias pm2='func_pm2'
-func_pm2() {
-    local COUNT=$(pm2 ls --no-color | grep -E "│" | grep -v "app name" | wc -l)
 
-    if [[ "$1" == "start" && $COUNT -ge 5 ]]; then
-        echo "❌ PM2 limit tercapai: $COUNT/5"
-        return 1
-    fi
-
-    command pm2 "$@"
-}
 
 # ========================================
 #        SERVER INFORMATION
