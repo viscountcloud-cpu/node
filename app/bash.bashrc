@@ -65,29 +65,20 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     CERT_FILE="$CLOUDFLARED_HOME/cert.pem"
     CLOUDFLARED_BIN="$(command -v cloudflared || echo /usr/local/bin/cloudflared)"
     if [ ! -f "$CERT_FILE" ]; then
-       LOGIN_LOG="${CLOUDFLARED_HOME}/logs/login.log"
+        LOGIN_LOG="${CLOUDFLARED_HOME}/logs/login.log"
        "$CLOUDFLARED_BIN" login >> "$LOGIN_LOG" 2>&1 &
-sleep 1
-
-# Ambil URL pertama yang muncul di log (jika ada)
-LOGIN_URL=$(grep -Eo 'https?://[^ ]+' "$LOGIN_LOG" | head -n 1 || true)
-
-# Jika grep belum menemukan URL, coba tunggu sedikit dan coba lagi (opsional)
-if [[ -z "$LOGIN_URL" ]]; then
-  # tunggu sampai 5 detik total, memeriksa setiap 1 detik
-  for i in 1 2 3 4 5; do
-    sleep 1
-    LOGIN_URL=$(grep -Eo 'https?://[^ ]+' "$LOGIN_LOG" | head -n 1 || true)
-    [[ -n "$LOGIN_URL" ]] && break
-  done
-fi
-        # LOGIN_OUTPUT=$("$CLOUDFLARED_BIN" login 2>&1 | tee -a "${CLOUDFLARED_HOME}/logs/login.log")
-        # LOGIN_URL=$(echo "$LOGIN_OUTPUT" | grep -Eo 'https?://[^ ]+')
+        sleep 1
+        LOGIN_URL=$(grep -Eo 'https?://[^ ]+' "$LOGIN_LOG" | head -n 1 || true)
+        if [[ -z "$LOGIN_URL" ]]; then
+            for i in 1 2 3 4 5; do
+                sleep 1
+                LOGIN_URL=$(grep -Eo 'https?://[^ ]+' "$LOGIN_LOG" | head -n 1 || true)
+                [[ -n "$LOGIN_URL" ]] && break
+            done
+        fi
     else
         if [ ! -f "$TUNNEL_FILE" ]; then
-            "$CLOUDFLARED_BIN" tunnel create "$TUNNEL_NAME"  \
-                >> "${CLOUDFLARED_HOME}/logs/tunnel.out.log" \
-                2>> "${CLOUDFLARED_HOME}/logs/tunnel.err.log" &
+            "$CLOUDFLARED_BIN" tunnel create "$TUNNEL_NAME" >> "${CLOUDFLARED_HOME}/logs/tunnel.log" 2>&1 &
             FOUND_JSON=$(ls "$CLOUDFLARED_HOME"/*.json 2>/dev/null | head -n 1)
             if [ -n "$FOUND_JSON" ] && [ "$FOUND_JSON" != "$TUNNEL_FILE" ]; then
                 mv "$FOUND_JSON" "$TUNNEL_FILE"
@@ -97,9 +88,7 @@ fi
             CHECK_DOMAIN=$(grep server_name /home/container/.nginx/default.conf | awk '{print $2}' | sed 's/;//')
             if [[ "$CHECK_DOMAIN" != "$DOMAIN" ]]; then
                 sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
-                "$CLOUDFLARED_BIN" tunnel route dns "$TUNNEL_NAME" "$DOMAIN" \
-                    >> "${CLOUDFLARED_HOME}/logs/dns.out.log" \
-                    2>> "${CLOUDFLARED_HOME}/logs/dns.err.log" &
+                "$CLOUDFLARED_BIN" tunnel route dns "$TUNNEL_NAME" "$DOMAIN" >> "${CLOUDFLARED_HOME}/logs/dns.log" 2>&1 &
                 cat > "$CONFIG_FILE" <<EOF
 tunnel: ${TUNNEL_NAME}
 credentials-file: ${TUNNEL_FILE}
@@ -116,10 +105,7 @@ EOF
         if [ -f /home/container/.nginx/default.conf ]; then
             nginx -c /home/container/.nginx/default.conf
         fi
-        "$CLOUDFLARED_BIN" tunnel run \
-            >> "${CLOUDFLARED_HOME}/logs/run.out.log" \
-            2>> "${CLOUDFLARED_HOME}/logs/run.err.log" &
-
+        "$CLOUDFLARED_BIN" tunnel run >> "${CLOUDFLARED_HOME}/logs/run.log" 2>&1 &
     fi
 else 
     rm -rf /home/container/.nginx
@@ -234,6 +220,7 @@ echo -e "                ${TEXT}${BOLD}Cloudflared Informatio${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e ""
 if [[ "$LOGIN_URL" != null ]]; then
+    rm -rf "$LOGIN_LOG"
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Login" "$LOGIN_URL"
 else 
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Root" "$WEBROOT"
