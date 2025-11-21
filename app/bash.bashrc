@@ -143,6 +143,7 @@ NVM_VERSION=$(nvm -v)
 GIT_VERSION=$(git --version 2>/dev/null | awk '{print $3}')
 CHROME_PATH=${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
 DOMAIN=${DOMAIN:-null}
+LOGIN_URL=${LOGIN_URL:-null}
 # HOSTNAME=${HOST_NAME}
 
 if [ ! -e "$HOME/.sudo_as_admin_successful" ] && [ ! -e "$HOME/.hushlogin" ] ; then
