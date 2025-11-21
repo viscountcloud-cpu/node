@@ -65,6 +65,7 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     CERT_FILE="$CLOUDFLARED_HOME/cert.pem"
     CLOUDFLARED_BIN="$(command -v cloudflared || echo /usr/local/bin/cloudflared)"
     if [ ! -f "$CERT_FILE" ]; then
+       LOGIN_LOG="${CLOUDFLARED_HOME}/logs/login.log"
        "$CLOUDFLARED_BIN" login >> "$LOGIN_LOG" 2>&1 &
 sleep 1
 
