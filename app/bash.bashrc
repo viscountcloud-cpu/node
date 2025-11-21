@@ -14,11 +14,6 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     if [ ! -f /home/container/.nginx/default.conf ]; then
         cp /nginx/default.conf /home/container/.nginx/default.conf
         sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
-        if [[ "$DOMAIN" != example.com ]]; then
-            sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
-        else
-            sed -i "s|server_name .*;|server_name localhost;|g" /home/container/.nginx/default.conf
-        fi
     fi
     if [ ! -f /home/container/webroot/index.html ]; then
         cp /webroot/index.html /home/container/webroot/index.html
@@ -26,16 +21,6 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     if [ -f /home/container/.nginx/default.conf ]; then
         nginx -c /home/container/.nginx/default.conf
     fi
-
-
-
-
-
-
-
-
-
-
     TUNNEL_NAME="ServerWeb-${HOSTNAME}"
     TUNNEL_FILE="$CLOUDFLARED_HOME/${HOSTNAME}.json"
     CONFIG_FILE="$CLOUDFLARED_HOME/config.yml"
@@ -52,11 +37,13 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
             fi
         fi
         if [[ "$DOMAIN" != example.com ]]; then
-            "$CLOUDFLARED_BIN" tunnel route dns "$TUNNEL_NAME" "$DOMAIN" \
-        >> "${CLOUDFLARED_HOME}/logs/dns.out.log" \
-        2>> "${CLOUDFLARED_HOME}/logs/dns.err.log" &
-        fi
-        cat > "$CONFIG_FILE" <<EOF
+            CHECK_DOMAIN=$(grep server_name /home/container/.nginx/default.conf | awk '{print $2}' | sed 's/;//')
+            if [[ "$CHECK_DOMAIN" != "$DOMAIN" ]]; then
+                sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
+                "$CLOUDFLARED_BIN" tunnel route dns "$TUNNEL_NAME" "$DOMAIN" \
+                    >> "${CLOUDFLARED_HOME}/logs/dns.out.log" \
+                    2>> "${CLOUDFLARED_HOME}/logs/dns.err.log" &
+                cat > "$CONFIG_FILE" <<EOF
 tunnel: ${TUNNEL_NAME}
 credentials-file: ${TUNNEL_FILE}
 
@@ -65,18 +52,20 @@ ingress:
     service: http://localhost:$SERVER_PORT
   - service: http_status:404
 EOF
-        if ! pgrep -f "cloudflared tunnel run" >/dev/null; then
-            "$CLOUDFLARED_BIN" tunnel run \
-        >> "${CLOUDFLARED_HOME}/logs/run.out.log" \
-        2>> "${CLOUDFLARED_HOME}/logs/run.err.log" &
+            fi
+        else
+            sed -i "s|server_name .*;|server_name localhost;|g" /home/container/.nginx/default.conf
         fi
+        
+        "$CLOUDFLARED_BIN" tunnel run \
+            >> "${CLOUDFLARED_HOME}/logs/run.out.log" \
+            2>> "${CLOUDFLARED_HOME}/logs/run.err.log" &
+
     fi
 else 
-rm -rf /home/container/.nginx
-rm -rf /home/container/webroot
+    rm -rf /home/container/.nginx
+    rm -rf /home/container/webroot
 fi
-
-
 
 
 if [ -d "/home/container/.nvm" ]; then
