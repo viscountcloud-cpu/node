@@ -47,14 +47,16 @@ fi
 
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
     mkdir -p /home/container/.nginx
-    mkdir -p /home/container/webroot
+    mkdir -p "${$WEBROOT}"
     mkdir -p /home/container/.cloudflared/logs
     if [ ! -f /home/container/.nginx/default.conf ]; then
         cp /nginx/default.conf /home/container/.nginx/default.conf
         sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
     fi
-    if [ ! -f /home/container/webroot/index.html ]; then
-        cp /webroot/index.html /home/container/webroot/index.html
+    if [ ! -f "${$WEBROOT}/index.html" ]; then
+        if [ ! -f "${$WEBROOT}/package.json" ]; then
+            cp /webroot/index.html "${$WEBROOT}/index.html"
+        fi
     fi
     if [[ "$WEBROOT" != "/home/container" ]]; then
         sed -i "s|root .*;|root ${WEBROOT};|g" /home/container/.nginx/default.conf
@@ -125,7 +127,9 @@ EOF
     fi
 else 
     rm -rf /home/container/.nginx
-    rm -rf /home/container/webroot
+    if [[ "$WEBROOT" != "/home/container" ]]; then
+        rm -rf "$WEBROOT"
+    fi
 fi
 
 
