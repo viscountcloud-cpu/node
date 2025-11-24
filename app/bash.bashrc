@@ -125,7 +125,9 @@ EOF
         fi
         "$CLOUDFLARED_BIN" tunnel run >> "${CLOUDFLARED_HOME}/logs/run.log" 2>&1 &
     fi
-
+else 
+    rm -rf /home/container/.nginx
+    rm -rf /home/container/webroot
 fi
 
 
@@ -206,7 +208,7 @@ DOMAIN_URL="https://${DOMAIN}"
 # ========================================
 #        SERVER INFORMATION
 # ========================================
-
+clear
 echo -e ""
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e "                ${TEXT}${BOLD}Server Information${RESET}"
