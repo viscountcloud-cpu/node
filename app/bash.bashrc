@@ -51,7 +51,6 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     mkdir -p /home/container/.cloudflared/logs
     if [ ! -f /home/container/.nginx/default.conf ]; then
         cp /nginx/default.conf /home/container/.nginx/default.conf
-        # sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
     fi
     if [ ! -f "${$WEBROOT}/index.html" ]; then
         if [ ! -f "${$WEBROOT}/package.json" ]; then
