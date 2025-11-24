@@ -81,12 +81,14 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     else
         if [ ! -f "$TUNNEL_FILE" ]; then
             "$CLOUDFLARED_BIN" tunnel create "$TUNNEL_NAME" >> "${CLOUDFLARED_HOME}/logs/tunnel.log" 2>&1 &
+echo -e "test 1"
             for i in 1 2 3 4 5; do
                 sleep 1
                 if grep -q "Tunnel credentials written to $CLOUDFLARED_HOME" "${CLOUDFLARED_HOME}/logs/tunnel.log"; then
                     break
                 fi
             done
+echo -e "test 2"
             FOUND_JSON=$(ls "$CLOUDFLARED_HOME"/*.json 2>/dev/null | head -n 1)
             if [ -n "$FOUND_JSON" ] && [ "$FOUND_JSON" != "$TUNNEL_FILE" ]; then
                 mv "$FOUND_JSON" "$TUNNEL_FILE"
@@ -207,7 +209,7 @@ DOMAIN_URL="https://${DOMAIN}"
 # ========================================
 #        SERVER INFORMATION
 # ========================================
-clear
+# clear
 echo -e ""
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e "                ${TEXT}${BOLD}Server Information${RESET}"
