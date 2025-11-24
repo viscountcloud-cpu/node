@@ -132,7 +132,7 @@ if [[ "${AUTO_START_WEBSITE}" == "ON" ]]; then
     CERT_FILE="$CLOUDFLARED_HOME/cert.pem"
     CLOUDFLARED_BIN="$(command -v cloudflared || echo /usr/local/bin/cloudflared)"
     if [ -f "$CERT_FILE" ]; then
-        if [ ! -f "$TUNNEL_FILE" ]; then
+        if [ -f "$TUNNEL_FILE" ]; then
             "$CLOUDFLARED_BIN" tunnel run >> "${CLOUDFLARED_HOME}/logs/run.log" 2>&1 &
             if [ -f /home/container/.nginx/default.conf ]; then
                 nginx -c /home/container/.nginx/default.conf >> /dev/null 2>&1 &
