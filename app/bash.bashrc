@@ -47,19 +47,21 @@ fi
 
 if [[ "${SETUP_NGINX}" == "ON" ]]; then
     mkdir -p /home/container/.nginx
-    mkdir -p /home/container/webroot
     mkdir -p /home/container/.cloudflared/logs
+    if [[ "$PATH_ROOT" != "/home/container" ]]; then
+        mkdir -p "$PATH_ROOT"
+    fi
     if [ ! -f /home/container/.nginx/default.conf ]; then
         cp /nginx/default.conf /home/container/.nginx/default.conf
         sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
     fi
-    if [ ! -f /home/container/webroot/index.html ]; then
-        if [ ! -f /home/container/webroot/package.json ]; then
-            cp /webroot/index.html /home/container/webroot/index.html
+    if [ ! -f "${PATH_ROOT}/index.html" ]; then
+        if [ ! -f "${PATH_ROOT}/index.html" ]; then
+            cp /webroot/index.html "${PATH_ROOT}/index.html"
         fi
     fi
-    if [[ "$WEBROOT" != "/home/container" ]]; then
-        sed -i "s|root .*;|root ${WEBROOT};|g" /home/container/.nginx/default.conf
+    if [[ "$PATH_ROOT" != "/home/container" ]]; then
+        sed -i "s|root .*;|root ${PATH_ROOT};|g" /home/container/.nginx/default.conf
     fi
     TUNNEL_NAME="ServerWeb-${HOSTNAME}"
     TUNNEL_FILE="$CLOUDFLARED_HOME/${HOSTNAME}.json"
@@ -120,17 +122,24 @@ ingress:
 EOF
             sed -i "s|server_name .*;|server_name localhost;|g" /home/container/.nginx/default.conf
         fi
-        if [ -f /home/container/.nginx/default.conf ]; then
-            nginx -c /home/container/.nginx/default.conf
-        fi
-        "$CLOUDFLARED_BIN" tunnel run >> "${CLOUDFLARED_HOME}/logs/run.log" 2>&1 &
     fi
-else 
-    rm -rf /home/container/.nginx
-    rm -rf /home/container/webroot
 fi
 
-
+if [[ "${AUTO_START_WEBSITE}" == "ON" ]]; then
+    TUNNEL_NAME="ServerWeb-${HOSTNAME}"
+    TUNNEL_FILE="$CLOUDFLARED_HOME/${HOSTNAME}.json"
+    CONFIG_FILE="$CLOUDFLARED_HOME/config.yml"
+    CERT_FILE="$CLOUDFLARED_HOME/cert.pem"
+    CLOUDFLARED_BIN="$(command -v cloudflared || echo /usr/local/bin/cloudflared)"
+    if [ -f "$CERT_FILE" ]; then
+        if [ ! -f "$TUNNEL_FILE" ]; then
+            if [ -f /home/container/.nginx/default.conf ]; then
+                nginx -c /home/container/.nginx/default.conf
+            fi
+            "$CLOUDFLARED_BIN" tunnel run >> "${CLOUDFLARED_HOME}/logs/run.log" 2>&1 &
+        fi
+    fi
+fi
 
 export NVM_DIR="/app/.nvm"
 
@@ -197,8 +206,8 @@ if [ -x /usr/lib/command-not-found -o -x /usr/share/command-not-found/command-no
 fi
 
 
-if [[ "$WEBROOT" != "/home/container" && "$SETUP_NGINX" == "ON" ]]; then
-    cd "$WEBROOT"
+if [[ "$PATH_ROOT" != "/home/container" ]]; then
+    cd "$PATH_ROOT"
 fi
 
 # URL
@@ -240,7 +249,7 @@ echo -e ""
 if [[ "$LOGIN_URL" != null ]]; then
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Login" "$LOGIN_URL"
 else 
-    printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Root" "$WEBROOT"
+    printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Root" "$PATH_ROOT"
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Config" "/home/container/.nginx/default.conf"
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "$LOCAL_URL"
     if [[ "$DOMAIN" != localhost ]]; then
