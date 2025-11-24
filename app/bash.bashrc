@@ -54,7 +54,7 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     fi
     if [ ! -f /home/container/webroot/index.html" ]; then
         if [ ! -f /home/container/webroot/package.json" ]; then
-            cp /webroot/index.html /home/container/webroot/index.html"
+            cp /webroot/index.html /home/container/webroot/index.html
         fi
     fi
     if [[ "$WEBROOT" != "/home/container" ]]; then
