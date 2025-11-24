@@ -20,7 +20,7 @@ UPTIME=$(uptime -p | sed 's/up //')
 MEMORY=$(free -h | awk '/Mem:/ {print $3 " / " $2}')
 DISK=$(df -h /home | awk 'NR==2 {print $3 " / " $2 " (" $5 ")"}')
 INTERNAL_IP=$(ip route get 1 | awk '{print $(NF-2);exit}')
-DOMAIN=${DOMAIN:-example.com}
+DOMAIN=${DOMAIN:-localhost}
 PORT=${SERVER_PORT:-${PORT:-8080}}
 
 # === IP publik (lebih andal, dengan fallback) ===
@@ -51,6 +51,7 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     mkdir -p /home/container/.cloudflared/logs
     if [ ! -f /home/container/.nginx/default.conf ]; then
         cp /nginx/default.conf /home/container/.nginx/default.conf
+        sed -i "s|listen [0-9]*;|listen ${PORT};|g" /home/container/.nginx/default.conf
     fi
     if [ ! -f /home/container/webroot/index.html ]; then
         if [ ! -f /home/container/webroot/package.json ]; then
@@ -81,20 +82,18 @@ if [[ "${SETUP_NGINX}" == "ON" ]]; then
     else
         if [ ! -f "$TUNNEL_FILE" ]; then
             "$CLOUDFLARED_BIN" tunnel create "$TUNNEL_NAME" >> "${CLOUDFLARED_HOME}/logs/tunnel.log" 2>&1 &
-echo -e "test 1"
             for i in 1 2 3 4 5; do
                 sleep 1
                 if grep -q "Tunnel credentials written to $CLOUDFLARED_HOME" "${CLOUDFLARED_HOME}/logs/tunnel.log"; then
                     break
                 fi
             done
-echo -e "test 2"
             FOUND_JSON=$(ls "$CLOUDFLARED_HOME"/*.json 2>/dev/null | head -n 1)
             if [ -n "$FOUND_JSON" ] && [ "$FOUND_JSON" != "$TUNNEL_FILE" ]; then
                 mv "$FOUND_JSON" "$TUNNEL_FILE"
             fi
         fi
-        if [[ "$DOMAIN" != example.com ]]; then
+        if [[ "$DOMAIN" != localhost ]]; then
             CHECK_DOMAIN=$(grep server_name /home/container/.nginx/default.conf | awk '{print $2}' | sed 's/;//')
             if [[ "$CHECK_DOMAIN" != "$DOMAIN" ]]; then
                 sed -i "s|server_name .*;|server_name ${DOMAIN};|g" /home/container/.nginx/default.conf
@@ -115,7 +114,7 @@ tunnel: ${TUNNEL_NAME}
 credentials-file: ${TUNNEL_FILE}
 
 ingress:
-  - hostname: ${DOMAIN}
+  - hostname: example.com
     service: http://localhost:$SERVER_PORT
   - service: http_status:404
 EOF
@@ -209,7 +208,7 @@ DOMAIN_URL="https://${DOMAIN}"
 # ========================================
 #        SERVER INFORMATION
 # ========================================
-# clear
+clear
 echo -e ""
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e "                ${TEXT}${BOLD}Server Information${RESET}"
@@ -244,7 +243,7 @@ else
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Root" "$WEBROOT"
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Config" "/home/container/.nginx/default.conf"
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "$LOCAL_URL"
-    if [[ "$DOMAIN" != example.com ]]; then
+    if [[ "$DOMAIN" != localhost ]]; then
         printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Domain" "$DOMAIN_URL"
     fi
 fi
