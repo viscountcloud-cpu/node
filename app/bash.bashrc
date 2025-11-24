@@ -133,10 +133,10 @@ if [[ "${AUTO_START_WEBSITE}" == "ON" ]]; then
     CLOUDFLARED_BIN="$(command -v cloudflared || echo /usr/local/bin/cloudflared)"
     if [ -f "$CERT_FILE" ]; then
         if [ ! -f "$TUNNEL_FILE" ]; then
-            if [ -f /home/container/.nginx/default.conf ]; then
-                nginx -c /home/container/.nginx/default.conf
-            fi
             "$CLOUDFLARED_BIN" tunnel run >> "${CLOUDFLARED_HOME}/logs/run.log" 2>&1 &
+            if [ -f /home/container/.nginx/default.conf ]; then
+                nginx -c /home/container/.nginx/default.conf >> /dev/null 2>&1 &
+            fi
         fi
     fi
 fi
@@ -241,7 +241,7 @@ printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "nvm" "$NVM_VERSION"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Git" "$GIT_VERSION"
 printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Chrome Path" "$CHROME_PATH"
 echo -e ""
-if [[ "${SETUP_NGINX}" == "ON" ]]; then
+if [[ "${AUTO_START_WEBSITE}" == "ON" ]]; then
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
 echo -e "                ${TEXT}${BOLD}Cloudflared Informatio${RESET}"
 echo -e "${ACCENT}${BOLD}────────────────────────────────────────────────────${RESET}"
@@ -250,7 +250,6 @@ if [[ "$LOGIN_URL" != null ]]; then
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Login" "$LOGIN_URL"
 else 
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Root" "$PATH_ROOT"
-    printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Config" "/home/container/.nginx/default.conf"
     printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Localhost" "$LOCAL_URL"
     if [[ "$DOMAIN" != localhost ]]; then
         printf "${DIM}%-18s${RESET}${TEXT}: %s\n" "Domain" "$DOMAIN_URL"
